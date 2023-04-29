@@ -15,6 +15,8 @@ public abstract class GenStructure extends MapGenStructure {
 
     private int odds;
 
+
+
     public GenStructure(int spacing, int offset, int odds) {
         this.spacing = spacing;
         this.offset = offset;

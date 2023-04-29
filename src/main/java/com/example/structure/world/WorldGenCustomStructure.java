@@ -13,6 +13,7 @@ import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.fml.common.IWorldGenerator;
+import org.lwjgl.Sys;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,20 +52,26 @@ public static WorldGenStructure[] listedStructures = {OCEAN_RUINS};
 
 
 
+
     @Override
     public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {
         int x = chunkX * 16;
         int z = chunkZ * 16;
+
         Class<?> BIOMES = Biomes.OCEAN.getBiomeClass();
 
         if(world.provider.getDimension() == 0) {
-            int i = 2;                                          // Alter the nextInt to change weight, if we really want too we can make this a config option
-            if(chunkX % i == 0 && chunkZ % i == 0 && world.rand.nextInt(24) == 0) {
+                                                   // Alter the nextInt to change weight, if we really want too we can make this a config option
+            if(world.rand.nextInt(24) == 0) {
                 // Set to spawn in all types of OCEAN Biomes, specifically for the Overworld only.
                 generateBiomeSpecificStructure(OCEAN_RUINS , world, random, x, z,BIOMES );
 
+                System.out.println("Spawned Structure");
+
 
             }
+
+
         }
     }
 
@@ -82,7 +89,9 @@ public static WorldGenStructure[] listedStructures = {OCEAN_RUINS};
             if (classesList.contains(biome)) {
                 if (rand.nextFloat() > generator.getAttempts()) {
                     generator.generate(world, rand, pos);
+                    System.out.println("Generation");
                     return true;
+
                 }
             }
         }

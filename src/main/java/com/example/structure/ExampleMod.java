@@ -8,6 +8,8 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import org.apache.logging.log4j.Logger;
+import software.bernie.geckolib3.GeckoLib;
+
 
 @Mod(modid = ExampleMod.MODID, name = ExampleMod.NAME, version = ExampleMod.VERSION)
 public class ExampleMod
@@ -21,7 +23,7 @@ public class ExampleMod
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
-
+        GeckoLib.initialize();
         logger = event.getModLog();
         //Registering the Structures lmao
         GameRegistry.registerWorldGenerator(new WorldGenCustomStructure(), 3);
