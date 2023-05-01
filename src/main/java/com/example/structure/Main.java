@@ -2,10 +2,12 @@ package com.example.structure;
 
 import com.example.structure.init.ModEntities;
 import com.example.structure.proxy.CommonProxy;
+import com.example.structure.util.ModReference;
 import com.example.structure.world.WorldGenCustomStructure;
 import net.minecraft.init.Blocks;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -13,14 +15,13 @@ import org.apache.logging.log4j.Logger;
 import software.bernie.geckolib3.GeckoLib;
 
 
-@Mod(modid = Main.MODID, name = Main.NAME, version = Main.VERSION)
+@Mod(modid = ModReference.MOD_ID, name = ModReference.NAME, version = ModReference.VERSION)
 public class Main
 {
-    public static final String MODID = "test";
-    public static final String NAME = "Structure Mod";
-    public static final String VERSION = "1.0";
 
+    @SidedProxy(clientSide = ModReference.CLIENT_PROXY_CLASS, serverSide = ModReference.COMMON_PROXY_CLASS)
     public static CommonProxy proxy;
+    @Mod.Instance
     public static Main instance;
 
     private static Logger logger;
@@ -30,10 +31,12 @@ public class Main
     {
         GeckoLib.initialize();
         logger = event.getModLog();
-        //Registering the Structures lmao
 
+        //Register Entities
         ModEntities.registerEntities();
+        //Register World Gen
         GameRegistry.registerWorldGenerator(new WorldGenCustomStructure(), 3);
+        //Renders and other misc stuff
         proxy.init();
     }
 

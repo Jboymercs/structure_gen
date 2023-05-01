@@ -25,6 +25,7 @@ public class ModEntities {
 
 
     public static void registerEntities() {
+        //Crystal Boss
         registerEntityWithID("crystal_boss", EntityCrystalKnight.class, ENTITY_START_ID++, 50, end_mobs);
     }
 

@@ -3,6 +3,7 @@ package com.example.structure.world;
 import com.example.structure.Main;
 import com.example.structure.util.IStructure;
 import com.example.structure.util.ModRand;
+import com.example.structure.util.ModReference;
 import com.example.structure.util.ModUtils;
 import net.minecraft.init.Blocks;
 import net.minecraft.server.MinecraftServer;
@@ -62,7 +63,7 @@ public class WorldGenStructure extends WorldGenerator implements IStructure {
 
         MinecraftServer mcServer = world.getMinecraftServer();
         TemplateManager manager = worldServer.getStructureTemplateManager();
-        ResourceLocation location = new ResourceLocation(Main.MODID , structureName);
+        ResourceLocation location = new ResourceLocation(ModReference.MOD_ID , structureName);
         template = manager.get(mcServer, location);
         if (template == null) {
             LogManager.getLogger().debug("The template, " + location + " could not be loaded");
