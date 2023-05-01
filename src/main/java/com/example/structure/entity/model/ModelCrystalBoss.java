@@ -9,17 +9,17 @@ import software.bernie.geckolib3.model.AnimatedGeoModel;
 public class ModelCrystalBoss extends AnimatedGeoModel<EntityCrystalKnight> {
     @Override
     public ResourceLocation getModelLocation(EntityCrystalKnight entityCrystalKnight) {
-        return new ResourceLocation(ModReference.MOD_ID, "geo/entity/crystalknight/");
+        return new ResourceLocation(ModReference.MOD_ID, "geo/entity/crystalknight/geo.lamentor.json");
     }
 
     @Override
     public ResourceLocation getTextureLocation(EntityCrystalKnight entityCrystalKnight) {
-        return new ResourceLocation(ModReference.MOD_ID, "textures/entity/");
+        return new ResourceLocation(ModReference.MOD_ID, "textures/entity/entitylamentor.png");
     }
 
     @Override
     public ResourceLocation getAnimationFileLocation(EntityCrystalKnight entityCrystalKnight) {
-        return new ResourceLocation(ModReference.MOD_ID, "animations/");
+        return new ResourceLocation(ModReference.MOD_ID, "animations/animation.lamentor.json");
     }
 
     @Override
