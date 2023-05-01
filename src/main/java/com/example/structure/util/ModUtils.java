@@ -1,6 +1,8 @@
 package com.example.structure.util;
 
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class ModUtils {
@@ -24,6 +26,10 @@ public class ModUtils {
 
     public static int calculateGenerationHeight(World world, int x, int z) {
         return world.getTopSolidOrLiquidBlock(new BlockPos(x, 0, z)).getY();
+    }
+
+    public static AxisAlignedBB makeBox(Vec3d pos1, Vec3d pos2) {
+        return new AxisAlignedBB(pos1.x, pos1.y, pos1.z, pos2.x, pos2.y, pos2.z);
     }
 
 
