@@ -1,7 +1,9 @@
 package com.example.structure.entity.util;
 
 import net.minecraft.entity.EntityLivingBase;
-
+/**
+ * Used by {@link #EntityAITimedAttack}
+ */
 public interface IAttack {
 
     /**

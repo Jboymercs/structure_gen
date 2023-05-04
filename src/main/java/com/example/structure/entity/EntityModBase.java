@@ -4,6 +4,11 @@ import com.example.structure.entity.ai.MobGroundNavigate;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.MoverType;
+import net.minecraft.entity.ai.EntityAIHurtByTarget;
+import net.minecraft.entity.ai.EntityAILookIdle;
+import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
+import net.minecraft.entity.ai.EntityAISwimming;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
@@ -15,7 +20,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.PriorityQueue;
 
-public class EntityModBase extends EntityCreature {
+public abstract class EntityModBase extends EntityCreature {
 
     private float regenTimer;
 
@@ -64,6 +69,21 @@ public class EntityModBase extends EntityCreature {
 
     @Override
     public void onLivingUpdate() {
+
+        if (!isDead && this.getHealth() > 0) {
+            boolean foundEvent = true;
+            while (foundEvent) {
+                TimedEvent event = events.peek();
+                if (event != null && event.ticks <= this.ticksExisted) {
+                    events.remove();
+                    event.callback.run();
+                } else {
+                    foundEvent = false;
+                }
+            }
+        }
+
+
         if (!world.isRemote) {
             if (this.getAttackTarget() == null) {
                 if (this.regenTimer > this.regenStartTimer) {
@@ -77,6 +97,7 @@ public class EntityModBase extends EntityCreature {
                 this.regenTimer = 0;
             }
         }
+        super.onLivingUpdate();
     }
 
     @Override
@@ -88,10 +109,23 @@ public class EntityModBase extends EntityCreature {
     public void doRender(RenderManager renderManager, double x, double y, double z, float entityYaw, float partialTicks) {
     }
 
+    @Override
+    protected void initEntityAI() {
+        this.tasks.addTask(1, new EntityAISwimming(this));
+        this.tasks.addTask(8, new EntityAILookIdle(this));
+        this.targetTasks.addTask(3, new EntityAIHurtByTarget(this, false));
+        this.targetTasks.addTask(1, new EntityAINearestAttackableTarget<EntityPlayer>(this, EntityPlayer.class, 1, true, false, null));
+    }
+
+    /**
+     * Adds an event to be executed at a later time. Negative ticks are executed immediately.
+     *
+     * @param runnable
+     * @param ticksFromNow
+     */
     public void addEvent(Runnable runnable, int ticksFromNow) {
         events.add(new TimedEvent(runnable, this.ticksExisted + ticksFromNow));
     }
-
 
     private static class TimedEvent implements Comparable<TimedEvent> {
         Runnable callback;
