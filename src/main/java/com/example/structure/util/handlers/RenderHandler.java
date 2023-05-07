@@ -1,9 +1,11 @@
 package com.example.structure.util.handlers;
 
 import com.example.structure.entity.EntityCrystalKnight;
+import com.example.structure.entity.EntityCrystalSpikeSmall;
 import com.example.structure.entity.render.RenderCrystalBoss;
 import com.example.structure.entity.render.RenderModEntity;
 import com.example.structure.entity.render.RenderProjectile;
+import com.example.structure.init.ModItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.entity.Render;
@@ -16,6 +18,7 @@ import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import java.util.function.Function;
 
 public class RenderHandler {
+
 
     private static <T extends Entity, U extends ModelBase, V extends RenderModEntity> void registerModEntityRenderer(Class<T> entityClass, U model, String... textures) {
         registerModEntityRenderer(entityClass, (manager) -> new RenderModEntity(manager, model, textures));
@@ -51,5 +54,7 @@ public class RenderHandler {
     public static void registerGeoEntityRenderers() {
         //Cyrstal Knight Boss
         RenderingRegistry.registerEntityRenderingHandler(EntityCrystalKnight.class, RenderCrystalBoss::new);
+        //Rendering of the Projectile FINALLY USING GECKOLIB FOR PROJECTILES
+        registerProjectileRenderer(EntityCrystalSpikeSmall.class);
     }
 }

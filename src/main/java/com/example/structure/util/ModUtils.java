@@ -1,21 +1,29 @@
 package com.example.structure.util;
 
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.MoverType;
 import net.minecraft.entity.MultiPartEntityPart;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class ModUtils {
     //VERY IMPORTANT
+
+    public static Vec3d Y_AXIS = new Vec3d(0, 1, 0);
+    public static final ResourceLocation PARTICLE = new ResourceLocation(ModReference.MOD_ID + ":textures/particle/particles.png");
 
     public static int getAverageGroundHeight(World world, int x, int z, int sizeX, int sizeZ, int maxVariation) {
         sizeX = x + sizeX;
@@ -157,6 +165,132 @@ public class ModUtils {
             entity.motionZ *= scale;
         }
 
+    }
+
+    public static void addEntityVelocity(Entity entity, Vec3d vec) {
+        entity.addVelocity(vec.x, vec.y, vec.z);
+    }
+
+    public static void facePosition(Vec3d pos, Entity entity, float maxYawIncrease, float maxPitchIncrease) {
+        double d0 = pos.x - entity.posX;
+        double d2 = pos.z - entity.posZ;
+        double d1 = pos.y - entity.posY;
+
+        double d3 = MathHelper.sqrt(d0 * d0 + d2 * d2);
+        float f = (float) (MathHelper.atan2(d2, d0) * (180D / Math.PI)) - 90.0F;
+        float f1 = (float) (-(MathHelper.atan2(d1, d3) * (180D / Math.PI)));
+        entity.rotationPitch = updateRotation(entity.rotationPitch, f1, maxPitchIncrease);
+        entity.rotationYaw = updateRotation(entity.rotationYaw, f, maxYawIncrease);
+    }
+
+    private static float updateRotation(float angle, float targetAngle, float maxIncrease) {
+        float f = MathHelper.wrapDegrees(targetAngle - angle);
+
+        if (f > maxIncrease) {
+            f = maxIncrease;
+        }
+
+        if (f < -maxIncrease) {
+            f = -maxIncrease;
+        }
+
+        return angle + f;
+    }
+
+
+    public static List<Vec3d> getBoundingBoxCorners(AxisAlignedBB box) {
+        return new ArrayList<>(Arrays.asList(
+                new Vec3d(box.maxX, box.maxY, box.maxZ),
+                new Vec3d(box.maxX, box.maxY, box.minZ),
+                new Vec3d(box.maxX, box.minY, box.maxZ),
+                new Vec3d(box.maxX, box.minY, box.minZ),
+                new Vec3d(box.minX, box.maxY, box.maxZ),
+                new Vec3d(box.minX, box.maxY, box.minZ),
+                new Vec3d(box.minX, box.minY, box.maxZ),
+                new Vec3d(box.minX, box.minY, box.minZ)));
+    }
+
+
+    public static void setEntityVelocity(Entity entity, Vec3d vec) {
+        entity.motionX = vec.x;
+        entity.motionY = vec.y;
+        entity.motionZ = vec.z;
+    }
+
+    public static Vec3d getEntityVelocity(Entity entity) {
+        return new Vec3d(entity.motionX, entity.motionY, entity.motionZ);
+    }
+
+
+    public static Vec3d planeProject(Vec3d vec, Vec3d plane)
+    {
+        return ModUtils.rotateVector2(vec.crossProduct(plane), plane, 90);
+    }
+
+    public static Vec3d rotateVector2(Vec3d v, Vec3d k, double degrees) {
+        double theta = Math.toRadians(degrees);
+        k = k.normalize();
+        return v
+                .scale(Math.cos(theta))
+                .add(k.crossProduct(v)
+                        .scale(Math.sin(theta)))
+                .add(k.scale(k.dotProduct(v))
+                        .scale(1 - Math.cos(theta)));
+    }
+
+    public static Vec3d direction(Vec3d from, Vec3d to) {
+        return to.subtract(from).normalize();
+    }
+
+    public static void aerialTravel(EntityLivingBase entity, float strafe, float vertical, float forward) {
+        if (entity.isInWater()) {
+            entity.moveRelative(strafe, vertical, forward, 0.02F);
+            entity.move(MoverType.SELF, entity.motionX, entity.motionY, entity.motionZ);
+            entity.motionX *= 0.800000011920929D;
+            entity.motionY *= 0.800000011920929D;
+            entity.motionZ *= 0.800000011920929D;
+        } else if (entity.isInLava()) {
+            entity.moveRelative(strafe, vertical, forward, 0.02F);
+            entity.move(MoverType.SELF, entity.motionX, entity.motionY, entity.motionZ);
+            entity.motionX *= 0.5D;
+            entity.motionY *= 0.5D;
+            entity.motionZ *= 0.5D;
+        } else {
+            float f = 0.91F;
+
+            if (entity.onGround) {
+                BlockPos underPos = new BlockPos(MathHelper.floor(entity.posX), MathHelper.floor(entity.getEntityBoundingBox().minY) - 1, MathHelper.floor(entity.posZ));
+                IBlockState underState = entity.world.getBlockState(underPos);
+                f = underState.getBlock().getSlipperiness(underState, entity.world, underPos, entity) * 0.91F;
+            }
+
+            float f1 = 0.16277136F / (f * f * f);
+            entity.moveRelative(strafe, vertical, forward, entity.onGround ? 0.1F * f1 : 0.02F);
+            f = 0.91F;
+
+            if (entity.onGround) {
+                BlockPos underPos = new BlockPos(MathHelper.floor(entity.posX), MathHelper.floor(entity.getEntityBoundingBox().minY) - 1, MathHelper.floor(entity.posZ));
+                IBlockState underState = entity.world.getBlockState(underPos);
+                f = underState.getBlock().getSlipperiness(underState, entity.world, underPos, entity) * 0.91F;
+            }
+
+            entity.move(MoverType.SELF, entity.motionX, entity.motionY, entity.motionZ);
+            entity.motionX *= f;
+            entity.motionY *= f;
+            entity.motionZ *= f;
+        }
+
+        entity.prevLimbSwingAmount = entity.limbSwingAmount;
+        double d1 = entity.posX - entity.prevPosX;
+        double d0 = entity.posZ - entity.prevPosZ;
+        float f2 = MathHelper.sqrt(d1 * d1 + d0 * d0) * 4.0F;
+
+        if (f2 > 1.0F) {
+            f2 = 1.0F;
+        }
+
+        entity.limbSwingAmount += (f2 - entity.limbSwingAmount) * 0.4F;
+        entity.limbSwing += entity.limbSwingAmount;
     }
 
 

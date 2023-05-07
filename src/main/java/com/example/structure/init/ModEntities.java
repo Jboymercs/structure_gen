@@ -2,6 +2,7 @@ package com.example.structure.init;
 
 import com.example.structure.Main;
 import com.example.structure.entity.EntityCrystalKnight;
+import com.example.structure.entity.EntityCrystalSpikeSmall;
 import com.example.structure.util.ModReference;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
@@ -27,6 +28,8 @@ public class ModEntities {
     public static void registerEntities() {
         //Crystal Boss
         registerEntityWithID("crystal_boss", EntityCrystalKnight.class, ENTITY_START_ID++, 50, end_mobs);
+        //Crystal Ball
+        registerEntity("crystal_ball", EntityCrystalSpikeSmall.class, ENTITY_START_ID++, 50);
     }
 
 

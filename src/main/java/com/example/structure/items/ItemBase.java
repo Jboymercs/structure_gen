@@ -18,7 +18,7 @@ public class ItemBase extends Item implements IHasModel {
     }
 
     public ItemBase(String name) {
-
+        this(name, CreativeTabs.MISC);
     }
 
     @Override
