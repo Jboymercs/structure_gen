@@ -8,21 +8,19 @@ import software.bernie.geckolib3.model.AnimatedGeoModel;
 
 public class ModelCrystalBall extends AnimatedGeoModel<CrystalBallItem> {
 
-    public ModelCrystalBall() {
 
-    }
     @Override
     public ResourceLocation getModelLocation(CrystalBallItem entityCrystalSpikeSmall) {
-        return new ResourceLocation(ModReference.MOD_ID, "geo/item/geo.crystal_ball.json");
+        return new ResourceLocation(ModReference.MOD_ID, "geo/item/geo.crystalball.json");
     }
 
     @Override
     public ResourceLocation getTextureLocation(CrystalBallItem entityCrystalSpikeSmall) {
-        return new ResourceLocation(ModReference.MOD_ID, "textures/entity/crystalball.png");
+        return new ResourceLocation(ModReference.MOD_ID, "textures/item/crystalball.png");
     }
 
 @Override
     public ResourceLocation getAnimationFileLocation(CrystalBallItem entityCrystalSpikeSmall) {
-        return new ResourceLocation(ModReference.MOD_ID, "animations/animation.crystal.json");
+        return new ResourceLocation(ModReference.MOD_ID, "animations/animation.crystalball.json");
     }
 }

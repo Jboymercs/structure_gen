@@ -20,6 +20,12 @@ public class ModParticle extends Particle {
     public float animationSpeed;
     public boolean isLit;
 
+
+    public static byte PARTICLE_BYTE = 12;
+    public static byte SECOND_PARTICLE_BYTE = 14;
+    public static byte THIRD_PARTICLE_BYTE = 15;
+    public static byte FOURTH_PARTICLE_BYTE = 16;
+
     public ModParticle(World worldIn, Vec3d pos, Vec3d motion, float scale, int age, boolean isLit) {
         super(worldIn, pos.x, pos.y, pos.z, motion.x, motion.y, motion.z);
         this.particleScale = scale;

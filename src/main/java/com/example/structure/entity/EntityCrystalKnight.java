@@ -251,15 +251,15 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
         for(int i = 0; i < 60; i += 5)  {
             addEvent(()-> {
                 //Summon Crystals
-                float damage = 5;
-               // EntityCrystalSpikeSmall projectile = new EntityCrystalSpikeSmall(this.world, this, damage, null);
-               // Vec3d pos = this.getPositionVector().add(ModUtils.getRelativeOffset(this, new Vec3d(ModRand.getFloat(3), 3, ModRand.getFloat(3))));
-               // Vec3d targetPos = new Vec3d(target.posX + ModRand.getFloat(3) -1, target.posY, target.posZ + ModRand.getFloat(3) -1);
-               // Vec3d velocity = targetPos.subtract(pos).normalize().scale(0.55f);
-               // projectile.setPosition(pos.x, pos.y, pos.z);
-              //  projectile.setTravelRange(30f);
-               // ModUtils.setEntityVelocity(projectile, velocity);
-               // world.spawnEntity(projectile);
+                float damage = 5f;
+               EntityCrystalSpikeSmall projectile = new EntityCrystalSpikeSmall(this.world, this, damage, null);
+                Vec3d pos = this.getPositionVector().add(ModUtils.getRelativeOffset(this, new Vec3d(ModRand.getFloat(2), 3, ModRand.getFloat(2))));
+                Vec3d targetPos = new Vec3d(target.posX + ModRand.getFloat(2) -1, target.posY, target.posZ + ModRand.getFloat(2) -1);
+               Vec3d velocity = targetPos.subtract(pos).normalize().scale(0.55f);
+               projectile.setPosition(pos.x, pos.y, pos.z);
+               projectile.setTravelRange(30f);
+                ModUtils.setEntityVelocity(projectile, velocity);
+                world.spawnEntity(projectile);
             }, i);
         }
       }, 40);

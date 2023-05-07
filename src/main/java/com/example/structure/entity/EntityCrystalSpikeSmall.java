@@ -1,11 +1,23 @@
 package com.example.structure.entity;
 
 import com.example.structure.init.ModItems;
+import com.example.structure.items.CrystalBallItem;
 import com.example.structure.items.Items;
+import com.example.structure.util.ModColors;
+import com.example.structure.util.ModDamageSource;
+import com.example.structure.util.ModRand;
+import com.example.structure.util.ModUtils;
+import com.example.structure.util.handlers.ParticleManager;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.projectile.EntityArrow;
+import net.minecraft.entity.projectile.EntityEgg;
+import net.minecraft.entity.projectile.EntitySnowball;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import software.bernie.geckolib3.core.IAnimatable;
@@ -18,6 +30,8 @@ import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 public class EntityCrystalSpikeSmall extends Projectile{
     private static final int PARTICLE_AMOUNT = 1;
+
+
 
     private final String ANIM_IDLE = "idle";
 
@@ -53,11 +67,38 @@ public class EntityCrystalSpikeSmall extends Projectile{
         return PlayState.CONTINUE;
     }
 
+    @Override
+    public void handleStatusUpdate(byte id) {
+        super.handleStatusUpdate(id);
+    }
 @Override
     protected void spawnParticles() {
         for (int i = 0; i < this.PARTICLE_AMOUNT; i++) {
+            float size = 0.25f;
+            ParticleManager.spawnColoredSmoke(world, getPositionVector(), ModColors.AZURE, new Vec3d(0, 0.1, 0));
+        }
+    }
+
+    @Override
+    protected void onHit(RayTraceResult result) {
+        DamageSource source = ModDamageSource.builder()
+                .indirectEntity(shootingEntity)
+                .directEntity(this)
+                .type(ModDamageSource.EXPLOSION)
+                .stoppedByArmorNotShields().build();
+        ModUtils.handleAreaImpact(1, (e) -> this.getDamage(), this.shootingEntity, this.getPositionVector(), source);
+        this.playSound(SoundEvents.BLOCK_GLASS_BREAK, 1.0F, 1.0F / (rand.nextFloat() * 0.4F + 0.4F));
+        if(rand.nextInt(8) == 0) {
+
 
         }
+
+
+
+
+
+        super.onHit(result);
+
     }
 
 

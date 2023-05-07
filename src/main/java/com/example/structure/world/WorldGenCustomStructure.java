@@ -66,7 +66,6 @@ public static WorldGenStructure[] listedStructures = {OCEAN_RUINS};
                 // Set to spawn in all types of OCEAN Biomes, specifically for the Overworld only.
                 generateBiomeSpecificStructure(OCEAN_RUINS , world, random, x, z,BIOMES );
 
-                System.out.println("Spawned Structure");
 
 
             }
