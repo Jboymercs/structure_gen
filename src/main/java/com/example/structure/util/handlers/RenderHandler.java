@@ -2,7 +2,9 @@ package com.example.structure.util.handlers;
 
 import com.example.structure.entity.EntityCrystalKnight;
 import com.example.structure.entity.EntityCrystalSpikeSmall;
+import com.example.structure.entity.EntityGroundCrystal;
 import com.example.structure.entity.render.RenderCrystalBoss;
+import com.example.structure.entity.render.RenderGroundCrystal;
 import com.example.structure.entity.render.RenderModEntity;
 import com.example.structure.entity.render.RenderProjectile;
 import com.example.structure.init.ModItems;
@@ -52,9 +54,11 @@ public class RenderHandler {
     }
 
     public static void registerGeoEntityRenderers() {
-        //Cyrstal Knight Boss
+        //Crystal Knight Boss
         RenderingRegistry.registerEntityRenderingHandler(EntityCrystalKnight.class, RenderCrystalBoss::new);
-        //Rendering of the Projectile FINALLY USING GECKOLIB FOR PROJECTILES
+        //Ground Crystal - Utility
+        RenderingRegistry.registerEntityRenderingHandler(EntityGroundCrystal.class, RenderGroundCrystal::new);
+        //Crystal Ball - Utility
         registerProjectileRenderer(EntityCrystalSpikeSmall.class);
     }
 }

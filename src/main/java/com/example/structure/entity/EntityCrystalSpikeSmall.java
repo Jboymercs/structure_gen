@@ -86,7 +86,7 @@ public class EntityCrystalSpikeSmall extends Projectile{
                 .directEntity(this)
                 .type(ModDamageSource.EXPLOSION)
                 .stoppedByArmorNotShields().build();
-        ModUtils.handleAreaImpact(1, (e) -> this.getDamage(), this.shootingEntity, this.getPositionVector(), source);
+        ModUtils.handleAreaImpact(1, (e) -> this.getDamage(), this.shootingEntity, this.getPositionVector(), source, 0.2f, 0);
         this.playSound(SoundEvents.BLOCK_GLASS_BREAK, 1.0F, 1.0F / (rand.nextFloat() * 0.4F + 0.4F));
         if(rand.nextInt(8) == 0) {
 

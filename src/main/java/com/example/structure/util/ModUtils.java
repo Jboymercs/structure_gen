@@ -1,10 +1,13 @@
 package com.example.structure.util;
 
+import com.google.common.collect.Sets;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.MultiPartEntityPart;
+import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -16,6 +19,8 @@ import net.minecraft.world.World;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -145,15 +150,20 @@ public class ModUtils {
         }
     }
     // Act as a quick dash of sorts from it's location to the Player's location, in a fluid line. Used mostly for the Crystal boss
-    public static void leapDash (EntityLivingBase entity, Vec3d target, float horzVel, float targetYValue) {
+    public static void leapDash (EntityLivingBase entity, Vec3d target, float horzVel, double targetYValue) {
         Vec3d dir = target.subtract(entity.getPositionVector().normalize());
-        Vec3d leap = new Vec3d(dir.x, 0, dir.z).normalize();
+        double ySpeed = entity.motionY;
+        double ySpeedResult = 0;
         if(entity.posY > targetYValue) {
-            entity.motionY -= leap.y;
+            double d0 = entity.posY - targetYValue * 0.05;
+            ySpeedResult -=ySpeed * d0;
         }
-        if(entity.motionY < targetYValue) {
-            entity.motionY += leap.y;
+        if(entity.posY < targetYValue) {
+            double d1 = targetYValue - entity.posY * 0.05;
+             ySpeedResult += ySpeed * d1;
         }
+
+        Vec3d leap = new Vec3d(dir.x, 0, dir.z).normalize().scale(horzVel).add(ModUtils.yVec(ySpeed));
 
         entity.motionZ += leap.x;
         entity.motionZ += leap.z;
@@ -167,6 +177,14 @@ public class ModUtils {
 
     }
 
+    public static void lineCallback(Vec3d start, Vec3d end, int points, BiConsumer<Vec3d, Integer> callback) {
+        Vec3d dir = end.subtract(start).scale(1 / (float) (points - 1));
+        Vec3d pos = start;
+        for (int i = 0; i < points; i++) {
+            callback.accept(pos, i);
+            pos = pos.add(dir);
+        }
+    }
     public static void addEntityVelocity(Entity entity, Vec3d vec) {
         entity.addVelocity(vec.x, vec.y, vec.z);
     }
@@ -195,6 +213,20 @@ public class ModUtils {
         }
 
         return angle + f;
+    }
+
+    public static <T extends EntityAIBase> void removeTaskOfType(EntityAITasks tasks, Class<T> clazz) {
+        Set<EntityAIBase> toRemove = Sets.newHashSet();
+
+        for (EntityAITasks.EntityAITaskEntry entry : tasks.taskEntries) {
+            if (clazz.isInstance(entry.action)) {
+                toRemove.add(entry.action);
+            }
+        }
+
+        for (EntityAIBase ai : toRemove) {
+            tasks.removeTask(ai);
+        }
     }
 
 
