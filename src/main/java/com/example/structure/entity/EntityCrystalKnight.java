@@ -1,13 +1,17 @@
 package com.example.structure.entity;
 
+import com.example.structure.entity.ai.ActionAerialTeleport;
 import com.example.structure.entity.ai.EntityAITimedAttack;
 import com.example.structure.entity.ai.EntityAerialTimedAttack;
 import com.example.structure.entity.ai.EntityFlyMoveHelper;
 import com.example.structure.entity.util.IAttack;
 import com.example.structure.entity.util.TimedAttackIniator;
+import com.example.structure.util.ModColors;
 import com.example.structure.util.ModDamageSource;
 import com.example.structure.util.ModRand;
 import com.example.structure.util.ModUtils;
+import com.example.structure.util.handlers.ParticleManager;
+import net.minecraft.advancements.critereon.LevitationTrigger;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -18,11 +22,16 @@ import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.entity.monster.EntityGhast;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.projectile.EntityShulkerBullet;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.MobEffects;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.pathfinding.PathNavigateFlying;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -62,6 +71,12 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
     private final String SPIN_ANIM = "spin";
     private final String SPIN_ATTACK_ANIM = "spinAttack";
     private final String GROUND_CRYSTALS_ANIM = "groundCrystals";
+
+    private final String HAMMER_BEGIN_ANIM = "hammerBegin";
+    private final String HAMMER_TRAVEL_ANIM = "hammerTravel";
+    private final String HAMMER_ATTACK_ANIM = "hammerAttack";
+    private final String MULTI_ATTACK_ANIM = "multiple";
+    private final String SUMMON_SHULKERS_ANIM = "shulker";
     private static final DataParameter<Boolean> FIGHT_MODE = EntityDataManager.createKey(EntityCrystalKnight.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Boolean> STRIKE_ATTACK = EntityDataManager.createKey(EntityCrystalKnight.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Boolean> CRYSTAL_ATTACK = EntityDataManager.createKey(EntityCrystalKnight.class, DataSerializers.BOOLEAN);
@@ -70,11 +85,18 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
     private static final DataParameter<Boolean> SPIN_CYCLE = EntityDataManager.createKey(EntityCrystalKnight.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Boolean> PIERCE_ATTACK = EntityDataManager.createKey(EntityCrystalKnight.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Boolean> SUMMON_ATTACK = EntityDataManager.createKey(EntityCrystalKnight.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<Boolean> HAMMER_START = EntityDataManager.createKey(EntityCrystalKnight.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<Boolean> HAMMER_CYCLE = EntityDataManager.createKey(EntityCrystalKnight.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<Boolean> HAMMER_ATTACK = EntityDataManager.createKey(EntityCrystalKnight.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<Boolean> MULTI_PIERCE_ATTACK = EntityDataManager.createKey(EntityCrystalKnight.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<Boolean> SHULKER_ATTACK = EntityDataManager.createKey(EntityCrystalKnight.class, DataSerializers.BOOLEAN);
 
     public boolean rangeSwitch;
     public boolean meleeSwitch;
 
+    public boolean targetFloating = false;
 
+    public boolean startFlameSpawns = false;
 
     public int SwitchCoolDown;
 
@@ -107,6 +129,13 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
         this.dataManager.register(SPIN_ATTACK, Boolean.valueOf(false));
         this.dataManager.register(PIERCE_ATTACK, Boolean.valueOf(false));
         this.dataManager.register(SUMMON_ATTACK, Boolean.valueOf(false));
+        //Phase Two
+        this.dataManager.register(HAMMER_START, Boolean.valueOf(false));
+        this.dataManager.register(HAMMER_CYCLE, Boolean.valueOf(false));
+        this.dataManager.register(HAMMER_ATTACK, Boolean.valueOf(false));
+        this.dataManager.register(MULTI_PIERCE_ATTACK, Boolean.valueOf(false));
+        this.dataManager.register(SHULKER_ATTACK, Boolean.valueOf(false));
+
 
     }
 
@@ -143,6 +172,37 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
     public boolean isSummonAttack() {
         return this.dataManager.get(SUMMON_ATTACK);
     }
+    public void setHammerStart(Boolean value) {
+        this.dataManager.set(HAMMER_START, Boolean.valueOf(value));
+    }
+    public boolean isHammerStart() {
+        return this.dataManager.get(HAMMER_START);
+    }
+    public void setHammerCycle(Boolean value) {
+        this.dataManager.set(HAMMER_CYCLE, Boolean.valueOf(value));
+    }
+    public boolean isHammerCycle() {
+        return this.dataManager.get(HAMMER_CYCLE);
+    }
+    public void setHammerAttack(Boolean value) {
+        this.dataManager.set(HAMMER_ATTACK, Boolean.valueOf(value));
+    }
+    public boolean isHammerAttack() {
+        return this.dataManager.get(HAMMER_ATTACK);
+    }
+    public void setMultiPierceAttack(Boolean value) {
+        this.dataManager.set(MULTI_PIERCE_ATTACK, Boolean.valueOf(value));
+    }
+    public boolean isMultiPierceAttack() {
+        return this.dataManager.get(MULTI_PIERCE_ATTACK);
+    }
+    public void setShulkerAttack(Boolean value) {
+        this.dataManager.set(SHULKER_ATTACK, Boolean.valueOf(value));
+    }
+    public boolean isShulkerAttack() {
+        return this.dataManager.get(SHULKER_ATTACK);
+    }
+
 
     @Override
     public void applyEntityAttributes() {
@@ -172,6 +232,51 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
         else {
             SwitchCoolDown++;
         }
+
+        if (this.isShulkerAttack()) {
+            this.motionY = 0;
+        }
+        if(targetFloating) {
+            EntityLivingBase target = this.getAttackTarget();
+            if(target != null) {
+                target.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 40, 3));
+            }
+        }
+
+    }
+    //Particle Call
+    @Override
+    public void onEntityUpdate() {
+        super.onEntityUpdate();
+
+        if(rand.nextInt(5)== 0) {
+            world.setEntityState(this, ModUtils.PARTICLE_BYTE);
+        }
+        if(startFlameSpawns) {
+            if(rand.nextInt(2) == 0) {
+                world.setEntityState(this, ModUtils.THIRD_PARTICLE_BYTE);
+            }
+        }
+        if(this.isSpinCycle()) {
+            if(rand.nextInt(2) == 0) {
+                world.setEntityState(this, ModUtils.FOURTH_PARTICLE_BYTE);
+            }
+        }
+    }
+    //Particle Handler for the boss
+    @Override
+    public void handleStatusUpdate(byte id) {
+        if(id == ModUtils.PARTICLE_BYTE) {
+            ParticleManager.spawnColoredSmoke(world, getPositionVector().add(ModUtils.getRelativeOffset(this, new Vec3d(0, 1.5, 0))), ModColors.WHITE, new Vec3d(ModRand.getFloat(1) * 0.1,ModRand.getFloat(1) * 0.1,ModRand.getFloat(1) * 0.1));
+        }
+        if(id == ModUtils.THIRD_PARTICLE_BYTE) {
+            ParticleManager.spawnBrightFlames(world, rand, this.getPositionVector(), ModRand.randVec().scale(0.3f));
+        }
+        if(id == ModUtils.FOURTH_PARTICLE_BYTE) {
+            ParticleManager.spawnColoredSmoke(world, getPositionVector(), ModColors.WHITE, new Vec3d(rand.nextFloat() * 0.2,1,rand.nextFloat() * 0.2));
+        }
+
+        super.handleStatusUpdate(id);
     }
 
     @Override
@@ -188,7 +293,7 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
                 this.addVelocity(d0, d1, d2);
             }
         }
-
+    //Spin Cycle
         if(this.isSpinCycle() && target != null) {
             double distSq = this.getDistanceSq(target.posX, target.getEntityBoundingBox().minY, target.posZ);
             double distance = Math.sqrt(distSq);
@@ -202,6 +307,22 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
         }
             else {
                 this.setSpinCycle(false);
+                this.setFightMode(false);
+            }
+        }
+        //Hammer Cycle
+        if(this.isHammerCycle() && target != null) {
+            double distSq = this.getDistanceSq(target.posX, target.getEntityBoundingBox().minY, target.posZ);
+            double distance = Math.sqrt(distSq);
+            meleeSwitch = true;
+            rangeSwitch = false;
+            if(distance > 3) {
+                double d0 = (target.posX - this.posX) * 0.015;
+                double d1 = (target.posY - this.posY) * 0.009;
+                double d2 = (target.posZ - this.posZ) * 0.015;
+                this.addVelocity(d0, d1, d2);
+            } else {
+                this.setHammerCycle(false);
                 this.setFightMode(false);
             }
         }
@@ -231,32 +352,64 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
 
     private <E extends IAnimatable>PlayState predicateAttack(AnimationEvent<E> event) {
         //Attack Animations
+        //Simple Strike
         if(this.isStrikeAttack()) {
             event.getController().setAnimation(new AnimationBuilder().addAnimation(STRIKE_ANIM, false));
             return PlayState.CONTINUE;
         }
+        //Summon Small Crystals
         if(this.isCrystalAttack()) {
             event.getController().setAnimation(new AnimationBuilder().addAnimation(CRYSTAL_ANIM, false));
             return PlayState.CONTINUE;
         }
+        // Spin Start Anim
         if(this.isSpinStart()) {
             event.getController().setAnimation(new AnimationBuilder().addAnimation(SPIN_BEGIN_ANIM, false));
             return PlayState.CONTINUE;
         }
+        // Spin Cycle End - Attack
         if(this.isSpinAttack()) {
             event.getController().setAnimation(new AnimationBuilder().addAnimation(SPIN_ATTACK_ANIM, false));
             return PlayState.CONTINUE;
         }
+        //Pierce Attack
         if(this.isPierceAttack()) {
             event.getController().setAnimation(new AnimationBuilder().addAnimation(PIERCE_DASH_ANIM, false));
             return PlayState.CONTINUE;
         }
+        //Spin Loop Anim
         if(this.isSpinCycle()) {
             event.getController().setAnimation(new AnimationBuilder().addAnimation(SPIN_ANIM, true));
             return PlayState.CONTINUE;
         }
+        //Summon Ground Crystals
         if(this.isSummonAttack()) {
             event.getController().setAnimation(new AnimationBuilder().addAnimation(GROUND_CRYSTALS_ANIM, false));
+            return PlayState.CONTINUE;
+        }
+        //Hammer Start Anim
+        if(this.isHammerStart()) {
+            event.getController().setAnimation(new AnimationBuilder().addAnimation(HAMMER_BEGIN_ANIM, false));
+            return PlayState.CONTINUE;
+        }
+        //Hammer Travel Cycle Anim
+        if(this.isHammerCycle()) {
+            event.getController().setAnimation(new AnimationBuilder().addAnimation(HAMMER_TRAVEL_ANIM, true));
+            return PlayState.CONTINUE;
+        }
+        //Hammer Attack Anim
+        if(this.isHammerAttack()) {
+            event.getController().setAnimation(new AnimationBuilder().addAnimation(HAMMER_ATTACK_ANIM, false));
+            return PlayState.CONTINUE;
+        }
+        //Multiple Pierce Anims
+        if(this.isMultiPierceAttack()) {
+            event.getController().setAnimation(new AnimationBuilder().addAnimation(MULTI_ATTACK_ANIM, false));
+            return PlayState.CONTINUE;
+        }
+        //Summon Shulkers Anim
+        if(this.isShulkerAttack()) {
+            event.getController().setAnimation(new AnimationBuilder().addAnimation(SUMMON_SHULKERS_ANIM, false));
             return PlayState.CONTINUE;
         }
         event.getController().markNeedsReload();
@@ -277,6 +430,11 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
         this.tasks.addTask(4, new EntityAerialTimedAttack(this, attackDistance, 3, 30, new TimedAttackIniator<>(this, 20)));
     }
 
+    public void teleportTarget(double x, double y, double z) {
+        this.setPosition(x , y, z);
+
+    }
+
     @Override
     public AnimationFactory getFactory() {
         return factory;
@@ -290,7 +448,7 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
         double HealthChange = this.getHealth() / this.getMaxHealth();
         if(!this.isFightMode()) {
             //Begin Attacks REPEATED
-            List<Consumer<EntityLivingBase>> attacks = new ArrayList<>(Arrays.asList(meleeStrike, summonCrystals, dashPierce, circleDash, circleAttack, shulkerGiant, summonGroundCrystals));
+            List<Consumer<EntityLivingBase>> attacks = new ArrayList<>(Arrays.asList(meleeStrike, summonCrystals, dashPierce, circleDash, circleAttack, summonGroundCrystals, hammerSLAM, hammerExplosion, animeStrike, summonShulkers));
             double[] weights = {
                     //Phase One Abilities
                     (distance < 3) ? 1/distance : 0, //Melee Strike
@@ -298,10 +456,13 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
                     (distance < 8 && prevAttack != dashPierce) ? 1/distance : 0, // Dash Pierce
                     (distance > 10 && prevAttack == summonCrystals) ? distance * 0.02 : 0, //CircleDash
                     (prevAttack == circleDash) ?  100 : 0, //CircleAttack
-                    (distance > 10) ? distance * 0.02 : 0, //Summon Shulker
-                    (distance < 8 && prevAttack != summonGroundCrystals) ? 1/distance : 0 //SummonGroundCrystals
+                    (distance < 8 && prevAttack != summonGroundCrystals) ? 1/distance : 0, //SummonGroundCrystals
                     //Phase Two Abilities Added
 
+                    (distance < 9 && prevAttack != hammerSLAM && HealthChange < 0.5) ? 1/distance : 0, //Hammer Slam Attack
+                    (prevAttack == hammerSLAM) ? 100 : 0, // 2 Part Hammer Attack
+                    (distance < 9 && prevAttack != animeStrike && HealthChange < 0.60) ? 1/distance : 0, //Summon Shulkers
+                    (distance > 10 && HealthChange < 0.75) ? distance * 0.02 : 0 // Summon Shulkers
 
             };
             prevAttack = ModRand.choice(attacks, rand, weights).next();
@@ -311,7 +472,7 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
         }
 
 
-        return (prevAttack == circleDash) ? 0 : 20;
+        return (prevAttack == circleDash || prevAttack == hammerSLAM) ? 0 : 20;
     }
 
     //Basic Melee Attack
@@ -323,6 +484,7 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
             DamageSource source = ModDamageSource.builder().type(ModDamageSource.MOB).directEntity(this).build();
             float damage = 7;
             ModUtils.handleAreaImpact(1.0f, (e)-> damage, this, offset, source, 0.4f, 0, false);
+            this.playSound(SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, 1.0f, 1.0f / (rand.nextFloat() * 0.4F + 0.4f));
         }, 25);
         addEvent(()-> {
             this.setFightMode(false);
@@ -337,7 +499,7 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
       addEvent(()-> {
         for(int i = 0; i < 60; i += 4)  {
             addEvent(()-> {
-
+                this.playSound(SoundEvents.ENTITY_BLAZE_SHOOT, 1.0f, 0.8f + ModRand.getFloat(0.2F));
                 float damage = 5f;
                EntityCrystalSpikeSmall projectile = new EntityCrystalSpikeSmall(this.world, this, damage, null);
                 Vec3d pos = this.getPositionVector().add(ModUtils.getRelativeOffset(this, new Vec3d(ModRand.getFloat(2), 3, ModRand.getFloat(2))));
@@ -364,6 +526,7 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
       addEvent(()-> {
         Vec3d targetPosition = target.getPositionVector();
         addEvent(()-> {
+            startFlameSpawns = true;
             ModUtils.leapTowards(this, targetPosition, 0.9f, 0.0f);
         }, 17);
 
@@ -371,7 +534,7 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
             for (int i = 0; i < 20; i += 5) {
             addEvent(() -> {
                 Vec3d offset = this.getPositionVector().add(ModUtils.getRelativeOffset(this, new Vec3d(0.5, 0.75, 0)));
-                DamageSource source = ModDamageSource.builder().type(ModDamageSource.MOB).directEntity(this).build();
+                DamageSource source = ModDamageSource.builder().type(ModDamageSource.MOB).disablesShields().directEntity(this).build();
                 float damage = 7;
                 ModUtils.handleAreaImpact(1.5f, (e)-> damage, this, offset, source, 0.7f, 0, false);
             }, i);
@@ -379,7 +542,7 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
         }, 17);
       }, 30);
 
-
+      addEvent(()-> startFlameSpawns = false, 67);
       addEvent(()-> {
             this.setPierceAttack(false);
             this.setFightMode(false);
@@ -394,6 +557,12 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
             this.setSpinStart(false);
             this.setSpinCycle(true);
         }, 30);
+        addEvent(()-> {
+        if(this.isSpinCycle()) {
+            this.setSpinCycle( false);
+            this.setFightMode(false);
+        }
+        }, 150);
     };
     //Circle Attack - A Continuation of the Circle Dash
     private final Consumer<EntityLivingBase> circleAttack = (target)-> {
@@ -404,6 +573,7 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
             DamageSource source = ModDamageSource.builder().type(ModDamageSource.MOB).directEntity(this).build();
             float damage = 14;
             ModUtils.handleAreaImpact(1.5f, (e)-> damage, this, offset, source, 0.7f, 0, false);
+            this.playSound(SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, 1.0f, 1.0f / (rand.nextFloat() * 0.4F + 0.4f));
         }, 4);
 
         addEvent(()-> {
@@ -411,23 +581,15 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
             this.setSpinAttack(false);
         }, 30);
     };
-    //Summon Giant Shulker Bullet
-    private final Consumer<EntityLivingBase> shulkerGiant = (target) -> {
-      this.setFightMode(true);
 
-
-
-      addEvent(()-> {
-          this.setFightMode(false);
-      }, 5);
-
-    };
 
     //Summon Ground Crystals
     private final Consumer<EntityLivingBase> summonGroundCrystals = (target) -> {
         this.setFightMode(true);
         this.setSummonAttack(true);
+        addEvent(() -> {
 
+        }, 10);
         addEvent(()-> {
             Vec3d targetPosition = target.getPositionVector();
             Vec3d throwerPosition = this.getPositionVector();
@@ -455,6 +617,145 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
 
         addEvent(()-> this.setFightMode(false), 40);
         addEvent(()-> this.setSummonAttack(false), 40);
+    };
+    //Hammer Slam Attack
+    private Consumer<EntityLivingBase> hammerSLAM = (target)-> {
+        this.setFightMode(true);
+        this.setHammerStart(true);
+        addEvent(()-> {
+            this.setHammerStart(false);
+            this.setHammerCycle(true);
+            //Set's into a continuation where until the requirements are met, the cycle will continue
+        }, 40);
+
+
+    };
+    //Hammer PT 2 Attack
+    private Consumer<EntityLivingBase> hammerExplosion = (target) -> {
+        this.setFightMode(true);
+        this.setHammerAttack(true);
+        addEvent(()-> {
+            Vec3d offset = this.getPositionVector().add(ModUtils.getRelativeOffset(this, new Vec3d(2.0, 0, 0)));
+            DamageSource source = ModDamageSource.builder().type(ModDamageSource.MOB).directEntity(this).build();
+            float damage = 7;
+            float explostionFactor = 2;
+            ModUtils.handleAreaImpact(2.0f, (e)-> damage, this, offset, source, 0.9f, 1, false);
+            this.world.newExplosion(this, offset.x, offset.y, offset.z, explostionFactor, true, true);
+        }, 20);
+
+        addEvent(()-> this.setFightMode(false), 40);
+        addEvent(()-> this.setHammerAttack(false), 35);
+    };
+    //Anime Pierce Strike
+    private Consumer<EntityLivingBase> animeStrike = (target)-> {
+        this.setFightMode(true);
+        targetFloating = true;
+        //Repeat Attack Times 3
+        addEvent(()-> {
+            this.meleeSwitch = true;
+            this.rangeSwitch = false;
+            new ActionAerialTeleport(ModColors.AZURE).performAction(this, target);
+            this.playSound(SoundEvents.ENTITY_ENDERMEN_TELEPORT, 1.0F, 1.0F / (rand.nextFloat() * 0.4F + 0.3F));
+            addEvent(()-> {
+                this.setMultiPierceAttack(true);
+            }, 20);
+            addEvent(()-> {
+            ModUtils.leapTowards(this, target.getPositionVector(), 0.8f, -0.4f);
+            for(int t = 0; t < 15; t+=5) {
+                addEvent(()-> {
+                    Vec3d offset = this.getPositionVector().add(ModUtils.getRelativeOffset(this, new Vec3d(1.0, 1.0, 0)));
+                    DamageSource source = ModDamageSource.builder().type(ModDamageSource.MOB).directEntity(this).build();
+                    float damage = 6;
+                    ModUtils.handleAreaImpact(1.0f, (e)-> damage, this, offset, source, 0.3f, 0, false);
+                }, t);
+            }
+
+            }, 60);
+            addEvent(()-> {
+                this.setMultiPierceAttack(false);
+
+            }, 100);
+        }, 0);
+
+
+        addEvent(()-> {
+            this.meleeSwitch = true;
+            this.rangeSwitch = false;
+            new ActionAerialTeleport(ModColors.AZURE).performAction(this, target);
+            this.playSound(SoundEvents.ENTITY_ENDERMEN_TELEPORT, 1.0F, 1.0F / (rand.nextFloat() * 0.4F + 0.3F));
+            addEvent(()-> {
+                this.setMultiPierceAttack(true);
+            }, 20);
+            addEvent(()-> {
+                ModUtils.leapTowards(this, target.getPositionVector(), 0.8f, -0.4f);
+                for(int t = 0; t < 15; t+=5) {
+                    addEvent(()-> {
+                        Vec3d offset = this.getPositionVector().add(ModUtils.getRelativeOffset(this, new Vec3d(1.0, 1.0, 0)));
+                        DamageSource source = ModDamageSource.builder().type(ModDamageSource.MOB).directEntity(this).build();
+                        float damage = 6;
+                        ModUtils.handleAreaImpact(1.0f, (e)-> damage, this, offset, source, 0.3f, 0, false);
+                    }, t);
+                }
+
+            }, 60);
+            addEvent(()-> {
+                this.setMultiPierceAttack(false);
+
+            }, 100);
+        }, 120);
+
+
+        addEvent(()-> {
+            this.meleeSwitch = true;
+            this.rangeSwitch = false;
+            new ActionAerialTeleport(ModColors.AZURE).performAction(this, target);
+            this.playSound(SoundEvents.ENTITY_ENDERMEN_TELEPORT, 1.0F, 1.0F / (rand.nextFloat() * 0.4F + 0.3F));
+            addEvent(()-> {
+                this.setMultiPierceAttack(true);
+            }, 20);
+            addEvent(()-> {
+                ModUtils.leapTowards(this, target.getPositionVector(), 0.8f, -0.4f);
+                for(int t = 0; t < 15; t+=5) {
+                    addEvent(()-> {
+                        Vec3d offset = this.getPositionVector().add(ModUtils.getRelativeOffset(this, new Vec3d(1.0, 1.0, 0)));
+                        DamageSource source = ModDamageSource.builder().type(ModDamageSource.MOB).directEntity(this).build();
+                        float damage = 6;
+                        ModUtils.handleAreaImpact(1.0f, (e)-> damage, this, offset, source, 0.3f, 0, false);
+                    }, t);
+                }
+            }, 60);
+
+            addEvent(()-> {
+
+                this.setMultiPierceAttack(false);
+                targetFloating = false;
+                this.rangeSwitch = true;
+            }, 100);
+        }, 240);
+
+        addEvent(()-> this.setFightMode(false), 360);
+    };
+
+    //Summon Shulkers
+    private Consumer<EntityLivingBase> summonShulkers = (target)-> {
+    this.setFightMode(true);
+    this.setShulkerAttack(true);
+
+    addEvent(()-> {
+    for(int i = 0; i < 25; i += 5) {
+        addEvent(()-> {
+            EntityShulkerBullet projectile = new EntityShulkerBullet(this.world);
+            Vec3d targetPos = target.getPositionVector().add(ModUtils.getRelativeOffset(this, new Vec3d(0, 12,0)));
+            BlockPos initPos = new BlockPos(targetPos.x, targetPos.y, targetPos.z);
+            projectile.setPosition(initPos.getX(), initPos.getY(), initPos.getZ());
+            this.world.spawnEntity(projectile);
+        }, i);
+    }
+    }, 30);
+    addEvent(()-> {
+        this.setFightMode(false);
+        this.setShulkerAttack(false);
+    }, 50);
     };
 
     @Override

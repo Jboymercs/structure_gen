@@ -32,7 +32,7 @@ public class ModEntities {
         //Crystal Ball - Utility
         registerEntity("crystal_ball", EntityCrystalSpikeSmall.class, ENTITY_START_ID++, 50);
         //Ground Crystal - Utility
-        registerEntityWithID("crystal_ground", EntityGroundCrystal.class, ENTITY_START_ID++, 50,  end_mobs);
+        registerEntity("crytsal_ground", EntityGroundCrystal.class, ENTITY_START_ID++, 50);
     }
 
 

@@ -94,6 +94,9 @@ public class EntityGroundCrystal extends EntityModBase implements IAnimatable {
         return SoundEvents.BLOCK_GLASS_BREAK;
     }
 
+    @Override
+    protected SoundEvent getHurtSound(DamageSource damageSourceIn) {return SoundEvents.BLOCK_GLASS_HIT;}
+
     public void setPosition(BlockPos pos) {
         this.setPosition(pos.getX(), pos.getY(), pos.getZ());
     }

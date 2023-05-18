@@ -1,6 +1,7 @@
 package com.example.structure.util.handlers;
 
 
+import com.example.structure.init.ModBlocks;
 import com.example.structure.init.ModItems;
 import com.example.structure.items.CrystalBallItem;
 import com.example.structure.items.Items;
@@ -33,7 +34,6 @@ public class RegistryHandler {
     @SubscribeEvent
     public static void onItemRegister(RegistryEvent.Register<Item> event) {
         itemRegistry = event.getRegistry();
-        System.out.println("Item Registry Initialized");
         Items.CRYSTAL_BALL_ITEM = registerItem(new CrystalBallItem(),  "crystalball");
         event.getRegistry().registerAll(ModItems.ITEMS.toArray(new Item[0]));
     }
@@ -49,7 +49,10 @@ public class RegistryHandler {
     }
 
 
-
+    @SubscribeEvent
+    public static void onBlockRegister(RegistryEvent.Register<Block> event) {
+        event.getRegistry().registerAll(ModBlocks.BLOCKS.toArray(new Block[0]));
+    }
 
 
     @SubscribeEvent
@@ -61,6 +64,11 @@ public class RegistryHandler {
         for (Item item : ModItems.ITEMS) {
             if (item instanceof IHasModel) {
                 ((IHasModel) item).registerModels();
+            }
+        }
+        for (Block block : ModBlocks.BLOCKS) {
+            if (block instanceof IHasModel) {
+                ((IHasModel) block).registerModels();
             }
         }
 

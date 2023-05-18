@@ -2,13 +2,11 @@ package com.example.structure.util;
 
 import com.google.common.collect.Sets;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.MoverType;
-import net.minecraft.entity.MultiPartEntityPart;
+import net.minecraft.entity.*;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -16,10 +14,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -27,6 +22,10 @@ import java.util.function.Predicate;
 public class ModUtils {
     //VERY IMPORTANT
 
+    public static byte PARTICLE_BYTE = 12;
+    public static byte SECOND_PARTICLE_BYTE = 14;
+    public static byte THIRD_PARTICLE_BYTE = 15;
+    public static byte FOURTH_PARTICLE_BYTE = 16;
     public static Vec3d Y_AXIS = new Vec3d(0, 1, 0);
     public static final ResourceLocation PARTICLE = new ResourceLocation(ModReference.MOD_ID + ":textures/particle/particles.png");
 
@@ -177,6 +176,59 @@ public class ModUtils {
 
     }
 
+    public static void setEntityPosition(Entity entity, Vec3d vec) {
+        entity.setPosition(vec.x, vec.y, vec.z);
+    }
+
+
+    public static boolean attemptTeleport(Vec3d pos, EntityLivingBase entity)
+    {
+        double d0 = entity.posX;
+        double d1 = entity.posY;
+        double d2 = entity.posZ;
+        ModUtils.setEntityPosition(entity, pos);
+        boolean flag = false;
+        BlockPos blockpos = new BlockPos(entity);
+        World world = entity.world;
+        Random random = entity.getRNG();
+
+        if (world.isBlockLoaded(blockpos))
+        {
+            entity.setPositionAndUpdate(entity.posX, entity.posY, entity.posZ);
+
+            if (world.getCollisionBoxes(entity, entity.getEntityBoundingBox()).isEmpty() && !world.containsAnyLiquid(entity.getEntityBoundingBox()))
+            {
+                flag = true;
+            }
+        }
+
+        if (!flag)
+        {
+            entity.setPositionAndUpdate(d0, d1, d2);
+            return false;
+        }
+        else
+        {
+            for (int j = 0; j < 128; ++j)
+            {
+                double d6 = (double)j / 127.0D;
+                float f = (random.nextFloat() - 0.5F) * 0.2F;
+                float f1 = (random.nextFloat() - 0.5F) * 0.2F;
+                float f2 = (random.nextFloat() - 0.5F) * 0.2F;
+                double d3 = d0 + (entity.posX - d0) * d6 + (random.nextDouble() - 0.5D) * (double)entity.width * 2.0D;
+                double d4 = d1 + (entity.posY - d1) * d6 + random.nextDouble() * (double)entity.height;
+                double d5 = d2 + (entity.posZ - d2) * d6 + (random.nextDouble() - 0.5D) * (double)entity.width * 2.0D;
+                world.spawnParticle(EnumParticleTypes.PORTAL, d3, d4, d5, f, f1, f2);
+            }
+
+            if (entity instanceof EntityCreature)
+            {
+                ((EntityCreature)entity).getNavigator().clearPath();
+            }
+
+            return true;
+        }
+    }
     public static void lineCallback(Vec3d start, Vec3d end, int points, BiConsumer<Vec3d, Integer> callback) {
         Vec3d dir = end.subtract(start).scale(1 / (float) (points - 1));
         Vec3d pos = start;

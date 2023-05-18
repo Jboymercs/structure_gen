@@ -1,3 +1,6 @@
 item.invisible.name=Invisible
 item.crystalball.name=Crystal Ball
 entity.crystal_boss.name=The Lamentor
+entity.crystal_ball.name=Spike Crystal
+entity.crytsal_ground.name=Lamentor's Spikes
+tile.lamented_end_stone.name=Lamented End Stone

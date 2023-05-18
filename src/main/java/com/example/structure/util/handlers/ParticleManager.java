@@ -1,13 +1,18 @@
 package com.example.structure.util.handlers;
 
+import com.example.structure.particle.EffectParticle;
 import com.example.structure.util.ModColors;
 import com.example.structure.util.ModParticle;
 import com.example.structure.util.ModRand;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
+import net.minecraft.client.particle.ParticleFlame;
+import net.minecraft.client.particle.ParticleSmokeLarge;
 import net.minecraft.client.particle.ParticleSmokeNormal;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+
+import java.util.Random;
 
 public class ParticleManager {
 
@@ -32,4 +37,22 @@ public class ParticleManager {
 
         Minecraft.getMinecraft().effectRenderer.addEffect(particle);
     }
+
+    public static void spawnBrightFlames(World worldIn, Random rand, Vec3d pos, Vec3d vel) {
+        Particle particle = new ParticleFlame.Factory().createParticle(0, worldIn, pos.x, pos.y, pos.z, vel.x, vel.y, vel.z);
+
+        float f = ModRand.getFloat(0.1f);
+        particle.setRBGColorF(0.1f, 0.5f, 1f);
+
+        Minecraft.getMinecraft().effectRenderer.addEffect(particle);
+    }
+
+    public static void spawnEffect(World world, Vec3d pos, Vec3d baseColor) {
+        Particle particle = new EffectParticle.Factory().createParticle(0, world, pos.x, pos.y, pos.z, 0, 0, 0);
+        baseColor = ModColors.variateColor(baseColor, 0.2f);
+        particle.setRBGColorF((float) baseColor.x, (float) baseColor.y, (float) baseColor.z);
+        Minecraft.getMinecraft().effectRenderer.addEffect(particle);
+    }
+
+
 }

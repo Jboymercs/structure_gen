@@ -16,7 +16,7 @@ public class CrystalBallItem extends Item implements IAnimatable {
 
     public CrystalBallItem() {
         super();
-        this.setCreativeTab(CreativeTabs.MISC);
+        this.setCreativeTab(CreativeTabs.SEARCH);
     }
 
     @Override
