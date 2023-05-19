@@ -208,11 +208,13 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
     public void applyEntityAttributes() {
         super.applyEntityAttributes();
         this.getAttributeMap().registerAttribute(SharedMonsterAttributes.FLYING_SPEED);
-        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(200);
+        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(250);
         this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(10);
         this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(40D);
         this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.34590D);
         this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(1.0D);
+        this.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).setBaseValue(2.0D);
+        this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(14.0D);
     }
 
     @Override
@@ -463,6 +465,7 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
                     (prevAttack == hammerSLAM) ? 100 : 0, // 2 Part Hammer Attack
                     (distance < 9 && prevAttack != animeStrike && HealthChange < 0.60) ? 1/distance : 0, //Summon Shulkers
                     (distance > 10 && HealthChange < 0.75) ? distance * 0.02 : 0 // Summon Shulkers
+                    //Possibly one more Attack
 
             };
             prevAttack = ModRand.choice(attacks, rand, weights).next();
@@ -628,6 +631,12 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
             //Set's into a continuation where until the requirements are met, the cycle will continue
         }, 40);
 
+        addEvent(()-> {
+            if(isHammerCycle()) {
+                this.setHammerCycle(false);
+                this.setFightMode(false);
+            }
+        }, 200);
 
     };
     //Hammer PT 2 Attack
