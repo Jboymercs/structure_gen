@@ -1,0 +1,12 @@
+{
+  "entity.swamp_crawler.hurt": {
+    "category": "entity",
+    "subtitle": "entity.boss.idle",
+    "sounds": [
+      {
+        "name": "test:entity/boss/idle",
+        "stream": true
+      }
+    ]
+  }
+}

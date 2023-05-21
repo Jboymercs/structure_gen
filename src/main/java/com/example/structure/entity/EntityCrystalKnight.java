@@ -10,6 +10,7 @@ import com.example.structure.util.ModColors;
 import com.example.structure.util.ModDamageSource;
 import com.example.structure.util.ModRand;
 import com.example.structure.util.ModUtils;
+import com.example.structure.util.handlers.ModSoundHandler;
 import com.example.structure.util.handlers.ParticleManager;
 import net.minecraft.advancements.critereon.LevitationTrigger;
 import net.minecraft.block.state.IBlockState;
@@ -33,6 +34,7 @@ import net.minecraft.pathfinding.PathNavigateFlying;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BossInfo;
@@ -790,6 +792,11 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
 
     @Override
     protected void updateFallState(double y, boolean onGroundIn, @Nonnull IBlockState state, @Nonnull BlockPos pos) {
+    }
+
+    @Override
+    protected SoundEvent getAmbientSound() {
+        return ModSoundHandler.BOSS_IDLE;
     }
 
 }

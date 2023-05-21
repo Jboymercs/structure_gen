@@ -3,6 +3,7 @@ package com.example.structure;
 import com.example.structure.init.ModEntities;
 import com.example.structure.proxy.CommonProxy;
 import com.example.structure.util.ModReference;
+import com.example.structure.util.handlers.ModSoundHandler;
 import com.example.structure.world.WorldGenCustomStructure;
 import net.minecraft.init.Blocks;
 import net.minecraftforge.fml.common.Mod;
@@ -47,5 +48,6 @@ public class Main
     {
         // some example code
         logger.info("DIRT BLOCK >> {}", Blocks.DIRT.getRegistryName());
+        ModSoundHandler.registerSounds();
     }
 }
