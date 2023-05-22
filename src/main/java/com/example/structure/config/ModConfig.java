@@ -11,4 +11,11 @@ public class ModConfig {
     @Config.RangeInt(min = 0, max = 10)
     @Config.RequiresMcRestart
     public static int structureFrequency = 4;
+
+    @Config.Name("Lamentor Boss Health")
+    @Config.Comment("Change the Health of the Lamentor")
+    @Config.RequiresMcRestart
+    public static float health = 300;
+
+
 }

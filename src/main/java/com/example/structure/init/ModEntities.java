@@ -3,6 +3,7 @@ package com.example.structure.init;
 import com.example.structure.Main;
 import com.example.structure.entity.EntityCrystalKnight;
 import com.example.structure.entity.EntityCrystalSpikeSmall;
+import com.example.structure.entity.EntityExplosion;
 import com.example.structure.entity.EntityGroundCrystal;
 import com.example.structure.entity.tileentity.TileEntityUpdater;
 import com.example.structure.util.ModReference;
@@ -34,6 +35,8 @@ public class ModEntities {
         registerEntity("crystal_ball", EntityCrystalSpikeSmall.class, ENTITY_START_ID++, 50);
         //Ground Crystal - Utility
         registerEntity("crytsal_ground", EntityGroundCrystal.class, ENTITY_START_ID++, 50);
+        //IdleEntity
+        registerEntity("entity_idle", EntityExplosion.class, ENTITY_START_ID++, 50);
         //Tile Entity
         registerTileEntity(TileEntityUpdater.class, "updater");
     }

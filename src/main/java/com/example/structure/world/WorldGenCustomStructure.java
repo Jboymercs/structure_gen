@@ -5,6 +5,7 @@ import net.minecraft.init.Biomes;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
+import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldType;
@@ -80,7 +81,7 @@ public static WorldGenStructure[] listedStructures = {OCEAN_RUINS};
             if(canStructureSpawn(chunkX, chunkZ, world, ModConfig.structureFrequency)) {
 
 
-                new WorldGenEndBossArena().generate(world, random, new BlockPos(x, 0, z));
+                new WorldGenEndBossArena().generateStructure(world, new BlockPos(x, 90, z), Rotation.NONE);
                 System.out.println("Spawned End Arena");
                System.out.println("Chunk X:" + chunkX);
                System.out.println("Chunk Z:" + chunkZ);

@@ -2,6 +2,7 @@ package com.example.structure.util.handlers;
 
 import com.example.structure.entity.EntityCrystalKnight;
 import com.example.structure.entity.EntityCrystalSpikeSmall;
+import com.example.structure.entity.EntityExplosion;
 import com.example.structure.entity.EntityGroundCrystal;
 import com.example.structure.entity.render.RenderCrystalBoss;
 import com.example.structure.entity.render.RenderGroundCrystal;
@@ -60,5 +61,7 @@ public class RenderHandler {
         RenderingRegistry.registerEntityRenderingHandler(EntityGroundCrystal.class, RenderGroundCrystal::new);
         //Crystal Ball - Utility
         registerProjectileRenderer(EntityCrystalSpikeSmall.class);
+        //Idle Entity - Utility
+        registerProjectileRenderer(EntityExplosion.class);
     }
 }

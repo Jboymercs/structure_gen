@@ -1,5 +1,6 @@
 package com.example.structure.entity;
 
+import com.example.structure.config.ModConfig;
 import com.example.structure.entity.ai.*;
 import com.example.structure.entity.util.IAttack;
 import com.example.structure.entity.util.TimedAttackIniator;
@@ -32,6 +33,7 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BossInfo;
@@ -108,14 +110,14 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
 
     private AnimationFactory factory = new AnimationFactory(this);
 
-    public EntityCrystalKnight(World worldIn, BlockPos spawnPos) {
+    public EntityCrystalKnight(World worldIn) {
         super(worldIn);
-        this.setPosition(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ());
+        this.setImmovable(true);
         this.experienceValue = 10;
         this.setSize(0.8f, 2.2f);
         this.isImmuneToFire = true;
         this.isImmuneToExplosions();
-        this.setImmovable(false);
+
         this.meleeSwitch = true;
         this.moveHelper = new EntityFlyMoveHelper(this);
         this.navigator = new PathNavigateFlying(this, worldIn);
@@ -128,16 +130,6 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
             addEvent(()-> this.playSound(ModSoundHandler.BOSS_SUMMON, 1.5f, 1.0f), 50);
             addEvent(()-> this.setAlive(false), 70);
         }
-
-    }
-
-    public EntityCrystalKnight(World world) {
-        super(world);
-
-    }
-
-    @Override
-    protected void initAnimation() {
 
     }
 
@@ -254,13 +246,13 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
     public void applyEntityAttributes() {
         super.applyEntityAttributes();
         this.getAttributeMap().registerAttribute(SharedMonsterAttributes.FLYING_SPEED);
-        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(250);
+        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(ModConfig.health);
         this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(10);
-        this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(30D);
+        this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(40D);
         this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.34590D);
         this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(1.0D);
         this.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).setBaseValue(2.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(14.0D);
+        this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(18.0D);
     }
 
     @Override
@@ -295,6 +287,11 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
             this.setImmovable(true);
         } else {
             this.setImmovable(false);
+        }
+        //Allows boss to destory blocks while quick dashing
+        if(this.isSpinCycle() || this.isPierceAttack() || this.isMultiPierceAttack()) {
+            AxisAlignedBB box = getEntityBoundingBox().grow(1.25, 0.1, 1.25).offset(0, 0.1, 0);
+            ModUtils.destroyBlocksInAABB(box, world, this);
         }
 
     }
@@ -913,6 +910,10 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
     public void removeTrackingPlayer(EntityPlayerMP player) {
         super.removeTrackingPlayer(player);
         this.bossInfo.removePlayer(player);
+    }
+
+    public void setPosition(BlockPos pos) {
+        this.setPosition(pos.getX(), pos.getY(), pos.getZ());
     }
 
     @Override

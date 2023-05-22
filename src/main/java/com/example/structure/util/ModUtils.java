@@ -2,10 +2,15 @@ package com.example.structure.util;
 
 import com.example.structure.entity.Projectile;
 import com.google.common.collect.Sets;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockLiquid;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAITasks;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
@@ -14,6 +19,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraftforge.event.ForgeEventFactory;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -22,6 +28,8 @@ import java.util.function.Predicate;
 
 public class ModUtils {
     //VERY IMPORTANT
+
+    public static final String LANG_DESC = ModReference.MOD_ID + ".desc.";
 
     public static byte PARTICLE_BYTE = 12;
     public static byte SECOND_PARTICLE_BYTE = 14;
@@ -117,6 +125,45 @@ public class ModUtils {
                 }
             }
         });
+    }
+
+    public static void destroyBlocksInAABB(AxisAlignedBB box, World world, Entity entity) {
+        int i = MathHelper.floor(box.minX);
+        int j = MathHelper.floor(box.minY);
+        int k = MathHelper.floor(box.minZ);
+        int l = MathHelper.floor(box.maxX);
+        int i1 = MathHelper.floor(box.maxY);
+        int j1 = MathHelper.floor(box.maxZ);
+
+        for (int x = i; x <= l; ++x) {
+            for (int y = j; y <= i1; ++y) {
+                for (int z = k; z <= j1; ++z) {
+                    BlockPos blockpos = new BlockPos(x, y, z);
+                    IBlockState iblockstate = world.getBlockState(blockpos);
+                    Block block = iblockstate.getBlock();
+
+                    if (!block.isAir(iblockstate, world, blockpos) && iblockstate.getMaterial() != Material.FIRE) {
+                        if (ForgeEventFactory.getMobGriefingEvent(world, entity)) {
+                            if (block != Blocks.COMMAND_BLOCK &&
+                                    block != Blocks.REPEATING_COMMAND_BLOCK &&
+                                    block != Blocks.CHAIN_COMMAND_BLOCK &&
+                                    block != Blocks.BEDROCK &&
+                                    !(block instanceof BlockLiquid)) {
+                                if (world.getClosestPlayer(blockpos.getX(), blockpos.getY(), blockpos.getZ(), 20, false) != null) {
+                                    world.destroyBlock(blockpos, false);
+                                } else {
+                                    world.setBlockToAir(blockpos);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static String translateDesc(String key, Object... params) {
+        return I18n.format(ModUtils.LANG_DESC + key, params);
     }
 
     public static void handleAreaImpact(float radius, Function<Entity, Float> maxDamage, Entity source, Vec3d pos, DamageSource damageSource) {

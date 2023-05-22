@@ -3,6 +3,7 @@ package com.example.structure.init;
 import com.example.structure.blocks.BlockBase;
 import com.example.structure.blocks.BlockKey;
 import com.example.structure.entity.EntityCrystalKnight;
+import com.example.structure.entity.EntityExplosion;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -29,5 +30,5 @@ public class ModBlocks {
 
     public static final Block LAMENTED_END_STONE = new BlockBase("lamented_end_stone", Material.ROCK, STONE_HARDNESS, STONE_RESISTANCE, SoundType.SLIME).setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
 
-    public static final Block END_KEY_BLOCK = new BlockKey("key_block", Items.APPLE, ((world, pos) -> new EntityCrystalKnight(world, new BlockPos(pos.getX(), pos.getY(), pos.getZ()))));
+    public static final Block END_KEY_BLOCK = new BlockKey("key_block", ModItems.END_KEY, ((world, pos) -> new EntityExplosion(world, pos.getX(), pos.getY(), pos.getZ(), null)));
 }

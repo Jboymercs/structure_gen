@@ -2,6 +2,7 @@ package com.example.structure.init;
 
 import com.example.structure.items.CrystalBallItem;
 import com.example.structure.items.ItemBase;
+import com.example.structure.items.ItemKey;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 
@@ -14,7 +15,10 @@ public class ModItems {
     public static final List<Item> ITEMS = new ArrayList<Item>();
     public static final Item INVISIBLE = new ItemBase("invisible", null);
 
+    public static final Item END_KEY = new ItemKey("key", "dimensional_key", CreativeTabs.MISC);
+
     public ModItems() {
+
 
     }
 }
