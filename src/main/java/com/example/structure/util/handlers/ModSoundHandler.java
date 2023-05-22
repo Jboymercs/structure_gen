@@ -24,6 +24,14 @@ public class ModSoundHandler {
 
     public static void registerSounds() {
         BOSS_IDLE = registerSound("boss.idle", "entity");
+        BOSS_HURT = registerSound("boss.hurt", "entity");
+        BOSS_DEATH = registerSound("boss.death", "entity");
+        BOSS_SUMMON = registerSound("boss.summon", "entity");
+
+        BOSS_DRAW_HAMMER = registerSound("boss.hammer", "entity");
+        BOSS_DRAW_SWORD = registerSound("boss.sword", "entity");
+        BOSS_DASH = registerSound("boss.dash", "entity");
+        BOSS_CAST_AMBIENT = registerSound("boss.cast", "entity");
     }
 
 

@@ -1,5 +1,6 @@
 package com.example.structure.util;
 
+import com.example.structure.entity.Projectile;
 import com.google.common.collect.Sets;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.*;
@@ -236,6 +237,38 @@ public class ModUtils {
             callback.accept(pos, i);
             pos = pos.add(dir);
         }
+    }
+
+    public static void throwProjectile(EntityLivingBase actor, Vec3d target, Projectile projectile, float inaccuracy, float velocity, Vec3d offset) {
+        Vec3d pos = projectile.getPositionVector().add(offset);
+        projectile.setPosition(pos.x, pos.y, pos.z);
+        throwProjectile(actor, target, projectile, inaccuracy, velocity);
+    }
+
+    public static void throwProjectile(EntityLivingBase actor, EntityLivingBase target, Projectile projectile, float inaccuracy, float velocity, Vec3d offset) {
+        Vec3d pos = projectile.getPositionVector().add(offset);
+        projectile.setPosition(pos.x, pos.y, pos.z);
+        throwProjectile(actor, target, projectile, inaccuracy, velocity);
+    }
+
+    public static void throwProjectile(EntityLivingBase actor, EntityLivingBase target, Projectile projectile, float inaccuracy, float velocity) {
+        double d0 = target.posY + target.getEyeHeight() - 0.9;
+        throwProjectile(actor, new Vec3d(target.posX, d0, target.posZ), projectile, inaccuracy, velocity);
+    }
+
+    public static void throwProjectile(EntityLivingBase actor, Vec3d target, Projectile projectile, float inaccuracy, float velocity) {
+        throwProjectileNoSpawn(target, projectile, inaccuracy, velocity);
+        actor.world.spawnEntity(projectile);
+    }
+
+
+    public static void throwProjectileNoSpawn(Vec3d target, Projectile projectile, float inaccuracy, float velocity) {
+        double d0 = target.y;
+        double d1 = target.x - projectile.posX;
+        double d2 = d0 - projectile.posY;
+        double d3 = target.z - projectile.posZ;
+        float f = projectile.hasNoGravity() ? 0 : MathHelper.sqrt(d1 * d1 + d3 * d3) * 0.2F;
+        projectile.shoot(d1, d2 + f, d3, velocity, inaccuracy);
     }
     public static void addEntityVelocity(Entity entity, Vec3d vec) {
         entity.addVelocity(vec.x, vec.y, vec.z);
