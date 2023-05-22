@@ -108,8 +108,9 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
 
     private AnimationFactory factory = new AnimationFactory(this);
 
-    public EntityCrystalKnight(World worldIn) {
+    public EntityCrystalKnight(World worldIn, BlockPos spawnPos) {
         super(worldIn);
+        this.setPosition(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ());
         this.experienceValue = 10;
         this.setSize(0.8f, 2.2f);
         this.isImmuneToFire = true;
@@ -127,6 +128,11 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
             addEvent(()-> this.playSound(ModSoundHandler.BOSS_SUMMON, 1.5f, 1.0f), 50);
             addEvent(()-> this.setAlive(false), 70);
         }
+
+    }
+
+    public EntityCrystalKnight(World world) {
+        super(world);
 
     }
 
@@ -250,7 +256,7 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
         this.getAttributeMap().registerAttribute(SharedMonsterAttributes.FLYING_SPEED);
         this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(250);
         this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(10);
-        this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(40D);
+        this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(30D);
         this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.34590D);
         this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(1.0D);
         this.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).setBaseValue(2.0D);
@@ -649,13 +655,15 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
                 this.setSpinCycle(true);
             }, 30);
             addEvent(() -> {
-                if (this.isSpinCycle()) {
+
                     for (int i = 0; i < 110; i += 5) {
                         addEvent(() -> {
-                            this.playSound(SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, 0.6f, 1.0f / (rand.nextFloat() * 0.4f + 0.4f));
+                            if(this.isSpinCycle()) {
+                                this.playSound(SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, 0.6f, 1.0f / (rand.nextFloat() * 0.4f + 0.4f));
+                            }
                         }, i);
                     }
-                }
+
             }, 30);
             addEvent(() -> {
                 if (this.isSpinCycle()) {
@@ -888,7 +896,7 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
         this.setHammerProjectile(true);
             new ActionVollet(crystalBallProjectile, 0.55f).performAction(this, target);
 
-        addEvent(()-> this.setFightMode(false), 40);
+        addEvent(()-> this.setFightMode(false), 80);
         addEvent(()-> this.setHammerProjectile(false), 40);
     };
 

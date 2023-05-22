@@ -10,6 +10,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeEnd;
+import net.minecraft.world.biome.BiomeEndDecorator;
 import net.minecraft.world.biome.BiomeOcean;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.IChunkGenerator;
@@ -49,7 +50,7 @@ public static final WorldGenStructure OCEAN_RUINS = new WorldGenStructure("ocean
     }
 };
 
-public static final WorldGenStructure END_BOSS_STRUCTURE = new WorldGenStructure("ocean/endboss");
+public static final WorldGenStructure END_BOSS_STRUCTURE = new WorldGenEndBossArena();
 
 //If you want to use this you can, as of now I have it preset to ONE structure, however if you wish to add more, create what
     //OCEAN_RUINS has and then just throw it in a list below and you can call a random choice at the actual generation of it.
@@ -76,8 +77,13 @@ public static WorldGenStructure[] listedStructures = {OCEAN_RUINS};
             }
         }
         if(world.provider.getDimension() == 1) {
-            if(canStructureSpawn(chunkX, chunkZ, world, 4)) {
-                generateBiomeSpecificStructure(END_BOSS_STRUCTURE, world, random, x, z, BIOMES_END);
+            if(canStructureSpawn(chunkX, chunkZ, world, ModConfig.structureFrequency)) {
+
+
+                new WorldGenEndBossArena().generate(world, random, new BlockPos(x, 0, z));
+                System.out.println("Spawned End Arena");
+               System.out.println("Chunk X:" + chunkX);
+               System.out.println("Chunk Z:" + chunkZ);
             }
         }
     }
@@ -108,7 +114,7 @@ public static WorldGenStructure[] listedStructures = {OCEAN_RUINS};
     public static boolean canStructureSpawn(int chunkX, int chunkZ, World world, int frequency){
         if (frequency <= 0) return false;
         int realFreq= 11 - frequency;
-        int maxDistanceBetween = realFreq + 8;
+        int maxDistanceBetween = realFreq + 16;
 
         int i = chunkX;
         int j = chunkZ;

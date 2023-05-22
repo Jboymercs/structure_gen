@@ -4,6 +4,7 @@ import com.example.structure.Main;
 import com.example.structure.entity.EntityCrystalKnight;
 import com.example.structure.entity.EntityCrystalSpikeSmall;
 import com.example.structure.entity.EntityGroundCrystal;
+import com.example.structure.entity.tileentity.TileEntityUpdater;
 import com.example.structure.util.ModReference;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
@@ -33,6 +34,8 @@ public class ModEntities {
         registerEntity("crystal_ball", EntityCrystalSpikeSmall.class, ENTITY_START_ID++, 50);
         //Ground Crystal - Utility
         registerEntity("crytsal_ground", EntityGroundCrystal.class, ENTITY_START_ID++, 50);
+        //Tile Entity
+        registerTileEntity(TileEntityUpdater.class, "updater");
     }
 
 
