@@ -1,5 +1,6 @@
 package com.example.structure.entity;
 
+import com.example.structure.config.ModConfig;
 import com.example.structure.util.ModDamageSource;
 import com.example.structure.util.ModUtils;
 import net.minecraft.entity.EntityLiving;
@@ -53,7 +54,7 @@ public class EntityGroundCrystal extends EntityModBase implements IAnimatable {
                     .type(ModDamageSource.MOB)
                     .directEntity(this)
                     .build();
-            float damage = 4.0f;
+            float damage = ModConfig.ground_crystal_damage;
             ModUtils.handleAreaImpact(0.5f, (e) -> damage, this, pos, source, 0.2F, 0, false );
         }
         if (ticksExisted == 1) {

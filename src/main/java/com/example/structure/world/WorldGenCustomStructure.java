@@ -27,64 +27,16 @@ import java.util.Random;
 
 public class WorldGenCustomStructure implements IWorldGenerator {
 
-    //Used for lists
-public static class lunkerToothStructure extends WorldGenStructure {
-
-    public lunkerToothStructure(String structureName) {
-        super("structures/" + structureName);
-    }
-}
-
-//handles the data markers
-public static final WorldGenStructure OCEAN_RUINS = new WorldGenStructure("ocean/ocean_ruins") {
-    @Override
-    protected void handleDataMarker(String function, BlockPos pos, World worldIn, Random rand) {
-        //This is to handle the structure block data marker
-        if(function.startsWith("loot")) {
-            worldIn.setBlockState(pos, Blocks.CHEST.getDefaultState());
-            TileEntity tileEntity = worldIn.getTileEntity(pos);
-
-            if(tileEntity instanceof TileEntityChest) {
-                //Insert Loot Table here
-            }
-        }
-    }
-};
-
-public static final WorldGenStructure END_BOSS_STRUCTURE = new WorldGenEndBossArena();
-
-//If you want to use this you can, as of now I have it preset to ONE structure, however if you wish to add more, create what
-    //OCEAN_RUINS has and then just throw it in a list below and you can call a random choice at the actual generation of it.
-public static WorldGenStructure[] listedStructures = {OCEAN_RUINS};
-
-
-
-
     @Override
     public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {
         int x = chunkX * 16;
         int z = chunkZ * 16;
-
-        Class<?> BIOMES = Biomes.OCEAN.getBiomeClass();
         Class<?> BIOMES_END = BiomeEnd.class;
 
-
-        if(world.provider.getDimension() == 0) {
-                                                   // Alter the nextInt to change weight, if we really want too we can make this a config option
-            if(world.rand.nextInt(24) == 0) {
-                // Set to spawn in all types of OCEAN Biomes, specifically for the Overworld only.
-                generateBiomeSpecificStructure(OCEAN_RUINS , world, random, x, z,BIOMES );
-
-            }
-        }
         if(world.provider.getDimension() == 1) {
             if(canStructureSpawn(chunkX, chunkZ, world, ModConfig.structureFrequency)) {
 
-
                 new WorldGenEndBossArena().generateStructure(world, new BlockPos(x, 90, z), Rotation.NONE);
-                System.out.println("Spawned End Arena");
-               System.out.println("Chunk X:" + chunkX);
-               System.out.println("Chunk Z:" + chunkZ);
             }
         }
     }
@@ -103,7 +55,6 @@ public static WorldGenStructure[] listedStructures = {OCEAN_RUINS};
             if (classesList.contains(biome)) {
                 if (rand.nextFloat() > generator.getAttempts()) {
                     generator.generate(world, rand, pos);
-                    System.out.println("Generation");
                     return true;
 
                 }

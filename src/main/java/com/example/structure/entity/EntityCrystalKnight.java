@@ -515,6 +515,7 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
     Supplier<Projectile> crystalBallProjectile = () -> new EntityCrystalSpikeSmall(world, this, 5.0f, null);
 
 
+    public static int Boss_Cooldown = ModConfig.boss_speed * 20;
 
     @Override
     public int startAttack(EntityLivingBase target, float distanceSq, boolean strafingBackwards) {
@@ -548,7 +549,7 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
         }
 
 
-        return (prevAttack == circleDash || prevAttack == hammerSLAM) ? 0 : 20;
+        return (prevAttack == circleDash || prevAttack == hammerSLAM) ? 0 : Boss_Cooldown;
     }
 
     //Basic Melee Attack
@@ -562,7 +563,7 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
             addEvent(() -> {
                 Vec3d offset = this.getPositionVector().add(ModUtils.getRelativeOffset(this, new Vec3d(1.2, 1.2, 0)));
                 DamageSource source = ModDamageSource.builder().type(ModDamageSource.MOB).directEntity(this).build();
-                float damage = 7;
+                float damage = ModConfig.attack_damage;
                 ModUtils.handleAreaImpact(1.0f, (e) -> damage, this, offset, source, 0.4f, 0, false);
                 this.playSound(SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, 1.0f, 1.0f / (rand.nextFloat() * 0.4F + 0.4f));
             }, 25);
@@ -584,7 +585,7 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
                 for (int i = 0; i < 60; i += 4) {
                     addEvent(() -> {
                         this.playSound(SoundEvents.ENTITY_BLAZE_SHOOT, 0.4f, 0.8f + ModRand.getFloat(0.2F));
-                        float damage = 5f;
+                        float damage = ModConfig.crystal_damage;
                         EntityCrystalSpikeSmall projectile = new EntityCrystalSpikeSmall(this.world, this, damage, null);
                         Vec3d pos = this.getPositionVector().add(ModUtils.getRelativeOffset(this, new Vec3d(ModRand.getFloat(2), 3, ModRand.getFloat(2))));
                         Vec3d targetPos = new Vec3d(target.posX + ModRand.getFloat(2) - 1, target.posY, target.posZ + ModRand.getFloat(2) - 1);
@@ -625,7 +626,7 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
                         addEvent(() -> {
                             Vec3d offset = this.getPositionVector().add(ModUtils.getRelativeOffset(this, new Vec3d(0.5, 0.75, 0)));
                             DamageSource source = ModDamageSource.builder().type(ModDamageSource.MOB).disablesShields().directEntity(this).build();
-                            float damage = 7;
+                            float damage = ModConfig.attack_damage * ModConfig.pierce_multiplier;
                             ModUtils.handleAreaImpact(1.5f, (e) -> damage, this, offset, source, 0.7f, 0, false);
                         }, i);
                     }
@@ -678,7 +679,7 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
             addEvent(() -> {
                 Vec3d offset = this.getPositionVector().add(ModUtils.getRelativeOffset(this, new Vec3d(1.0, 0.75, 0)));
                 DamageSource source = ModDamageSource.builder().type(ModDamageSource.MOB).directEntity(this).build();
-                float damage = 14;
+                float damage = ModConfig.attack_damage * ModConfig.circle_multiplier;
                 ModUtils.handleAreaImpact(1.5f, (e) -> damage, this, offset, source, 0.7f, 0, false);
                 this.playSound(SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, 1.0f, 1.0f / (rand.nextFloat() * 0.4F + 0.4f));
             }, 4);
@@ -757,8 +758,8 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
             addEvent(() -> {
                 Vec3d offset = this.getPositionVector().add(ModUtils.getRelativeOffset(this, new Vec3d(2.0, 0, 0)));
                 DamageSource source = ModDamageSource.builder().type(ModDamageSource.MOB).directEntity(this).build();
-                float damage = 7;
-                float explostionFactor = 2;
+                float damage = ModConfig.attack_damage * ModConfig.hammer_multiplier;
+                float explostionFactor = ModConfig.explosion_size;
                 ModUtils.handleAreaImpact(2.0f, (e) -> damage, this, offset, source, 0.9f, 1, false);
                 this.world.newExplosion(this, offset.x, offset.y, offset.z, explostionFactor, true, true);
             }, 20);
@@ -788,7 +789,7 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
                         addEvent(() -> {
                             Vec3d offset = this.getPositionVector().add(ModUtils.getRelativeOffset(this, new Vec3d(1.0, 1.0, 0)));
                             DamageSource source = ModDamageSource.builder().type(ModDamageSource.MOB).directEntity(this).build();
-                            float damage = 6;
+                            float damage = ModConfig.attack_damage * ModConfig.pierce_multiplier;
                             ModUtils.handleAreaImpact(1.0f, (e) -> damage, this, offset, source, 0.3f, 0, false);
                         }, t);
                     }
@@ -816,7 +817,7 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
                         addEvent(() -> {
                             Vec3d offset = this.getPositionVector().add(ModUtils.getRelativeOffset(this, new Vec3d(1.0, 1.0, 0)));
                             DamageSource source = ModDamageSource.builder().type(ModDamageSource.MOB).directEntity(this).build();
-                            float damage = 6;
+                            float damage =  ModConfig.attack_damage * ModConfig.pierce_multiplier;
                             ModUtils.handleAreaImpact(1.0f, (e) -> damage, this, offset, source, 0.3f, 0, false);
                         }, t);
                     }
@@ -844,7 +845,7 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
                         addEvent(() -> {
                             Vec3d offset = this.getPositionVector().add(ModUtils.getRelativeOffset(this, new Vec3d(1.0, 1.0, 0)));
                             DamageSource source = ModDamageSource.builder().type(ModDamageSource.MOB).directEntity(this).build();
-                            float damage = 6;
+                            float damage = ModConfig.attack_damage * ModConfig.pierce_multiplier;
                             ModUtils.handleAreaImpact(1.0f, (e) -> damage, this, offset, source, 0.3f, 0, false);
                         }, t);
                     }
@@ -945,7 +946,7 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
         this.setDeadAnim(true);
         if(this.isDeathAnim()) {
 
-            addEvent(()-> this.playSound(ModSoundHandler.BOSS_DEATH, 1.5f, 1.0f), 40);
+            addEvent(()-> this.playSound(ModSoundHandler.BOSS_DEATH, 1.5f, 1.0f), 0);
             addEvent(()-> this.setDeadAnim(false), 90);
             addEvent(()-> this.setDead(), 90);
         }
