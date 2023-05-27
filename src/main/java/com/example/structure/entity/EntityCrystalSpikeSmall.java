@@ -18,6 +18,7 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -45,6 +46,35 @@ public class EntityCrystalSpikeSmall extends Projectile{
 
     }
 
+    @Override
+    public void onUpdate() {
+        super.onUpdate();
+
+    }
+
+    @Override
+    public void shoot(double x, double y, double z, float velocity, float inaccuracy) {
+        float f = MathHelper.sqrt(x * x + y * y + z * z);
+        x = x / f;
+        y = y / f;
+        z = z / f;
+        x = x + this.rand.nextGaussian() * 0.007499999832361937D * inaccuracy;
+        y = y + this.rand.nextGaussian() * 0.007499999832361937D * inaccuracy;
+        z = z + this.rand.nextGaussian() * 0.007499999832361937D * inaccuracy;
+        x = x * velocity;
+        y = y * velocity;
+        z = z * velocity;
+        this.motionX = x;
+        this.motionY = y;
+        this.motionZ = z;
+        float f1 = MathHelper.sqrt(x * x + z * z);
+        this.rotationYaw = (float) (MathHelper.atan2(x, z) * (180D / Math.PI));
+        this.rotationPitch = (float) (MathHelper.atan2(y, f1) * (180D / Math.PI));
+        this.prevRotationYaw = this.rotationYaw;
+        this.prevRotationPitch = this.rotationPitch;
+        int ticksInGround = 0;
+    }
+
     public EntityCrystalSpikeSmall(World worldIn) {
         super(worldIn);
     }
@@ -57,7 +87,7 @@ public class EntityCrystalSpikeSmall extends Projectile{
 
     @Override
     public Item getItemToRender() {
-        return Items.CRYSTAL_BALL_ITEM;
+        return ModItems.CRYSTAL_BALL;
     }
 
 

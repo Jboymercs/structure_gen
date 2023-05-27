@@ -1,13 +1,7 @@
 package com.example.structure.util.handlers;
 
-import com.example.structure.entity.EntityCrystalKnight;
-import com.example.structure.entity.EntityCrystalSpikeSmall;
-import com.example.structure.entity.EntityExplosion;
-import com.example.structure.entity.EntityGroundCrystal;
-import com.example.structure.entity.render.RenderCrystalBoss;
-import com.example.structure.entity.render.RenderGroundCrystal;
-import com.example.structure.entity.render.RenderModEntity;
-import com.example.structure.entity.render.RenderProjectile;
+import com.example.structure.entity.*;
+import com.example.structure.entity.render.*;
 import com.example.structure.init.ModItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
@@ -57,11 +51,15 @@ public class RenderHandler {
     public static void registerGeoEntityRenderers() {
         //Crystal Knight Boss
         RenderingRegistry.registerEntityRenderingHandler(EntityCrystalKnight.class, RenderCrystalBoss::new);
+        //Shulker COnstructor
+        RenderingRegistry.registerEntityRenderingHandler(EntityBuffker.class, RenderBuffker::new);
         //Ground Crystal - Utility
         RenderingRegistry.registerEntityRenderingHandler(EntityGroundCrystal.class, RenderGroundCrystal::new);
         //Crystal Ball - Utility
         registerProjectileRenderer(EntityCrystalSpikeSmall.class);
         //Idle Entity - Utility
         registerProjectileRenderer(EntityExplosion.class);
+        //Quake
+        registerProjectileRenderer(ProjectileQuake.class);
     }
 }

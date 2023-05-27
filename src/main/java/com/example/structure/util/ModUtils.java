@@ -1,15 +1,18 @@
 package com.example.structure.util;
 
 import com.example.structure.entity.Projectile;
+import com.example.structure.entity.tileentity.MobSpawnerLogic;
 import com.google.common.collect.Sets;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAITasks;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumParticleTypes;
@@ -19,10 +22,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.storage.AnvilChunkLoader;
 import net.minecraftforge.event.ForgeEventFactory;
 
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -36,6 +42,8 @@ public class ModUtils {
     public static byte THIRD_PARTICLE_BYTE = 15;
     public static byte FOURTH_PARTICLE_BYTE = 16;
     public static Vec3d Y_AXIS = new Vec3d(0, 1, 0);
+
+    public static Vec3d Z_AXIS = new Vec3d(0, 0, 1);
     public static final ResourceLocation PARTICLE = new ResourceLocation(ModReference.MOD_ID + ":textures/particle/particles.png");
 
     public static int getAverageGroundHeight(World world, int x, int z, int sizeX, int sizeZ, int maxVariation) {
@@ -125,6 +133,69 @@ public class ModUtils {
                 }
             }
         });
+    }
+
+
+    /**
+     * Gets the look vector from pitch and yaw, where 0 pitch is forward, negative 90 pitch is down
+     * Yaw is the negative rotation of the z vector.
+     *
+     * @param pitch
+     * @param yaw
+     * @return
+     */
+    public static Vec3d getLookVec(float pitch, float yaw) {
+        Vec3d yawVec = ModUtils.rotateVector2(ModUtils.Z_AXIS, ModUtils.Y_AXIS, -yaw);
+        return ModUtils.rotateVector2(yawVec, yawVec.crossProduct(ModUtils.Y_AXIS), pitch);
+    }
+
+    /**
+     * Returns the xyz offset using the axis as the relative base
+     *
+     * @param axis
+     * @param offset
+     * @return
+     */
+    public static Vec3d getAxisOffset(Vec3d axis, Vec3d offset) {
+        Vec3d forward = axis.normalize();
+        Vec3d side = axis.crossProduct(new Vec3d(0, 1, 0)).normalize();
+        Vec3d up = axis.crossProduct(side).normalize();
+        return forward.scale(offset.x).add(side.scale(offset.z)).add(up.scale(offset.y));
+    }
+
+    public static double unsignedAngle(Vec3d a, Vec3d b) {
+        double dot = a.dotProduct(b);
+        double cos = dot / (a.lengthVector() * b.lengthVector());
+        return Math.acos(cos);
+    }
+
+    public static @Nullable
+    Entity createMobFromSpawnData(MobSpawnerLogic.MobSpawnData data, World world, double x, double y, double z) {
+        Entity entity;
+        if (data.mobData != null) {
+            // Read entity with custom NBT
+            entity = AnvilChunkLoader.readWorldEntityPos(data.mobData, world, x, y, z, true);
+        } else {
+            // Read just the default entity
+            entity = EntityList.createEntityByIDFromName(new ResourceLocation(data.mobId), world);
+        }
+
+        if (entity == null) {
+            System.out.println("Failed to spawn entity with id " + data.mobId);
+            return null;
+        }
+
+        entity.setLocationAndAngles(x, y, z, world.rand.nextFloat() * 360.0F, 0.0F);
+
+        return entity;
+    }
+
+    /**
+     * Pitch of a vector in degrees 90 is up, -90 is down.
+     */
+    public static double toPitch(Vec3d vec) {
+        double angleBetweenYAxis = Math.toDegrees(unsignedAngle(vec, ModUtils.Y_AXIS.scale(-1)));
+        return angleBetweenYAxis - 90;
     }
 
     public static void destroyBlocksInAABB(AxisAlignedBB box, World world, Entity entity) {
@@ -455,6 +526,31 @@ public class ModUtils {
 
         entity.limbSwingAmount += (f2 - entity.limbSwingAmount) * 0.4F;
         entity.limbSwing += entity.limbSwingAmount;
+    }
+
+    public static void doSweepAttack(EntityPlayer player, @Nullable EntityLivingBase target, Consumer<EntityLivingBase> perEntity) {
+        doSweepAttack(player, target, perEntity, 9, 1);
+    }
+
+    public static void doSweepAttack(EntityPlayer player, @Nullable EntityLivingBase target, Consumer<EntityLivingBase> perEntity, float maxDistanceSq, float areaSize) {
+        float attackDamage = (float) player.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue();
+        float sweepDamage = Math.min(0.15F + EnchantmentHelper.getSweepingDamageRatio(player), 1) * attackDamage;
+
+        AxisAlignedBB box;
+
+        if (target != null) {
+            box = target.getEntityBoundingBox();
+        } else {
+            Vec3d center = ModUtils.getAxisOffset(player.getLookVec(), new Vec3d(areaSize * 1.5, 0, 0)).add(player.getPositionEyes(1));
+            box = makeBox(center, center).grow(areaSize * 0.5, areaSize, areaSize * 0.5);
+        }
+
+        for (EntityLivingBase entitylivingbase : player.world.getEntitiesWithinAABB(EntityLivingBase.class, box.grow(areaSize, 0.25D, areaSize))) {
+            if (entitylivingbase != player && entitylivingbase != target && !player.isOnSameTeam(entitylivingbase) && player.getDistanceSq(entitylivingbase) < maxDistanceSq) {
+                entitylivingbase.knockBack(player, 0.4F, MathHelper.sin(player.rotationYaw * 0.017453292F), (-MathHelper.cos(player.rotationYaw * 0.017453292F)));
+                perEntity.accept(entitylivingbase);
+            }
+        }
     }
 
 

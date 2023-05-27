@@ -1,5 +1,11 @@
 package com.example.structure.world;
 
+import com.example.structure.config.ModConfig;
+import com.example.structure.entity.EntityBuffker;
+import com.example.structure.entity.tileentity.MobSpawnerLogic;
+import com.example.structure.entity.tileentity.tileEntityMobSpawner;
+import com.example.structure.init.ModBlocks;
+import com.example.structure.init.ModEntities;
 import com.example.structure.util.ModReference;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
@@ -32,6 +38,23 @@ public class WorldGenRuinBridge extends WorldGenEndDungeon{
                     TileEntityChest chest = (TileEntityChest) tileEntity;
                     chest.setLootTable(LOOT, random.nextLong());
 
+                }
+            } else {
+                world.setBlockToAir(pos);
+            }
+        }
+        if(function.startsWith("mob")) {
+            if (random.nextFloat() > ModConfig.structure_spawns) {
+                world.setBlockState(pos, ModBlocks.DISAPPEARING_SPAWNER.getDefaultState(), 2);
+                TileEntity tileentity = world.getTileEntity(pos);
+                if (tileentity instanceof tileEntityMobSpawner) {
+                    ((tileEntityMobSpawner) tileentity).getSpawnerBaseLogic().setData(
+                            new MobSpawnerLogic.MobSpawnData[]{
+                                    new MobSpawnerLogic.MobSpawnData(ModEntities.getID(EntityBuffker.class), 1)
+                            },
+                            new int[]{1},
+                            1,
+                            24);
                 }
             } else {
                 world.setBlockToAir(pos);

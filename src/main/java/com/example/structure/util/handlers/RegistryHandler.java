@@ -5,6 +5,7 @@ import com.example.structure.init.ModBlocks;
 import com.example.structure.init.ModItems;
 import com.example.structure.items.CrystalBallItem;
 import com.example.structure.items.Items;
+import com.example.structure.renderer.RenderBossSword;
 import com.example.structure.renderer.RenderCrystalBall;
 import com.example.structure.util.IHasModel;
 import com.example.structure.util.ModReference;
@@ -34,18 +35,7 @@ public class RegistryHandler {
     @SubscribeEvent
     public static void onItemRegister(RegistryEvent.Register<Item> event) {
         itemRegistry = event.getRegistry();
-        Items.CRYSTAL_BALL_ITEM = registerItem(new CrystalBallItem(),  "crystalball");
         event.getRegistry().registerAll(ModItems.ITEMS.toArray(new Item[0]));
-    }
-
-    public static <T extends Item> T registerItem(T item, String name) {
-        registerItem(item, new ResourceLocation(ModReference.MOD_ID, name));
-        return item;
-    }
-
-    public static <T extends Item> T registerItem(T item, ResourceLocation name) {
-        itemRegistry.register(item.setRegistryName(name).setUnlocalizedName(name.toString().replace(":", ".")));
-        return item;
     }
 
 
@@ -58,9 +48,10 @@ public class RegistryHandler {
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
     public static void onModelRegister(ModelRegistryEvent event) {
-        System.out.println("Model Registry");
-        ModelLoader.setCustomModelResourceLocation(Items.CRYSTAL_BALL_ITEM, 0, new ModelResourceLocation(ModReference.MOD_ID + ":crystalball","inventory"));
-        Items.CRYSTAL_BALL_ITEM.setTileEntityItemStackRenderer(new RenderCrystalBall());
+        ModelLoader.setCustomModelResourceLocation(ModItems.CRYSTAL_BALL, 0, new ModelResourceLocation(ModReference.MOD_ID + ":crystalball","inventory"));
+        ModelLoader.setCustomModelResourceLocation(ModItems.BOSS_SWORD, 0, new ModelResourceLocation(ModReference.MOD_ID + ":sword", "inventory"));
+        ModItems.CRYSTAL_BALL.setTileEntityItemStackRenderer(new RenderCrystalBall());
+        ModItems.BOSS_SWORD.setTileEntityItemStackRenderer(new RenderBossSword());
         for (Item item : ModItems.ITEMS) {
             if (item instanceof IHasModel) {
                 ((IHasModel) item).registerModels();

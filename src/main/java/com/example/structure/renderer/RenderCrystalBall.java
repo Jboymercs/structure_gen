@@ -7,7 +7,6 @@ import software.bernie.geckolib3.renderers.geo.GeoItemRenderer;
 public class RenderCrystalBall extends GeoItemRenderer<CrystalBallItem> {
     public RenderCrystalBall() {
         super(new ModelCrystalBall());
-        System.out.println("Render Crystal Ball");
     }
 
 }

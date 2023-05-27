@@ -1,6 +1,7 @@
 package com.example.structure.init;
 
 import com.example.structure.blocks.BlockBase;
+import com.example.structure.blocks.BlockDisappearingSpawner;
 import com.example.structure.blocks.BlockKey;
 import com.example.structure.entity.EntityCrystalKnight;
 import com.example.structure.entity.EntityExplosion;
@@ -31,4 +32,6 @@ public class ModBlocks {
     public static final Block LAMENTED_END_STONE = new BlockBase("lamented_end_stone", Material.ROCK, STONE_HARDNESS, STONE_RESISTANCE, SoundType.SLIME).setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
 
     public static final Block END_KEY_BLOCK = new BlockKey("key_block", ModItems.END_KEY, ((world, pos) -> new EntityExplosion(world, pos.getX(), pos.getY(), pos.getZ(), null)));
+
+    public static final Block DISAPPEARING_SPAWNER = new BlockDisappearingSpawner("disappearing_spawner", Material.ROCK);
 }

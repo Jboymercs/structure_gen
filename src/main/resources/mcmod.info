@@ -2,15 +2,15 @@
 {
   "modid": "test",
   "name": "End Expansion",
-  "description": "Example placeholder mod.",
-  "version": "${version}",
-  "mcversion": "${mcversion}",
+  "description": "A small simple mod adding a few creatures to the end, adding the Lamented Islands and a new boss to encounter",
+  "version": "${0.1}",
+  "mcversion": "${1.12.2}",
   "url": "",
   "updateUrl": "",
-  "authorList": ["UnseenDontRun"],
-  "credits": "The Forge and FML guys, for making this example",
-  "logoFile": "",
+  "authorList": ["Barribob for bringing us Into the Maelstrom"],
+  "credits": "UnseenDontRun, FakeDrayn, and UnOriginal",
+  "logoFile": "endexpansion.png",
   "screenshots": [],
-  "dependencies": []
+  "dependencies": ["Geckolib 3.0.31"]
 }
 ]

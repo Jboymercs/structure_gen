@@ -36,11 +36,7 @@ public class EntityExplosion extends Projectile{
     public void onUpdate() {
         super.onUpdate();
         if(ticksExisted == 20) {
-            EntityCrystalKnight entity = new EntityCrystalKnight(this.world);
-            Vec3d initPos = this.getPositionVector();
-            BlockPos newPos = new BlockPos(initPos.x, initPos.y, initPos.z);
-            entity.setPosition(newPos);
-            this.world.spawnEntity(entity);
+         new EntityCrystalKnight(world).onSummon(this.getPosition(), this);
         }
 
         if(ticksExisted > 40) {

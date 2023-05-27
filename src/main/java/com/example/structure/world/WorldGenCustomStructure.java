@@ -31,13 +31,14 @@ public class WorldGenCustomStructure implements IWorldGenerator {
     public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {
         int x = chunkX * 16;
         int z = chunkZ * 16;
-        Class<?> BIOMES_END = BiomeEnd.class;
 
         if(world.provider.getDimension() == 1) {
-            if(canStructureSpawn(chunkX, chunkZ, world, ModConfig.structureFrequency)) {
+            if (ModConfig.does_structure_spawn) {
+                if (canStructureSpawn(chunkX, chunkZ, world, ModConfig.structureFrequency)) {
 
-                new WorldGenEndBossArena().generateStructure(world, new BlockPos(x, 90, z), Rotation.NONE);
-            }
+                    new WorldGenEndBossArena().generateStructure(world, new BlockPos(x, 90, z), Rotation.NONE);
+                }
+        }
         }
     }
 
@@ -65,8 +66,8 @@ public class WorldGenCustomStructure implements IWorldGenerator {
 
     public static boolean canStructureSpawn(int chunkX, int chunkZ, World world, int frequency){
         if (frequency <= 0) return false;
-        int realFreq= 11 - frequency;
-        int maxDistanceBetween = realFreq + 16;
+        int realFreq= 48 - frequency;
+        int maxDistanceBetween = realFreq + 36;
 
         int i = chunkX;
         int j = chunkZ;

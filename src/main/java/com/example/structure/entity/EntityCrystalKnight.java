@@ -4,10 +4,7 @@ import com.example.structure.config.ModConfig;
 import com.example.structure.entity.ai.*;
 import com.example.structure.entity.util.IAttack;
 import com.example.structure.entity.util.TimedAttackIniator;
-import com.example.structure.util.ModColors;
-import com.example.structure.util.ModDamageSource;
-import com.example.structure.util.ModRand;
-import com.example.structure.util.ModUtils;
+import com.example.structure.util.*;
 import com.example.structure.util.handlers.ModSoundHandler;
 import com.example.structure.util.handlers.ParticleManager;
 import net.minecraft.advancements.critereon.LevitationTrigger;
@@ -32,6 +29,7 @@ import net.minecraft.pathfinding.PathNavigateFlying;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -112,6 +110,7 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
 
     public EntityCrystalKnight(World worldIn) {
         super(worldIn);
+        ignoreFrustumCheck = true;
         this.setImmovable(true);
         this.experienceValue = 10;
         this.setSize(0.8f, 2.2f);
@@ -131,6 +130,14 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
             addEvent(()-> this.setAlive(false), 70);
         }
 
+    }
+
+
+    public void onSummon(BlockPos Pos, Projectile actor) {
+        BlockPos offset = Pos.add(new BlockPos(0,3,0));
+        this.setPosition(offset);
+        world.spawnEntity(this);
+        actor.setDead();
     }
 
     @Override
@@ -247,7 +254,6 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
         super.applyEntityAttributes();
         this.getAttributeMap().registerAttribute(SharedMonsterAttributes.FLYING_SPEED);
         this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(ModConfig.health);
-        this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(10);
         this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(40D);
         this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.34590D);
         this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(1.0D);
@@ -903,6 +909,17 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
         ModUtils.aerialTravel(this, strafe, vertical, forward);
     }
 
+    private static final ResourceLocation LOOT_BOSS = new ResourceLocation(ModReference.MOD_ID, "lamentor");
+
+    @Override
+    protected ResourceLocation getLootTable() {
+        return LOOT_BOSS;
+    }
+
+    @Override
+    protected boolean canDropLoot() {
+        return true;
+    }
     @Override
     public void fall(float distance, float damageMultiplier) {
     }
@@ -944,11 +961,13 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
     public void onDeath(DamageSource cause) {
         this.setHealth(0.0001f);
         this.setDeadAnim(true);
+        this.setImmovable(true);
         if(this.isDeathAnim()) {
-
+            addEvent(()-> this.setImmovable(false), 90);
             addEvent(()-> this.playSound(ModSoundHandler.BOSS_DEATH, 1.5f, 1.0f), 0);
             addEvent(()-> this.setDeadAnim(false), 90);
             addEvent(()-> this.setDead(), 90);
+            addEvent(()-> this.setDropItemsWhenDead(true), 90);
         }
         super.onDeath(cause);
     }

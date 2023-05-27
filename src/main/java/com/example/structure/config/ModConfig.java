@@ -6,18 +6,18 @@ import net.minecraftforge.common.config.Config;
 
 @Config(modid = ModReference.MOD_ID, name = ModReference.NAME)
 public class ModConfig {
-    @Config.Name("End Boss Structure Frequency")
+    @Config.Name("Lamented Islands Structure Frequency")
     @Config.Comment("Raises and Lowers Frequency of Structure Spawns, Higher means more frequent")
-    @Config.RangeInt(min = 0, max = 10)
+    @Config.RangeInt(min = 0, max = 48)
     @Config.RequiresMcRestart
-    public static int structureFrequency = 4;
+    public static int structureFrequency = 10;
 
     @Config.Name("Lamentor Boss Health")
     @Config.Comment("Change the Health of the Lamentor")
     @Config.RequiresMcRestart
     public static float health = 300f;
 
-    @Config.Name("Lamentor Speed")
+    @Config.Name("Lamentor Attack Speed")
     @Config.Comment("Change the speed at which the Lamentor attacks in seconds, smaller number means quicker, larger number means slower, warning 0 might be buggy")
     @Config.RangeInt(min = 0, max = 10)
     @Config.RequiresMcRestart
@@ -59,4 +59,63 @@ public class ModConfig {
     @Config.RequiresMcRestart
     public static float ground_crystal_damage= 4f;
 
+    @Config.Name("Constructor Health")
+    @Config.Comment("Change the Health of the Constructor")
+    @Config.RequiresMcRestart
+    public static float constructor_health = 40f;
+
+    @Config.Name("Constructor Attack Speed Value 1")
+    @Config.Comment("Constructor Speed #1, this value in seconds, smaller means quicker, larger means slower speed of attacks")
+    @Config.RequiresMcRestart
+    public static int constructor_speed_one = 2;
+
+    @Config.Name("Constructor Attack Speed Value 2")
+    @Config.Comment("Constructor Speed #2, this value in seconds, smaller means quicker, larger means slower speed of attacks. This second value is used for how long after a ranged attack")
+    @Config.RequiresMcRestart
+    public static int constructor_speed_two = 15;
+
+    @Config.Name("Constructor ShockWave Damage")
+    @Config.Comment("damage dealt by the Constructor when doing it's ground shock wave attack")
+    @Config.RequiresMcRestart
+    public static float constructor_shockwave_damage= 4f;
+
+    @Config.Name("Constructor Structure Spawn Chance")
+    @Config.Comment("Change the chance of how many Constructors will spawn on the Lamented Islands dungeon")
+    @Config.RangeInt(min = 0, max = 1)
+    public static float structure_spawns = 0.3f;
+
+    @Config.Name("Constructor Natural Spawn Weight")
+    @Config.Comment("Change the weights at which the Constructors naturally spawn in the End, or disable it entirely, lower value means less spawns, higher means more common")
+    @Config.RequiresMcRestart
+    public static int constructor_weights = 1;
+
+    @Config.Name("Lamented Islands Structure Enabled/Disabled")
+    @Config.Comment("Change the value to enable the structure or disable the Lamented Islands spawn, true or false value only")
+    @Config.RequiresMcRestart
+    public static boolean does_structure_spawn = true;
+
+    @Config.Name("Lamented Sword Damage")
+    @Config.Comment("Change the damage done by the Lamented Sword")
+    @Config.RequiresMcRestart
+    public static float sword_damage = 7.0f;
+
+    @Config.Name("Lamented Sword Dash Damage")
+    @Config.Comment("Change the damage done by the dash ability upon initially dashing to nearby entities")
+    @Config.RequiresMcRestart
+    public static float sword_dash_damage = 4.0f;
+
+    @Config.Name("Lamented Sword Cooldown")
+    @Config.Comment("Change the cooldown time for using the dash ability on the Lamented Sword, in seconds")
+    @Config.RequiresMcRestart
+    public static int sword_cooldown = 3;
+
+    @Config.Name("Lamented Sword Dash Velocity")
+    @Config.Comment("Change the Velocity of the player when using the dash ability")
+    @Config.RequiresMcRestart
+    public static float sword_velocity = 2.4f;
+
+    @Config.Name("Lamented Eye Cooldown")
+    @Config.Comment("Change the cooldown Period of the Lamented Eye, in seconds")
+    @Config.RequiresMcRestart
+    public static int eye_cooldown = 10;
 }

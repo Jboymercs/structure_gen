@@ -127,7 +127,7 @@ public abstract class EntityModBase extends EntityCreature {
         events.add(new TimedEvent(runnable, this.ticksExisted + ticksFromNow));
     }
 
-    private static class TimedEvent implements Comparable<TimedEvent> {
+    public static class TimedEvent implements Comparable<TimedEvent> {
         Runnable callback;
         int ticks;
 

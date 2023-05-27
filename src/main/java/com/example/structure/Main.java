@@ -37,6 +37,7 @@ public class Main
 
         //Register Entities
         ModEntities.registerEntities();
+        ModEntities.RegisterEntitySpawns();
         //Register World Gen
         GameRegistry.registerWorldGenerator(new WorldGenCustomStructure(), 3);
         //Renders and other misc stuff

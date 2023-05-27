@@ -5,10 +5,8 @@ import com.example.structure.util.ModColors;
 import com.example.structure.util.ModParticle;
 import com.example.structure.util.ModRand;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.Particle;
-import net.minecraft.client.particle.ParticleFlame;
-import net.minecraft.client.particle.ParticleSmokeLarge;
-import net.minecraft.client.particle.ParticleSmokeNormal;
+import net.minecraft.client.particle.*;
+import net.minecraft.item.Item;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -51,6 +49,11 @@ public class ParticleManager {
         Particle particle = new EffectParticle.Factory().createParticle(0, world, pos.x, pos.y, pos.z, 0, 0, 0);
         baseColor = ModColors.variateColor(baseColor, 0.2f);
         particle.setRBGColorF((float) baseColor.x, (float) baseColor.y, (float) baseColor.z);
+        Minecraft.getMinecraft().effectRenderer.addEffect(particle);
+    }
+
+    public static void spawnBreak(World world, Vec3d pos, Item item, Vec3d vel) {
+        Particle particle = new ParticleBreaking.Factory().createParticle(0, world, pos.x, pos.y, pos.z, vel.x, vel.y, vel.z, Item.getIdFromItem(item));
         Minecraft.getMinecraft().effectRenderer.addEffect(particle);
     }
 

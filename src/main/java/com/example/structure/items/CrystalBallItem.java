@@ -1,5 +1,7 @@
 package com.example.structure.items;
 
+import com.example.structure.Main;
+import com.example.structure.util.IHasModel;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import software.bernie.geckolib3.core.IAnimatable;
@@ -10,12 +12,12 @@ import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
-public class CrystalBallItem extends Item implements IAnimatable {
+public class CrystalBallItem extends ItemBase implements IAnimatable, IHasModel {
     private final String ANIM_IDLE = "idle";
     public AnimationFactory factory = new AnimationFactory(this);
 
-    public CrystalBallItem() {
-        super();
+    public CrystalBallItem(String name, CreativeTabs tabs) {
+        super(name, tabs);
         this.setCreativeTab(CreativeTabs.SEARCH);
     }
 
@@ -32,4 +34,10 @@ public class CrystalBallItem extends Item implements IAnimatable {
     public AnimationFactory getFactory() {
         return factory;
     }
+
+    @Override
+    public void registerModels() {
+        {
+            Main.proxy.registerItemRenderer(this, 0, "inventory");
+        }}
 }
