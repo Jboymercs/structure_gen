@@ -72,14 +72,16 @@ public class EntityBuffker extends EntityModBase implements IAnimatable, IAttack
     private final MultiPartEntityPart[] hitboxParts;
 
     public EntityBuffker(World worldIn) {
-
         super(worldIn);
-        ignoreFrustumCheck = true;
+        ACCEPT_TARGET = true;
         this.hitboxParts = new MultiPartEntityPart[]{model, head, torso};
-        this.setSize(0.5f, 1.6f);
+        this.setSize(2.0f, 2.8f);
     }
 
-
+    @Override
+    public boolean canBeCollidedWith() {
+        return false;
+    }
 
 
     @Override
@@ -337,32 +339,39 @@ public class EntityBuffker extends EntityModBase implements IAnimatable, IAttack
         return null;
     }
 
-    @Override
-    public boolean attackEntityFromPart(MultiPartEntityPart multiPartEntityPart, DamageSource damageSource, float v) {
-        if(multiPartEntityPart == this.head  && this.isFightMode()) {
-            return this.attackEntityFrom(damageSource, v);
-        }
-        if(v > 0.0f && !damageSource.isUnblockable()) {
-            if(!damageSource.isProjectile() || !damageSource.isExplosion()) {
-                Entity entity = damageSource.getImmediateSource();
-                if (entity instanceof EntityLivingBase) {
-                    this.blockUsingShield((EntityLivingBase) entity);
+    public boolean damageConstructor;
 
-                }
+    @Override
+    public boolean attackEntityFromPart(MultiPartEntityPart multiPartEntityPart, DamageSource damageSource, float damage) {
+        if(multiPartEntityPart == this.head  && this.isFightMode()) {
+            this.damageConstructor = true;
+            return this.attackEntityFrom(damageSource, damage);
+
+        }
+        if (damage > 0.0F && !damageSource.isUnblockable()) {
+        if (!damageSource.isProjectile()) {
+            Entity entity = damageSource.getImmediateSource();
+
+            if (entity instanceof EntityLivingBase) {
+                this.blockUsingShield((EntityLivingBase) entity);
             }
 
+             }
             this.playSound(SoundEvents.ENTITY_SHULKER_HURT_CLOSED, 1.0f, 0.6f + ModRand.getFloat(0.2f));
             return false;
         }
         return false;
     }
 
+
+
     @Override
     public final boolean attackEntityFrom(DamageSource source, float amount) {
-        if(!this.isFightMode() && !source.isUnblockable()) {
+        if(!this.damageConstructor && !source.isUnblockable()) {
             return false;
 
         }
+        this.damageConstructor = false;
         return super.attackEntityFrom(source, amount);
     }
 

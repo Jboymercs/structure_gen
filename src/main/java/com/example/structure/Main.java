@@ -19,6 +19,18 @@ import software.bernie.geckolib3.GeckoLib;
 
 @Mod(modid = ModReference.MOD_ID, name = ModReference.NAME, version = ModReference.VERSION)
 public class Main
+        /**
+         * I'd like to give a huge thank you to Barribob, for the spectacular work done on Maelstrom and this project
+         * exsisting cause of it. Credit to a lot of the code modified from Maelstrom source. Yes, I am revamping that mod but
+         * Barribob still deserves the credit.
+         *
+         * Credits also go to - UnOriginal for the structure method used in this project, and a few other functions used
+         *
+         * FakeDrayn for sound design, and animation work
+         *
+         * Lastly, this mod is for the ModJam 2023 Summer for the 1.12.2 Modded Coalition Discord Server
+         * link - https://discord.gg/Hmvek4Axrv
+         */
 {
 
     @SidedProxy(clientSide = ModReference.CLIENT_PROXY_CLASS, serverSide = ModReference.COMMON_PROXY_CLASS)
@@ -40,15 +52,14 @@ public class Main
         ModEntities.RegisterEntitySpawns();
         //Register World Gen
         GameRegistry.registerWorldGenerator(new WorldGenCustomStructure(), 3);
-        //Renders and other misc stuff
+
         proxy.init();
     }
 
     @EventHandler
     public void init(FMLInitializationEvent event)
     {
-        // some example code
-        logger.info("DIRT BLOCK >> {}", Blocks.DIRT.getRegistryName());
+
         ModSoundHandler.registerSounds();
     }
 }

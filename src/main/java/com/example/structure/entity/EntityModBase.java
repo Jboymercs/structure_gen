@@ -2,6 +2,7 @@ package com.example.structure.entity;
 
 import com.example.structure.entity.ai.MobGroundNavigate;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
@@ -13,16 +14,45 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.pathfinding.PathNavigate;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.EntityEntry;
+import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.PriorityQueue;
+import com.google.common.base.Predicate;
 
 public abstract class EntityModBase extends EntityCreature {
 
     private float regenTimer;
+
+    public static boolean ACCEPT_TARGET;
+
+    public static final Predicate<Entity> CAN_TARGET = entity -> {
+        if(entity != null) {
+            EntityEntry entry = EntityRegistry.getEntry(entity.getClass());
+        if(!ACCEPT_TARGET && entry != null) {
+
+        }
+        }
+
+        return !(entity instanceof EntityModBase) && ACCEPT_TARGET;
+    };
+
+    public static boolean isModBase(Entity entity) {
+        return !CAN_TARGET.apply(entity);
+    }
+
+    @Override
+    public boolean attackEntityFrom(DamageSource source, float amount) {
+        if (!CAN_TARGET.apply(source.getTrueSource())) {
+            return false;
+        }
+        return super.attackEntityFrom(source, amount);
+    }
 
     private PriorityQueue<TimedEvent> events = new PriorityQueue<TimedEvent>();
 
