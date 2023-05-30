@@ -110,7 +110,6 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
 
     public EntityCrystalKnight(World worldIn) {
         super(worldIn);
-        ignoreFrustumCheck = true;
         this.setImmovable(true);
         this.experienceValue = 10;
         this.setSize(0.8f, 2.2f);
@@ -133,12 +132,15 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
     }
 
 
+
     public void onSummon(BlockPos Pos, Projectile actor) {
         BlockPos offset = Pos.add(new BlockPos(0,3,0));
         this.setPosition(offset);
         world.spawnEntity(this);
         actor.setDead();
     }
+
+
 
     @Override
     public void entityInit() {
@@ -532,7 +534,7 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
             List<Consumer<EntityLivingBase>> attacks = new ArrayList<>(Arrays.asList(meleeStrike, summonCrystals, dashPierce, circleDash, circleAttack, summonGroundCrystals, hammerSLAM, hammerExplosion, animeStrike, summonShulkers, hammerProjectile));
             double[] weights = {
                     //Phase One Abilities
-                    (distance < 3) ? 1/distance : 0, //Melee Strike
+                    (distance < 3 && prevAttack != meleeStrike) ? 1/distance : 0, //Melee Strike
                     (distance > 10 && prevAttack != summonCrystals) ? distance * 0.02 : 0, //Summon Crystal Projectiles
                     (distance < 8 && prevAttack != dashPierce) ? 1/distance : 0, // Dash Pierce
                     (distance > 10 && prevAttack == summonCrystals) ? distance * 0.02 : 0, //CircleDash
@@ -968,6 +970,7 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
             addEvent(()-> this.setDeadAnim(false), 90);
             addEvent(()-> this.setDead(), 90);
             addEvent(()-> this.setDropItemsWhenDead(true), 90);
+
         }
         super.onDeath(cause);
     }

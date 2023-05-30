@@ -42,6 +42,11 @@ public abstract class EntityModBase extends EntityCreature {
         return !(entity instanceof EntityModBase) && ACCEPT_TARGET;
     };
 
+    public EntityModBase(World worldIn, float x, float y, float z) {
+        super(worldIn);
+        this.setPosition(x, y, z);
+    }
+
     public static boolean isModBase(Entity entity) {
         return !CAN_TARGET.apply(entity);
     }

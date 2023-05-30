@@ -2,8 +2,11 @@ package com.example.structure.entity.model;
 
 import com.example.structure.entity.EntityBuffker;
 import com.example.structure.util.ModReference;
+import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import software.bernie.geckolib3.core.processor.IBone;
+import software.bernie.geckolib3.geo.raw.pojo.Bone;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 
 public class ModelBuffker extends AnimatedGeoModel<EntityBuffker> {
