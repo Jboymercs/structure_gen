@@ -49,6 +49,8 @@ public class ModEntities {
         registerEntity("projectile_quake", ProjectileQuake.class, ENTITY_START_ID++, 50);
         //Tile Entity - Utility
         registerTileEntity(TileEntityDisappearingSpawner.class, "disappearing_spawner_entity");
+        //Ender Knight
+        registerEntityWithID("end_knight", EntityEnderKnight.class, ENTITY_START_ID++, 50, end_mobs);
     }
 
     public static void RegisterEntitySpawns() {

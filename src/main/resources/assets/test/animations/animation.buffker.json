@@ -224,6 +224,11 @@
 						}
 					}
 				},
+				"LeftShoulder": {
+					"rotation": {
+						"vector": [0, 0, 0]
+					}
+				},
 				"RotationRLegJ": {
 					"rotation": {
 						"vector": [0, 10, 0]
