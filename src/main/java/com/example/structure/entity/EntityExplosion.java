@@ -35,7 +35,7 @@ public class EntityExplosion extends Projectile{
     @Override
     public void onUpdate() {
         super.onUpdate();
-        if(ticksExisted == 20) {
+        if(ticksExisted == 20 && !world.isRemote) {
          new EntityCrystalKnight(world).onSummon(this.getPosition(), this);
         }
 

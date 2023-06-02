@@ -1,9 +1,9 @@
 [
 {
-  "modid": "test",
+  "modid": "ee",
   "name": "End Expansion",
   "description": "A small simple mod adding a few creatures to the end, adding the Lamented Islands and a new boss to encounter",
-  "version": "${0.1}",
+  "version": "${0.3}",
   "mcversion": "${1.12.2}",
   "url": "",
   "updateUrl": "",

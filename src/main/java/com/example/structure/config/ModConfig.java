@@ -118,4 +118,9 @@ public class ModConfig {
     @Config.Comment("Change the cooldown Period of the Lamented Eye, in seconds")
     @Config.RequiresMcRestart
     public static int eye_cooldown = 10;
+
+    @Config.Name("Lamentor Legacy texture")
+    @Config.Comment("For those that prefer the legacy model and texture of the Lamentor")
+    @Config.RequiresMcRestart
+    public static boolean lamenter_legacy_texture = false;
 }

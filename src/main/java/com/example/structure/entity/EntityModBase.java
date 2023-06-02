@@ -29,33 +29,19 @@ public abstract class EntityModBase extends EntityCreature {
 
     private float regenTimer;
 
-    public static boolean ACCEPT_TARGET;
 
-    public static final Predicate<Entity> CAN_TARGET = entity -> {
-        if(entity != null) {
-            EntityEntry entry = EntityRegistry.getEntry(entity.getClass());
-        if(!ACCEPT_TARGET && entry != null) {
 
-        }
-        }
 
-        return !(entity instanceof EntityModBase) && ACCEPT_TARGET;
-    };
 
     public EntityModBase(World worldIn, float x, float y, float z) {
         super(worldIn);
         this.setPosition(x, y, z);
     }
 
-    public static boolean isModBase(Entity entity) {
-        return !CAN_TARGET.apply(entity);
-    }
 
     @Override
     public boolean attackEntityFrom(DamageSource source, float amount) {
-        if (!CAN_TARGET.apply(source.getTrueSource())) {
-            return false;
-        }
+
         return super.attackEntityFrom(source, amount);
     }
 
