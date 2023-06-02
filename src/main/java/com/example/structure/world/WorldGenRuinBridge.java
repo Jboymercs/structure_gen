@@ -41,6 +41,7 @@ public class WorldGenRuinBridge extends WorldGenEndDungeon{
                 }
             } else {
                 world.setBlockToAir(pos);
+                world.setBlockToAir(pos.down());
             }
         }
         if(function.startsWith("mob")) {
@@ -59,6 +60,9 @@ public class WorldGenRuinBridge extends WorldGenEndDungeon{
             } else {
                 world.setBlockToAir(pos);
             }
+        }
+        if(function.startsWith("island")) {
+            world.setBlockToAir(pos);
         }
     }
 

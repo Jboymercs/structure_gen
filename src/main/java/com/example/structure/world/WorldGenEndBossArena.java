@@ -6,6 +6,9 @@ import com.example.structure.entity.tileentity.MobSpawnerLogic;
 import com.example.structure.entity.tileentity.tileEntityMobSpawner;
 import com.example.structure.init.ModBlocks;
 import com.example.structure.init.ModEntities;
+import com.example.structure.world.islands.WorldGenSmallIsland;
+import com.example.structure.world.islands.WorldGenSmallIslandThree;
+import com.example.structure.world.islands.WorldGenSmallIslandTwo;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.Rotation;
@@ -50,7 +53,7 @@ public class WorldGenEndBossArena extends WorldGenEndDungeon{
             world.setBlockToAir(pos);
         }
         if(function.startsWith("mob")) {
-            if(random.nextFloat() > ModConfig.structure_spawns) {
+            if(random.nextFloat() > ModConfig.structure_spawns && ModConfig.constructor_center_spawn) {
                 world.setBlockState(pos, ModBlocks.DISAPPEARING_SPAWNER.getDefaultState(), 2);
                 TileEntity tileentity = world.getTileEntity(pos);
                 if(tileentity instanceof tileEntityMobSpawner) {
@@ -67,5 +70,34 @@ public class WorldGenEndBossArena extends WorldGenEndDungeon{
                 world.setBlockToAir(pos);
             }
         }
+        if(function.startsWith("island")) {
+            if(random.nextFloat() > 0.4) {
+                BlockPos pos1 = pos.add(new BlockPos(-5, random.nextInt(5) + 5, -5));
+                new WorldGenSmallIsland().generateStructure(world, pos1, Rotation.NONE);
+                world.setBlockToAir(pos);
+            } else {
+                world.setBlockToAir(pos);
+            }
+        }
+        if(function.startsWith("island2")) {
+            if(random.nextFloat() > 0.6) {
+                BlockPos pos1 = pos.add(new BlockPos(-5, random.nextInt(9) + 5, -5));
+                new WorldGenSmallIslandTwo().generateStructure(world,pos1, Rotation.NONE );
+                world.setBlockToAir(pos);
+            } else {
+                world.setBlockToAir(pos);
+            }
+        }
+        if(function.startsWith("island3")) {
+            if(random.nextFloat() > 0.2) {
+                BlockPos pos1 = pos.add(new BlockPos(-5, random.nextInt(12) + 5, -5));
+                new WorldGenSmallIslandThree().generateStructure(world, pos1, Rotation.NONE);
+                world.setBlockToAir(pos);
+            } else {
+                world.setBlockToAir(pos);
+            }
+
+        }
+
     }
 }

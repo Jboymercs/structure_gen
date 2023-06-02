@@ -123,4 +123,10 @@ public class ModConfig {
     @Config.Comment("For those that prefer the legacy model and texture of the Lamentor")
     @Config.RequiresMcRestart
     public static boolean lamenter_legacy_texture = false;
+
+    @Config.Name("Constructor Center Island Spawns Enabled/Disabled")
+    @Config.Comment("Allow Constructors to spawn in the center island during generation of the Lamented Islands")
+    @Config.RequiresMcRestart
+    public static boolean constructor_center_spawn = true;
+
 }

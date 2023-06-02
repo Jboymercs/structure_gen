@@ -36,6 +36,7 @@ public class WorldGenEndRuinHouse extends WorldGenEndDungeon{
                 }
             } else {
                 world.setBlockToAir(pos);
+                world.setBlockToAir(pos.down());
             }
         }
     }

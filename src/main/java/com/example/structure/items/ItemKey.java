@@ -34,11 +34,9 @@ public class ItemKey extends ItemBase{
     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer player, EnumHand hand)
     {
         ItemStack stack = player.getHeldItem(hand);
-        Vec3d playerLook = player.getLookVec();
-        BlockPos look = new BlockPos(playerLook.x, playerLook.y, playerLook.z);
-        if(worldIn.getBlockState(look) == ModBlocks.END_KEY_BLOCK) {
+
             stack.damageItem(1, player);
-        }
+
 
 
 

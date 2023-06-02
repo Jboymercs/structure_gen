@@ -35,6 +35,7 @@ public class WorldGenEndWalkway extends WorldGenEndDungeon{
                 }
             } else {
                 world.setBlockToAir(pos);
+                world.setBlockToAir(pos.down());
             }
         }
     }
