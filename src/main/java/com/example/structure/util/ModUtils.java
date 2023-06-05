@@ -1,5 +1,6 @@
 package com.example.structure.util;
 
+import com.example.structure.config.ModConfig;
 import com.example.structure.entity.Projectile;
 import com.example.structure.entity.tileentity.MobSpawnerLogic;
 import com.google.common.collect.Sets;
@@ -70,6 +71,13 @@ public class ModUtils {
         return new AxisAlignedBB(pos1.x, pos1.y, pos1.z, pos2.x, pos2.y, pos2.z);
     }
 
+    public static float getMobDamage(double baseAttackDamage, double healthScaledAttackFactor, float maxHealth, float health) {
+
+        double healthScaledAttack = baseAttackDamage * healthScaledAttackFactor * (((maxHealth * 0.5) - health) / maxHealth);
+
+        return (float) ((healthScaledAttack + baseAttackDamage));
+    }
+
 
     public static Vec3d getRelativeOffset(EntityLivingBase actor, Vec3d offset) {
         Vec3d look = ModUtils.getVectorForRotation(0, actor.renderYawOffset);
@@ -87,6 +95,18 @@ public class ModUtils {
         float f2 = -MathHelper.cos(-pitch * 0.017453292F);
         float f3 = MathHelper.sin(-pitch * 0.017453292F);
         return new Vec3d(f1 * f2, f3, f * f2);
+    }
+
+    public static List<Vec3d> cubePoints(int xMin, int yMin, int zMin, int xMax, int yMax, int zMax) {
+        List<Vec3d> points = new ArrayList<>();
+        for(int x = xMin; x < xMax; x++) {
+            for(int y = yMin; y < yMax; y++) {
+                for(int z = zMin; z < zMax; z++) {
+                    points.add(new Vec3d(x, y, z));
+                }
+            }
+        }
+        return points;
     }
 
     public static void handleAreaImpact(float radius, Function<Entity, Float> maxDamage, Entity source, Vec3d pos, DamageSource damageSource,

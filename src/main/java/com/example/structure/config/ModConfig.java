@@ -10,7 +10,7 @@ public class ModConfig {
     @Config.Comment("Raises and Lowers Frequency of Structure Spawns, Higher means more frequent")
     @Config.RangeInt(min = 0, max = 48)
     @Config.RequiresMcRestart
-    public static int structureFrequency = 10;
+    public static int structureFrequency = 25;
 
     @Config.Name("Lamentor Boss Health")
     @Config.Comment("Change the Health of the Lamentor")
@@ -26,12 +26,12 @@ public class ModConfig {
     @Config.Name("Lamentor Attack Damage")
     @Config.Comment("Change the Attack Damage of the Lamentor")
     @Config.RequiresMcRestart
-    public static float attack_damage= 9f;
+    public static double attack_damage= 9D;
 
     @Config.Name("Lamentor Ranged Crystal Damage")
     @Config.Comment("Change the damage of the flying Crystals")
     @Config.RequiresMcRestart
-    public static float crystal_damage= 5f;
+    public static float crystal_damage= 4.0f;
 
     @Config.Name("Lamentor Pierce Damage")
     @Config.Comment("Change the multiplier of the Lamentor's Pierce attacks, base damage * pierce multiplier")
@@ -72,12 +72,12 @@ public class ModConfig {
     @Config.Name("Constructor Attack Speed Value 2")
     @Config.Comment("Constructor Speed #2, this value in seconds, smaller means quicker, larger means slower speed of attacks. This second value is used for how long after a ranged attack")
     @Config.RequiresMcRestart
-    public static int constructor_speed_two = 15;
+    public static int constructor_speed_two = 10;
 
     @Config.Name("Constructor ShockWave Damage")
-    @Config.Comment("damage dealt by the Constructor when doing it's ground shock wave attack")
+    @Config.Comment("damage dealt by the Constructor when doing it's ground shock wave attack as a mutliplier, base damage * shockwave damage")
     @Config.RequiresMcRestart
-    public static float constructor_shockwave_damage= 4f;
+    public static float constructor_shockwave_damage= 0.5f;
 
     @Config.Name("Constructor Structure Spawn Chance")
     @Config.Comment("Change the chance of how many Constructors will spawn on the Lamented Islands dungeon")
@@ -117,7 +117,7 @@ public class ModConfig {
     @Config.Name("Lamented Eye Cooldown")
     @Config.Comment("Change the cooldown Period of the Lamented Eye, in seconds")
     @Config.RequiresMcRestart
-    public static int eye_cooldown = 10;
+    public static int eye_cooldown = 8;
 
     @Config.Name("Lamentor Legacy texture")
     @Config.Comment("For those that prefer the legacy model and texture of the Lamentor")
@@ -129,4 +129,25 @@ public class ModConfig {
     @Config.RequiresMcRestart
     public static boolean constructor_center_spawn = true;
 
+    @Config.Name("Mini Islands Spawn above Lamented Islands Enabled/Disabled")
+    @Config.Comment("Allow mini-islands to spawn above the dungeon, this is to make it easier to counteract levitation, if you want it to be harder set it too false")
+    @Config.RequiresMcRestart
+    public static boolean miniIslands_spawn = true;
+
+    @Config.Name("Mini-Island Chest Spawns Chance")
+    @Config.Comment("Change the chance of loot spawns for the mini-islands, higher number means lesser chance")
+    @Config.RangeInt(min = 0, max = 5)
+    @Config.RequiresMcRestart
+    public static int miniIslandLootChance = 3;
+
+    @Config.Name("Lamented Islands Chest Spawn Chance")
+    @Config.Comment("Change the chance of loot spawns for the Lamented Islands, higher number means lesser chance")
+    @Config.RangeInt(min = 0, max = 5)
+    @Config.RequiresMcRestart
+    public static int lamentedIslandsLootChance = 2;
+
+    @Config.Name("Scaling Attack Factor For the Lamentor")
+    @Config.Comment("This value raises the attack damage of the Lamentor the lower it's health is, to incentivize further punishment in not dodging the bosses moves later in the fight")
+    @Config.RequiresMcRestart
+    public static double lamentor_scaled_attack = 0.4f;
 }

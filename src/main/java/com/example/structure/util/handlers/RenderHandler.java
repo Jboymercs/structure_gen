@@ -62,6 +62,6 @@ public class RenderHandler {
         //Quake
         registerProjectileRenderer(ProjectileQuake.class);
         //Ender Knight
-        registerModEntityRenderer(EntityEnderKnight.class, RenderEnderKnight::new);
+
     }
 }

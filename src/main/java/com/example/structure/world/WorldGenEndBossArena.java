@@ -71,7 +71,7 @@ public class WorldGenEndBossArena extends WorldGenEndDungeon{
             }
         }
         if(function.startsWith("island")) {
-            if(random.nextFloat() > 0.4) {
+            if(random.nextFloat() > 0.4 && ModConfig.miniIslands_spawn) {
                 BlockPos pos1 = pos.add(new BlockPos(-5, random.nextInt(5) + 5, -5));
                 new WorldGenSmallIsland().generateStructure(world, pos1, Rotation.NONE);
                 world.setBlockToAir(pos);
@@ -79,8 +79,8 @@ public class WorldGenEndBossArena extends WorldGenEndDungeon{
                 world.setBlockToAir(pos);
             }
         }
-        if(function.startsWith("island2")) {
-            if(random.nextFloat() > 0.6) {
+        if(function.startsWith("island2") ) {
+            if(random.nextFloat() > 0.6 && ModConfig.miniIslands_spawn) {
                 BlockPos pos1 = pos.add(new BlockPos(-5, random.nextInt(9) + 5, -5));
                 new WorldGenSmallIslandTwo().generateStructure(world,pos1, Rotation.NONE );
                 world.setBlockToAir(pos);
@@ -89,7 +89,7 @@ public class WorldGenEndBossArena extends WorldGenEndDungeon{
             }
         }
         if(function.startsWith("island3")) {
-            if(random.nextFloat() > 0.2) {
+            if(random.nextFloat() > 0.2 && ModConfig.miniIslands_spawn) {
                 BlockPos pos1 = pos.add(new BlockPos(-5, random.nextInt(12) + 5, -5));
                 new WorldGenSmallIslandThree().generateStructure(world, pos1, Rotation.NONE);
                 world.setBlockToAir(pos);

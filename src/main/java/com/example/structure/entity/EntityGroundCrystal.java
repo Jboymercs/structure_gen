@@ -54,7 +54,7 @@ public class EntityGroundCrystal extends EntityModBase implements IAnimatable {
                     .type(ModDamageSource.MOB)
                     .directEntity(this)
                     .build();
-            float damage = ModConfig.ground_crystal_damage;
+            float damage = this.getAttack();
             ModUtils.handleAreaImpact(0.5f, (e) -> damage, this, pos, source, 0.2F, 0, false );
         }
         if (ticksExisted == 1) {
@@ -71,6 +71,7 @@ public class EntityGroundCrystal extends EntityModBase implements IAnimatable {
         super.applyEntityAttributes();
         this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0D);
         this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(5);
+        this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(ModConfig.ground_crystal_damage);
     }
 
     @Override

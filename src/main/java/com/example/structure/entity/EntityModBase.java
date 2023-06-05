@@ -1,10 +1,12 @@
 package com.example.structure.entity;
 
 import com.example.structure.entity.ai.MobGroundNavigate;
+import com.example.structure.util.ModUtils;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.MoverType;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
@@ -38,6 +40,12 @@ public abstract class EntityModBase extends EntityCreature {
         this.setPosition(x, y, z);
     }
 
+    protected double healthScaledAttackFactor = 0.0; // Factor that determines how much attack is affected by health
+
+    public float getAttack() {
+        return ModUtils.getMobDamage(this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue(), healthScaledAttackFactor, this.getMaxHealth(),
+                this.getHealth());
+    }
 
     @Override
     public boolean attackEntityFrom(DamageSource source, float amount) {
@@ -58,7 +66,14 @@ public abstract class EntityModBase extends EntityCreature {
         this.experienceValue = 5;
 
     }
+    @Override
+    protected void applyEntityAttributes() {
+        super.applyEntityAttributes();
+        this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
+        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(20);
+        this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(0);
 
+    }
     protected boolean isImmovable() {
         return this.dataManager == null ? false : this.dataManager.get(IMMOVABLE);
     }

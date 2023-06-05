@@ -1,5 +1,6 @@
 package com.example.structure.world;
 
+import com.example.structure.config.ModConfig;
 import com.example.structure.util.ModReference;
 import com.example.structure.world.islands.WorldGenSmallIslandTwo;
 import net.minecraft.init.Blocks;
@@ -36,7 +37,7 @@ public class WorldGenEndTower extends WorldGenEndDungeon{
 
         }
         if(function.startsWith("island")) {
-            if(random.nextFloat() > 0.4) {
+            if(random.nextFloat() > 0.4 && ModConfig.miniIslands_spawn) {
                 BlockPos pos1 = pos.add(new BlockPos(5, random.nextInt(6), -5));
                 new WorldGenSmallIslandTwo().generateStructure(world, pos1, Rotation.NONE);
                 world.setBlockToAir(pos);

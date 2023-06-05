@@ -1,5 +1,6 @@
 package com.example.structure.world;
 
+import com.example.structure.config.ModConfig;
 import com.example.structure.util.ModReference;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
@@ -25,7 +26,7 @@ public class WorldGenEndWalkway extends WorldGenEndDungeon{
     @Override
     protected void handleDataMarker(String function, BlockPos pos, World world, Random random) {
         if(function.startsWith("chest")) {
-            if (random.nextInt(3) == 0) {
+            if (random.nextInt(ModConfig.lamentedIslandsLootChance) == 0) {
                 TileEntity tileEntity = world.getTileEntity(pos.down());
                 world.setBlockState(pos, Blocks.AIR.getDefaultState(), 3);
                 if (tileEntity instanceof TileEntityChest) {
