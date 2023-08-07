@@ -1,6 +1,6 @@
 package com.example.structure.model;
 
-import com.example.structure.entity.EntityCrystalSpikeSmall;
+
 import com.example.structure.items.CrystalBallItem;
 import com.example.structure.util.ModReference;
 import net.minecraft.util.ResourceLocation;

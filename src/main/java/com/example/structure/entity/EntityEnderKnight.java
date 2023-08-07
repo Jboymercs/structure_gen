@@ -131,23 +131,17 @@ public class EntityEnderKnight extends EntityModBase implements IAnimatable, IAt
 
     }
     private <E extends IAnimatable>PlayState predicateArms(AnimationEvent<E> event) {
-       // if(!(event.getLimbSwingAmount() > -0.02F && event.getLimbSwingAmount() < 0.02F && event.getLimbSwingAmount() < -0.40F && event.getLimbSwingAmount() > 0.40F)) {
-          //  event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_WALKING_ARMS, true));
-       // }
-        if(!(event.getLimbSwingAmount() > -0.40F && event.getLimbSwingAmount() < 0.40F) && !this.isFightMode()) {
-            event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_RUNNING_ARMS, true));
+
+        if(!(event.getLimbSwingAmount() > -0.10F && event.getLimbSwingAmount() < 0.10F) && !this.isFightMode()) {
+            event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_WALKING_ARMS, true));
             return PlayState.CONTINUE;
         }
 
         return PlayState.STOP;
     }
     private <E extends IAnimatable>PlayState predicateLegs(AnimationEvent<E> event) {
-        if(!(event.getLimbSwingAmount() > -0.02F && event.getLimbSwingAmount() < 0.02F && event.getLimbSwingAmount() < -0.40F && event.getLimbSwingAmount() > 0.40F)) {
+        if(!(event.getLimbSwingAmount() > -0.10F && event.getLimbSwingAmount() < 0.10F)) {
             event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_WALKING_LEGS, true));
-            return PlayState.CONTINUE;
-        }
-        if(!(event.getLimbSwingAmount() > -0.40F && event.getLimbSwingAmount() < 0.40F)) {
-           event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_RUNNING_LEGS, true));
             return PlayState.CONTINUE;
         }
         return PlayState.STOP;
