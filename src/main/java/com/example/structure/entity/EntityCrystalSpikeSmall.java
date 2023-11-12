@@ -39,7 +39,6 @@ public class EntityCrystalSpikeSmall extends Projectile{
 
 
     public EntityCrystalSpikeSmall(World worldIn, EntityLivingBase throwerIn, float damage, ItemStack stack) {
-        //FIX
         super(worldIn, throwerIn, ModConfig.crystal_damage);
         this.setNoGravity(true);
 

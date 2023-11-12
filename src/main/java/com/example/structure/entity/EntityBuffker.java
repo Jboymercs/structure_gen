@@ -6,6 +6,8 @@ import com.example.structure.entity.util.IAttack;
 import com.example.structure.util.ModRand;
 import com.example.structure.util.ModUtils;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.monster.EntityGuardian;
+import net.minecraft.entity.monster.EntityIronGolem;
 import net.minecraft.entity.projectile.EntityShulkerBullet;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.network.datasync.DataParameter;

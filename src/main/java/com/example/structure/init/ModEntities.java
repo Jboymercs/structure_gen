@@ -3,6 +3,7 @@ package com.example.structure.init;
 import com.example.structure.Main;
 import com.example.structure.config.ModConfig;
 import com.example.structure.entity.*;
+import com.example.structure.entity.endking.EntityEndKing;
 import com.example.structure.entity.tileentity.TileEntityDisappearingSpawner;
 import com.example.structure.entity.tileentity.TileEntityUpdater;
 import com.example.structure.util.ModReference;
@@ -51,6 +52,8 @@ public class ModEntities {
         registerTileEntity(TileEntityDisappearingSpawner.class, "disappearing_spawner_entity");
         //Ender Knight
         registerEntityWithID("end_knight", EntityEnderKnight.class, ENTITY_START_ID++, 50, end_mobs);
+        //End King
+        registerEntityWithID("end_king", EntityEndKing.class, ENTITY_START_ID++, 50, end_mobs);
     }
 
     public static void RegisterEntitySpawns() {

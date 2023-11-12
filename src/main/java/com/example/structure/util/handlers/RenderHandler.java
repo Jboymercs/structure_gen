@@ -1,6 +1,7 @@
 package com.example.structure.util.handlers;
 
 import com.example.structure.entity.*;
+import com.example.structure.entity.endking.EntityEndKing;
 import com.example.structure.entity.render.*;
 import com.example.structure.init.ModItems;
 import net.minecraft.client.Minecraft;
@@ -63,5 +64,7 @@ public class RenderHandler {
         registerProjectileRenderer(ProjectileQuake.class);
         //Ender Knight
         registerModEntityRenderer(EntityEnderKnight.class, RenderEnderKnight::new);
+        //End King
+        RenderingRegistry.registerEntityRenderingHandler(EntityEndKing.class, RenderEntityKing::new);
     }
 }

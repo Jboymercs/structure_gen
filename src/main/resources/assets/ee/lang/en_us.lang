@@ -2,6 +2,7 @@ item.invisible.name=Invisible
 item.crystalball.name=Crystal Ball
 item.lamented.name= Lamented Eye
 item.sword.name= Lamented Sword
+entity.end_king.name=The Unholy Ender Lord
 entity.crystal_boss.name=The Lamentor
 entity.end_knight.name=Ender Knight
 entity.buffker.name=Constructor

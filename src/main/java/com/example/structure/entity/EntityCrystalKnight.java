@@ -570,10 +570,10 @@ public class EntityCrystalKnight extends EntityModBase implements IAnimatable, I
                 this.playSound(ModSoundHandler.BOSS_DRAW_SWORD, 1.0f, 1.0f / (rand.nextFloat() * 0.4f + 0.4f));
             }, 5);
             addEvent(() -> {
-                Vec3d offset = this.getPositionVector().add(ModUtils.getRelativeOffset(this, new Vec3d(1.2, 1.2, 0)));
+                Vec3d offset = this.getPositionVector().add(ModUtils.getRelativeOffset(this, new Vec3d(1.2, 1.5, 0)));
                 DamageSource source = ModDamageSource.builder().type(ModDamageSource.MOB).directEntity(this).build();
                 float damage = this.getAttack();
-                ModUtils.handleAreaImpact(1.0f, (e) -> damage, this, offset, source, 0.4f, 0, false);
+                ModUtils.handleAreaImpact(2.5f, (e) -> damage, this, offset, source, 0.4f, 0, false);
                 this.playSound(SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, 1.0f, 1.0f / (rand.nextFloat() * 0.4F + 0.4f));
             }, 25);
             addEvent(() -> {

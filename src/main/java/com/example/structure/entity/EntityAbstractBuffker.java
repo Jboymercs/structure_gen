@@ -62,6 +62,7 @@ public abstract class EntityAbstractBuffker extends EntityModBase implements IEn
     private final MultiPartEntityPart torso = new MultiPartEntityPart(this, "torso", 1.3f, 1.2f);
 
 
+
     public EntityAbstractBuffker(World worldIn) {
         super(worldIn);
 
@@ -144,13 +145,11 @@ public abstract class EntityAbstractBuffker extends EntityModBase implements IEn
     @Override
     public void initEntityAI() {
         super.initEntityAI();
-
         this.tasks.addTask(6, new EntityAIWanderAvoidWater(this, 1.0D));
         this.tasks.addTask(7, new EntityAILookIdle(this));
         this.targetTasks.addTask(1, new EntityAINearestAttackableTarget<EntityPlayer>(this, EntityPlayer.class, 1, true, false, null));
         this.targetTasks.addTask(2, new EntityAINearestAttackableTarget<EntityCrystalKnight>(this, EntityCrystalKnight.class, 1, true, false, null));
         this.targetTasks.addTask(3, new EntityAIHurtByTarget(this, false));
-
     }
     public static int constructor_cooldown_one = ModConfig.constructor_speed_one * 20;
     public static int constructor_cooldown_two = ModConfig.constructor_speed_two * 20;
