@@ -2,6 +2,8 @@ package com.example.structure.util.handlers;
 
 import com.example.structure.entity.*;
 import com.example.structure.entity.endking.EntityEndKing;
+import com.example.structure.entity.endking.EntityRedCrystal;
+import com.example.structure.entity.endking.ProjectileSpinSword;
 import com.example.structure.entity.render.*;
 import com.example.structure.init.ModItems;
 import net.minecraft.client.Minecraft;
@@ -66,5 +68,9 @@ public class RenderHandler {
         registerModEntityRenderer(EntityEnderKnight.class, RenderEnderKnight::new);
         //End King
         RenderingRegistry.registerEntityRenderingHandler(EntityEndKing.class, RenderEntityKing::new);
+        //Red Crystal
+        RenderingRegistry.registerEntityRenderingHandler(EntityRedCrystal.class, RenderRedCrystal::new);
+        //Red Sword
+        registerProjectileRenderer(ProjectileSpinSword.class);
     }
 }

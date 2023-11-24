@@ -3,12 +3,11 @@ package com.example.structure.entity.endking;
 import com.example.structure.config.ModConfig;
 import com.example.structure.entity.EntityCrystalKnight;
 import com.example.structure.entity.EntityModBase;
+import com.example.structure.entity.ai.EntityAITimedAttack;
 import com.example.structure.entity.util.IPitch;
+import com.example.structure.util.ModRand;
 import com.example.structure.util.ModUtils;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.IEntityMultiPart;
-import net.minecraft.entity.MultiPartEntityPart;
-import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.*;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
@@ -23,11 +22,25 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class EntityAbstractEndKing extends EntityModBase implements IEntityMultiPart, IPitch {
+import java.util.List;
 
+public class EntityAbstractEndKing extends EntityModBase implements IEntityMultiPart, IPitch {
+    protected Vec3d chargeDir;
+
+    //Boolean to check for any nearby swords
+    protected boolean hasSwordsNearby = false;
+
+    //A call for if damage will be done in the selected area by the attack sorter
+    protected boolean damageViable = false;
     protected static final DataParameter<Boolean> FIGHT_MODE = EntityDataManager.createKey(EntityModBase.class, DataSerializers.BOOLEAN);
+    //Used for Full Bones usage of the body
     protected static final DataParameter<Boolean> FULL_BODY_USAGE = EntityDataManager.createKey(EntityModBase.class, DataSerializers.BOOLEAN);
+    //Used for Upper Body only attacks
     protected static final DataParameter<Boolean> SWINGING_ARMS = EntityDataManager.createKey(EntityModBase.class, DataSerializers.BOOLEAN);
+    protected static final DataParameter<Boolean> PHASE_MODE = EntityDataManager.createKey(EntityModBase.class, DataSerializers.BOOLEAN);
+    protected static final  DataParameter<Boolean> LEAP_SWEEP_ATTACK = EntityDataManager.createKey(EntityModBase.class, DataSerializers.BOOLEAN);
+    protected static final DataParameter<Boolean> SUMMON_CRYSTALS_ATTACK = EntityDataManager.createKey(EntityModBase.class, DataSerializers.BOOLEAN);
+    protected static final DataParameter<Boolean> SUMMON_FIREBALLS_ATTACK = EntityDataManager.createKey(EntityModBase.class, DataSerializers.BOOLEAN);
 
     protected static final DataParameter<Float> LOOK = EntityDataManager.createKey(EntityModBase.class, DataSerializers.FLOAT);
     public void setFightMode(boolean value) {this.dataManager.set(FIGHT_MODE, Boolean.valueOf(value));}
@@ -36,6 +49,14 @@ public class EntityAbstractEndKing extends EntityModBase implements IEntityMulti
     public boolean isSwingingArms() {return this.dataManager.get(SWINGING_ARMS);}
     public void setFullBodyUsage(boolean value) {this.dataManager.set(FULL_BODY_USAGE, Boolean.valueOf(value));}
     public boolean isFullBodyUsage() {return this.dataManager.get(FULL_BODY_USAGE);}
+    public void setPhaseMode(boolean value) {this.dataManager.set(PHASE_MODE, Boolean.valueOf(value));}
+    public boolean isPhaseMode() {return this.dataManager.get(PHASE_MODE);}
+    public void setLeapSweepAttack(boolean value) {this.dataManager.set(LEAP_SWEEP_ATTACK, Boolean.valueOf(value));}
+    public boolean isLeapSweepAttack() {return this.dataManager.get(LEAP_SWEEP_ATTACK);}
+    public void setSummonCrystalsAttack(boolean value) {this.dataManager.set(SUMMON_CRYSTALS_ATTACK, Boolean.valueOf(value));}
+    public boolean isSummonCrystalsAttack() {return this.dataManager.get(SUMMON_CRYSTALS_ATTACK);}
+    public void setSummonFireballsAttack(boolean value) {this.dataManager.set(SUMMON_FIREBALLS_ATTACK, Boolean.valueOf(value));}
+    public boolean isSummonFireBallsAttack() {return this.dataManager.get(SUMMON_FIREBALLS_ATTACK);}
     private final MultiPartEntityPart[] hitboxParts;
     private final MultiPartEntityPart model = new MultiPartEntityPart(this, "model", 0f, 0f);
     private final MultiPartEntityPart legsL = new MultiPartEntityPart(this, "legsL", 0.5f, 1.1f);
@@ -43,6 +64,8 @@ public class EntityAbstractEndKing extends EntityModBase implements IEntityMulti
     private final MultiPartEntityPart torso = new MultiPartEntityPart(this, "torso", 1.2f, 1.7f);
     private final MultiPartEntityPart head = new MultiPartEntityPart(this, "head", 0.7f, 0.7f);
 
+
+    public float variable_distance = 10f;
     public EntityAbstractEndKing(World world) {
         super(world);
         this.hitboxParts = new MultiPartEntityPart[]{model, legsL, legsR, torso, head};
@@ -56,6 +79,10 @@ public class EntityAbstractEndKing extends EntityModBase implements IEntityMulti
         this.dataManager.register(FIGHT_MODE, Boolean.valueOf(false));
         this.dataManager.register(FULL_BODY_USAGE, Boolean.valueOf(false));
         this.dataManager.register(SWINGING_ARMS, Boolean.valueOf(false));
+        this.dataManager.register(PHASE_MODE, Boolean.valueOf(false));
+        this.dataManager.register(LEAP_SWEEP_ATTACK, Boolean.valueOf(false));
+        this.dataManager.register(SUMMON_CRYSTALS_ATTACK, Boolean.valueOf(false));
+        this.dataManager.register(SUMMON_FIREBALLS_ATTACK, Boolean.valueOf(false));
         super.entityInit();
 
     }
@@ -70,6 +97,22 @@ public class EntityAbstractEndKing extends EntityModBase implements IEntityMulti
         Vec3d position = center.subtract(ModUtils.Y_AXIS.add(ModUtils.getAxisOffset(lookVel, offset)));
         ModUtils.setEntityPosition(entity, position);
 
+    }
+
+    @Override
+    public void onUpdate() {
+        super.onUpdate();
+        double HealthChange = this.getHealth() / this.getMaxHealth();
+        if(HealthChange > 0.67) {
+            variable_distance = 2.0f;
+        }
+
+        List<ProjectileSpinSword> nearbySwords = this.world.getEntitiesWithinAABB(ProjectileSpinSword.class, this.getEntityBoundingBox().grow(4D), e -> !e.getIsInvulnerable());
+        if(!nearbySwords.isEmpty()) {
+            hasSwordsNearby = true;
+        } else {
+            hasSwordsNearby = false;
+        }
     }
     @Override
     public void onLivingUpdate() {
@@ -102,6 +145,7 @@ public class EntityAbstractEndKing extends EntityModBase implements IEntityMulti
         this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.23D);
         this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(0.8D);
         this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(8.0D);
+        this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(ModConfig.attack_damage);
     }
 
     @Override
@@ -145,6 +189,15 @@ public class EntityAbstractEndKing extends EntityModBase implements IEntityMulti
         float deltaLook = 5;
         float clampedLook = MathHelper.clamp(newLook, prevLook - deltaLook, prevLook + deltaLook);
         this.dataManager.set(LOOK, clampedLook);
+    }
+    //Determines a random Positive or Negative additive to an original Position for random Dashing
+    public int randomDashDirGenerator() {
+        int randomNumberGenerator = ModRand.range(0, 10);
+        if(randomNumberGenerator >= 5) {
+            return ModRand.range(6, 8);
+        } else {
+            return ModRand.range(-8, -6);
+        }
     }
 
     @Override

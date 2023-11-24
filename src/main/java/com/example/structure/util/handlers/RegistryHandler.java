@@ -7,6 +7,7 @@ import com.example.structure.items.CrystalBallItem;
 import com.example.structure.items.Items;
 import com.example.structure.renderer.RenderBossSword;
 import com.example.structure.renderer.RenderCrystalBall;
+import com.example.structure.renderer.RenderSpinSword;
 import com.example.structure.util.IHasModel;
 import com.example.structure.util.ModReference;
 import net.minecraft.block.Block;
@@ -50,8 +51,10 @@ public class RegistryHandler {
     public static void onModelRegister(ModelRegistryEvent event) {
         ModelLoader.setCustomModelResourceLocation(ModItems.CRYSTAL_BALL, 0, new ModelResourceLocation(ModReference.MOD_ID + ":crystalball","inventory"));
         ModelLoader.setCustomModelResourceLocation(ModItems.BOSS_SWORD, 0, new ModelResourceLocation(ModReference.MOD_ID + ":sword", "inventory"));
+        ModelLoader.setCustomModelResourceLocation(ModItems.SPIN_SWORD_ITEM, 0, new ModelResourceLocation(ModReference.MOD_ID + ":spinsword", "inventory"));
         ModItems.CRYSTAL_BALL.setTileEntityItemStackRenderer(new RenderCrystalBall());
         ModItems.BOSS_SWORD.setTileEntityItemStackRenderer(new RenderBossSword());
+        ModItems.SPIN_SWORD_ITEM.setTileEntityItemStackRenderer(new RenderSpinSword());
         for (Item item : ModItems.ITEMS) {
             if (item instanceof IHasModel) {
                 ((IHasModel) item).registerModels();

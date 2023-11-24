@@ -72,6 +72,7 @@ public class EntityBuffker extends EntityAbstractBuffker implements IAnimatable,
     @Override
     public int startAttack(EntityLivingBase target, float distanceSq, boolean strafingBackwards) {
         double distance = Math.sqrt(distanceSq);
+
         if(!this.isFightMode()) {
             List<Consumer<EntityLivingBase>> attacks = new ArrayList<>(Arrays.asList(mortarFire, groundSlam));
             double[] weights = {

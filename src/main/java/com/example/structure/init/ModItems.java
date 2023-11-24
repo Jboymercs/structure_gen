@@ -1,10 +1,7 @@
 package com.example.structure.init;
 
 import com.example.structure.config.ModConfig;
-import com.example.structure.items.CrystalBallItem;
-import com.example.structure.items.ItemBase;
-import com.example.structure.items.ItemKey;
-import com.example.structure.items.ItemLamentedEye;
+import com.example.structure.items.*;
 import com.example.structure.items.tools.ToolBossSword;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
@@ -29,6 +26,7 @@ public class ModItems {
 
     public static final Item CRYSTAL_BALL = new CrystalBallItem("crystalball", null);
 
+    public static final Item SPIN_SWORD_ITEM = new SpinSwordItem("spinsword", null);
     public ModItems() {
 
 
