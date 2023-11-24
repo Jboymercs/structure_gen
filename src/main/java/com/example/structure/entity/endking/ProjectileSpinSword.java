@@ -7,6 +7,8 @@ import com.example.structure.util.ModDamageSource;
 import com.example.structure.util.ModUtils;
 import com.example.structure.util.handlers.ParticleManager;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.ai.EntityLookHelper;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -15,6 +17,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+
+import java.util.List;
 
 public class ProjectileSpinSword extends Projectile {
 
@@ -34,9 +38,42 @@ public class ProjectileSpinSword extends Projectile {
         this.setNoGravity(true);
     }
 
+    public boolean hasShot = false;
+
     @Override
     public void onUpdate() {
         super.onUpdate();
+
+        List<EntityEndKing> nearbyBoss = this.world.getEntitiesWithinAABB(EntityEndKing.class, this.getEntityBoundingBox().grow(4D), e -> !e.getIsInvulnerable());
+        if(!nearbyBoss.isEmpty()) {
+            hasShot = false;
+        } else {
+            hasShot = true;
+        }
+
+        List<EntityPlayer> nearbyPlayer = this.world.getEntitiesWithinAABB(EntityPlayer.class, this.getEntityBoundingBox().grow(8D), e -> !e.getIsInvulnerable());
+        if(!nearbyPlayer.isEmpty() && hasShot) {
+            for(EntityPlayer player: nearbyPlayer) {
+                Vec3d playerPos = player.getPositionVector().add(ModUtils.yVec(1));
+                Vec3d currentPos = this.getPositionVector();
+                if(playerPos.x != currentPos.x) {
+                    if(playerPos.x > currentPos.x) {
+                        this.motionX += 0.03;
+                    }
+                    if(playerPos.x < currentPos.x) {
+                        this.motionX -= 0.03;
+                    }
+                }
+                if(playerPos.z != currentPos.z) {
+                    if(playerPos.z > currentPos.z) {
+                        this.motionZ += 0.03;
+                    }
+                    if(playerPos.z < currentPos.z) {
+                        this.motionZ -= 0.3;
+                    }
+                }
+            }
+        }
 
     }
 

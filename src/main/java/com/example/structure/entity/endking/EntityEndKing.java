@@ -102,7 +102,7 @@ public class EntityEndKing extends EntityAbstractEndKing implements IAnimatable,
     @Override
     public void initEntityAI() {
         super.initEntityAI();
-        this.tasks.addTask(4, new EntityAITimedAttack<>(this, 1.0, 60, 10.0f, 0.4f));
+        this.tasks.addTask(4, new EntityAITimedAttack<>(this, 1.0, 60, 24.0f, 0.4f));
     }
 
     private AnimationFactory factory = new AnimationFactory(this);
@@ -122,9 +122,9 @@ public class EntityEndKing extends EntityAbstractEndKing implements IAnimatable,
             List<Consumer<EntityLivingBase>> attacks = new ArrayList<>(Arrays.asList(sweepLeap, strafeBack, crystalSelfAOE, projectileSwords));
             //weights
             double[] weights = {
-                    (distance < 10) ? 1/distance : 0, //LeapAttack
-                    (distance < 8 && prevAttack != strafeBack) ? 1/distance : 0, //DashBackAttack
-                    (distance < 6 && prevAttack != crystalSelfAOE) ? 1/distance : 0,  //Crystal Self AOE
+                    (distance < 24) ? distance * 0.02 : 0, //LeapAttack
+                    (distance < 8 && prevAttack != strafeBack) ? 1/distance : 0, //DashRandom
+                    (distance < 7 && prevAttack != crystalSelfAOE) ? 1/distance : 0,  //Crystal Self AOE
                     (distance > 5 && !hasSwordsNearby) ? distance * 0.02 : 0    // Projectile Swords Attack
             };
             prevAttack = ModRand.choice(attacks, rand, weights).next();
@@ -133,6 +133,7 @@ public class EntityEndKing extends EntityAbstractEndKing implements IAnimatable,
         return 60;
     }
 
+    //Leap Attack Quick
     private final Consumer<EntityLivingBase> sweepLeap = (target) -> {
         this.setImmovable(true);
       this.setFightMode(true);
@@ -159,6 +160,7 @@ public class EntityEndKing extends EntityAbstractEndKing implements IAnimatable,
       }, 30);
     };
 
+    //Random Dash Attack
     private final Consumer<EntityLivingBase> strafeBack = (target) -> {
       this.setFightMode(true);
         this.ActionDashRandom(target);
@@ -172,6 +174,7 @@ public class EntityEndKing extends EntityAbstractEndKing implements IAnimatable,
       addEvent(()-> this.setFightMode(false), 40);
     };
 
+    //SElf AOE Attack
     private final Consumer<EntityLivingBase> crystalSelfAOE = (target)-> {
       this.setFightMode(true);
       this.setImmovable(true);
@@ -180,14 +183,38 @@ public class EntityEndKing extends EntityAbstractEndKing implements IAnimatable,
       addEvent(()-> new ActionAOESimple().performAction(this, target), 20);
 
       addEvent(()-> this.setSummonCrystalsAttack(false), 23);
-      addEvent(()-> this.setFightMode(false), 23);
       addEvent(()-> this.setImmovable(false),23);
+      //Random Dash Chance
+      if(randomDashChance() >= 6) {
+          addEvent(()-> this.ActionDashRandom(target), 23);
+          addEvent(()-> this.setFightMode(false), 63);
+      } else {
+          addEvent(()-> this.setFightMode(false), 23);
+      }
+
     };
 
+    //Projectile Swords Attack
     private final Consumer<EntityLivingBase> projectileSwords = (target) -> {
       this.setFightMode(true);
       new ActionHoldSwordAttack(projectileSupplierSpinSword, 2.0f).performAction(this, target);
+
+      //Random Chance for Dashing
+      addEvent(()-> {
+          if(randomDashChance() >= 6) {
+              this.ActionDashRandom(target);
+          }
+      }, 40);
+
       addEvent(()-> this.setFightMode(false), 80);
+    };
+
+    //AOE on Player
+    private final Consumer<EntityLivingBase> targetAOE = (target)-> {
+      this.setFightMode(true);
+
+      
+      addEvent(()-> this.setFightMode(false), 40);
     };
 
     public void ActionDashBack(EntityLivingBase target) {

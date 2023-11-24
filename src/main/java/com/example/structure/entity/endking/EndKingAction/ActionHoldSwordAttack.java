@@ -27,7 +27,7 @@ public class ActionHoldSwordAttack implements IAction {
         //Upper Top Sword
         Function<Vec3d, Runnable> missile = (offset) -> () -> {
             Projectile projectile = projectileSupplier.get();
-            projectile.setTravelRange(40);
+            projectile.setTravelRange(60);
             int randomTimer = 100 +  (int) ModRand.getFloat(200);
             actor.addEvent(()-> actor.world.spawnEntity(projectile), 5);
 
@@ -41,18 +41,18 @@ public class ActionHoldSwordAttack implements IAction {
             }
 
             actor.addEvent(() -> {
-                Vec3d vel = target.getPositionVector().subtract(ModUtils.yVec(1)).subtract(projectile.getPositionVector());
+                Vec3d vel = target.getPositionVector().add(ModUtils.yVec(1)).subtract(projectile.getPositionVector());
 
-                    projectile.shoot(vel.x, vel.y, vel.z, 2.0f, 0.3f);
+                    projectile.shoot(vel.x, vel.y, vel.z, 1.5f, 0f);
 
-                ModUtils.addEntityVelocity(actor, vel.normalize().scale(-0.1));
+                ModUtils.addEntityVelocity(actor, vel.normalize());
             }, randomTimer);
 
         };
         //Echeleon 1 Missile
         Function<Vec3d, Runnable> missile2 = (offset) -> () -> {
             Projectile projectile = projectileSupplier.get();
-            projectile.setTravelRange(40);
+            projectile.setTravelRange(60);
             int randomTimer = 100 +  (int) ModRand.getFloat(200);
             actor.addEvent(()-> actor.world.spawnEntity(projectile), 5);
 
@@ -66,18 +66,20 @@ public class ActionHoldSwordAttack implements IAction {
             }
 
             actor.addEvent(() -> {
-                Vec3d vel = target.getPositionVector().subtract(ModUtils.yVec(1)).subtract(projectile.getPositionVector());
+                Vec3d vel = target.getPositionVector().add(ModUtils.yVec(1)).subtract(projectile.getPositionVector());
 
-                projectile.shoot(vel.x, vel.y, vel.z, 2.0f, 0.3f);
 
-                ModUtils.addEntityVelocity(actor, vel.normalize().scale(-0.1));
+
+                projectile.shoot(vel.x, vel.y, vel.z, 1.5f, 0f);
+
+                ModUtils.addEntityVelocity(actor, vel.normalize());
             }, randomTimer);
 
         };
         //Echeleon 2 Missile
         Function<Vec3d, Runnable> missile3 = (offset) -> () -> {
             Projectile projectile = projectileSupplier.get();
-            projectile.setTravelRange(40);
+            projectile.setTravelRange(60);
             int randomTimer = 100 +  (int) ModRand.getFloat(200);
             actor.addEvent(()-> actor.world.spawnEntity(projectile), 5);
 
@@ -91,17 +93,17 @@ public class ActionHoldSwordAttack implements IAction {
             }
 
             actor.addEvent(() -> {
-                Vec3d vel = target.getPositionVector().subtract(ModUtils.yVec(1)).subtract(projectile.getPositionVector());
+                Vec3d vel = target.getPositionVector().add(ModUtils.yVec(1)).subtract(projectile.getPositionVector());
 
-                projectile.shoot(vel.x, vel.y, vel.z, 2.0f, 0.3f);
+                projectile.shoot(vel.x, vel.y, vel.z, 1.5f, 0f);
 
-                ModUtils.addEntityVelocity(actor, vel.normalize().scale(-0.1));
+                ModUtils.addEntityVelocity(actor, vel.normalize());
             }, randomTimer);
 
         };
         Function<Vec3d, Runnable> missile4 = (offset) -> () -> {
             Projectile projectile = projectileSupplier.get();
-            projectile.setTravelRange(40);
+            projectile.setTravelRange(60);
             int randomTimer = 100 +  (int) ModRand.getFloat(200);
             actor.addEvent(()-> actor.world.spawnEntity(projectile), 5);
 
@@ -115,17 +117,17 @@ public class ActionHoldSwordAttack implements IAction {
             }
 
             actor.addEvent(() -> {
-                Vec3d vel = target.getPositionVector().subtract(ModUtils.yVec(1)).subtract(projectile.getPositionVector());
+                Vec3d vel = target.getPositionVector().add(ModUtils.yVec(1)).subtract(projectile.getPositionVector());
 
-                projectile.shoot(vel.x, vel.y, vel.z, 2.0f, 0.3f);
+                projectile.shoot(vel.x, vel.y, vel.z, 1.5f, 0f);
 
-                ModUtils.addEntityVelocity(actor, vel.normalize().scale(-0.1));
+                ModUtils.addEntityVelocity(actor, vel.normalize());
             }, randomTimer);
 
         };
         Function<Vec3d, Runnable> missile5 = (offset) -> () -> {
             Projectile projectile = projectileSupplier.get();
-            projectile.setTravelRange(40);
+            projectile.setTravelRange(60);
             int randomTimer = 100 +  (int) ModRand.getFloat(200);
             actor.addEvent(()-> actor.world.spawnEntity(projectile), 5);
 
@@ -139,11 +141,11 @@ public class ActionHoldSwordAttack implements IAction {
             }
 
             actor.addEvent(() -> {
-                Vec3d vel = target.getPositionVector().subtract(ModUtils.yVec(1)).subtract(projectile.getPositionVector());
+                Vec3d vel = target.getPositionVector().add(ModUtils.yVec(1)).subtract(projectile.getPositionVector());
 
-                projectile.shoot(vel.x, vel.y, vel.z, 2.0f, 0.3f);
+                projectile.shoot(vel.x, vel.y, vel.z, 1.5f, 0f);
 
-                ModUtils.addEntityVelocity(actor, vel.normalize().scale(-0.1));
+                ModUtils.addEntityVelocity(actor, vel.normalize());
             }, randomTimer);
 
         };

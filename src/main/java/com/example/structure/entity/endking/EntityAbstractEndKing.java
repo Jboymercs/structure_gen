@@ -200,6 +200,24 @@ public class EntityAbstractEndKing extends EntityModBase implements IEntityMulti
         }
     }
 
+    //A random chance that the knight will dash following certain attacks to allow more unpredicatability
+    public int randomDashChance() {
+        int healthModif = 0;
+        double HealthChange = this.getHealth() / this.getMaxHealth();
+        if(HealthChange < 0.2) {
+        healthModif = 4;
+        } else
+        if(HealthChange < 0.4) {
+            healthModif = 3;
+        } else if (HealthChange < 0.6) {
+            healthModif = 2;
+        } else if (HealthChange < 0.8) {
+            healthModif = 1;
+        }
+
+        return ModRand.range(0, 10) + healthModif;
+    }
+
     @Override
     public float getPitch() {
         return this.dataManager == null ? 0 : this.dataManager.get(LOOK);
