@@ -16,6 +16,7 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import scala.tools.nsc.backend.icode.Primitives;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
@@ -38,6 +39,8 @@ public class EntityRedCrystal extends EntityModBase implements IAnimatable {
         this.setSize(0.9f, 2.0f);
 
     }
+
+
 
     @Override
     public void onUpdate() {

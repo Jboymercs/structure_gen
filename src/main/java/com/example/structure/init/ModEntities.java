@@ -3,9 +3,7 @@ package com.example.structure.init;
 import com.example.structure.Main;
 import com.example.structure.config.ModConfig;
 import com.example.structure.entity.*;
-import com.example.structure.entity.endking.EntityEndKing;
-import com.example.structure.entity.endking.EntityRedCrystal;
-import com.example.structure.entity.endking.ProjectileSpinSword;
+import com.example.structure.entity.endking.*;
 import com.example.structure.entity.tileentity.TileEntityDisappearingSpawner;
 import com.example.structure.entity.tileentity.TileEntityUpdater;
 import com.example.structure.util.ModReference;
@@ -57,9 +55,13 @@ public class ModEntities {
         //End King
         registerEntityWithID("end_king", EntityEndKing.class, ENTITY_START_ID++, 50, end_mobs);
         //Red Crystal
-        registerEntityWithID("red_crystal", EntityRedCrystal.class, ENTITY_START_ID++, 50, end_mobs);
+        registerEntity("red_crystal", EntityRedCrystal.class, ENTITY_START_ID++, 50);
         //SpinSword Projectile
         registerEntity("red_sword", ProjectileSpinSword.class, ENTITY_START_ID++, 60);
+        //Fireball Entity
+        registerEntity("fire_ball_red", EntityFireBall.class, ENTITY_START_ID++, 60);
+        //Nuclear Explosion
+        registerEntity("nuke", EntityNuclearExplosion.class, ENTITY_START_ID++, 60);
     }
 
     public static void RegisterEntitySpawns() {

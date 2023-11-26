@@ -78,5 +78,25 @@
         "stream": true
       }
     ]
+  },
+  "entity.king.dash": {
+    "category": "entity",
+    "subtitle": "entity.king.dash",
+    "sounds": [
+      {
+        "name": "ee:entity/king/dash",
+        "stream": true
+      }
+    ]
+  },
+  "entity.king.explode": {
+    "category": "entity",
+    "subtitle": "entity.king.explode",
+    "sounds": [
+      {
+        "name": "ee:entity/king/explode",
+        "stream": true
+      }
+    ]
   }
 }

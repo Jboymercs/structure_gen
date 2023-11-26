@@ -51,27 +51,18 @@ public class ProjectileSpinSword extends Projectile {
             hasShot = true;
         }
 
-        List<EntityPlayer> nearbyPlayer = this.world.getEntitiesWithinAABB(EntityPlayer.class, this.getEntityBoundingBox().grow(8D), e -> !e.getIsInvulnerable());
+        List<EntityPlayer> nearbyPlayer = this.world.getEntitiesWithinAABB(EntityPlayer.class, this.getEntityBoundingBox().grow(10D), e -> !e.getIsInvulnerable());
         if(!nearbyPlayer.isEmpty() && hasShot) {
             for(EntityPlayer player: nearbyPlayer) {
                 Vec3d playerPos = player.getPositionVector().add(ModUtils.yVec(1));
                 Vec3d currentPos = this.getPositionVector();
-                if(playerPos.x != currentPos.x) {
-                    if(playerPos.x > currentPos.x) {
-                        this.motionX += 0.03;
-                    }
-                    if(playerPos.x < currentPos.x) {
-                        this.motionX -= 0.03;
-                    }
-                }
-                if(playerPos.z != currentPos.z) {
-                    if(playerPos.z > currentPos.z) {
-                        this.motionZ += 0.03;
-                    }
-                    if(playerPos.z < currentPos.z) {
-                        this.motionZ -= 0.3;
-                    }
-                }
+                this.motionX = (playerPos.x - currentPos.x) * 0.2;
+                double d1 = (playerPos.y - currentPos.y) * 0.008;
+                this.motionZ = (playerPos.z - currentPos.z) * 0.2;
+
+                Vec3d targetedPosVel = new Vec3d(0, d1, 0);
+                ModUtils.addEntityVelocity(this, targetedPosVel);
+
             }
         }
 

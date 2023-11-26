@@ -3,19 +3,20 @@ package com.example.structure.entity.endking;
 import com.example.structure.entity.EntityModBase;
 import com.example.structure.entity.Projectile;
 import com.example.structure.entity.ai.EntityAITimedAttack;
-import com.example.structure.entity.endking.EndKingAction.ActionAOESimple;
-import com.example.structure.entity.endking.EndKingAction.ActionDashBack;
-import com.example.structure.entity.endking.EndKingAction.ActionDashForward;
-import com.example.structure.entity.endking.EndKingAction.ActionHoldSwordAttack;
+import com.example.structure.entity.endking.EndKingAction.*;
 import com.example.structure.entity.util.IAttack;
 import com.example.structure.util.ModDamageSource;
 import com.example.structure.util.ModRand;
 import com.example.structure.util.ModUtils;
+import com.example.structure.util.handlers.ModSoundHandler;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.BossInfo;
+import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.World;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
@@ -33,12 +34,13 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class EntityEndKing extends EntityAbstractEndKing implements IAnimatable, IAttack {
+
     private final String ANIM_IDLE_LOWER = "idle_lower";
     private final String ANIM_IDLE_UPPER = "idle_upper";
     private final String ANIM_WALK_LOWER = "walk_lower";
     private final String ANIM_WALK_UPPER = "walk_upper";
     private final String ANIM_SWEEP_LEAP = "sweepLeap";
-    private final String ANIM_FIRE_BALL = "fireball";
+    private final String ANIM_FIRE_BALL = "fireBall";
     private final String SUMMON_AOE_CRYSTALS = "crystals";
 
 
@@ -119,13 +121,14 @@ public class EntityEndKing extends EntityAbstractEndKing implements IAnimatable,
         double HealthChange = this.getHealth() / this.getMaxHealth();
         if(!this.isFightMode()) {
             //attacks
-            List<Consumer<EntityLivingBase>> attacks = new ArrayList<>(Arrays.asList(sweepLeap, strafeBack, crystalSelfAOE, projectileSwords));
+            List<Consumer<EntityLivingBase>> attacks = new ArrayList<>(Arrays.asList(sweepLeap, strafeBack, crystalSelfAOE, projectileSwords, throwFireball));
             //weights
             double[] weights = {
-                    (distance < 24) ? distance * 0.02 : 0, //LeapAttack
+                    (distance < 24 && prevAttack != sweepLeap) ? distance * 0.02 : 0, //LeapAttack
                     (distance < 8 && prevAttack != strafeBack) ? 1/distance : 0, //DashRandom
                     (distance < 7 && prevAttack != crystalSelfAOE) ? 1/distance : 0,  //Crystal Self AOE
-                    (distance > 5 && !hasSwordsNearby) ? distance * 0.02 : 0    // Projectile Swords Attack
+                    (distance > 5 && !hasSwordsNearby) ? distance * 0.02 : 0, // Projectile Swords Attack
+                    (distance > 8 && prevAttack != throwFireball) ? distance * 0.02 : 0 //Throw Fireball Attack
             };
             prevAttack = ModRand.choice(attacks, rand, weights).next();
             prevAttack.accept(target);
@@ -209,12 +212,19 @@ public class EntityEndKing extends EntityAbstractEndKing implements IAnimatable,
       addEvent(()-> this.setFightMode(false), 80);
     };
 
-    //AOE on Player
-    private final Consumer<EntityLivingBase> targetAOE = (target)-> {
+    Supplier<EntityFireBall> fireBallSupplier = () -> new EntityFireBall(world);
+    //Throw Fireball
+    private final Consumer<EntityLivingBase> throwFireball = (target)-> {
       this.setFightMode(true);
+      this.setSummonFireballsAttack(true);
+      this.setFullBodyUsage(true);
+      this.setImmovable(true);
+    new ActionThrowFireball(fireBallSupplier, 2.5f).performAction(this, target);
 
-      
-      addEvent(()-> this.setFightMode(false), 40);
+        addEvent(()-> this.setImmovable(false), 35);
+        addEvent(()-> this.setFullBodyUsage(false), 35);
+        addEvent(()-> this.setSummonFireballsAttack(false), 35);
+      addEvent(()-> this.setFightMode(false), 80);
     };
 
     public void ActionDashBack(EntityLivingBase target) {
@@ -256,6 +266,7 @@ public class EntityEndKing extends EntityAbstractEndKing implements IAnimatable,
         addEvent(()-> setPhaseMode(false), 5);
         addEvent(()-> setPhaseMode(true), 10);
         addEvent(()-> {
+            this.playSound(ModSoundHandler.KING_DASH, 1.0f, 1.0f / (rand.nextFloat() * 0.4f + 0.4f));
             int randomDeterminedDistance = ModRand.range(4, 6);
             Vec3d enemyPos = target.getPositionVector().add(ModUtils.yVec(1));
 
@@ -296,6 +307,7 @@ public class EntityEndKing extends EntityAbstractEndKing implements IAnimatable,
         addEvent(()-> setPhaseMode(false), 5);
         addEvent(()-> setPhaseMode(true), 10);
         addEvent(()-> {
+            this.playSound(ModSoundHandler.KING_DASH, 1.0f, 1.0f / (rand.nextFloat() * 0.4f + 0.4f));
             int randomDeterminedDistance = ModRand.range(4, 6);
             Vec3d startPos = this.getPositionVector().add(ModUtils.yVec(1));
             Vec3d randomPos = new Vec3d(startPos.x + randomDashDirGenerator(), startPos.y, startPos.z + randomDeterminedDistance);
@@ -319,5 +331,16 @@ public class EntityEndKing extends EntityAbstractEndKing implements IAnimatable,
         addEvent(()-> setPhaseMode(false), 35);
         addEvent(()-> setPhaseMode(true), 40);
         addEvent(()-> setPhaseMode(false), 45);
+    }
+
+    @Override
+    public void addTrackingPlayer(EntityPlayerMP player) {
+        super.addTrackingPlayer(player);
+        this.bossInfo.addPlayer(player);
+    }
+    @Override
+    public void removeTrackingPlayer(EntityPlayerMP player) {
+        super.removeTrackingPlayer(player);
+        this.bossInfo.removePlayer(player);
     }
 }

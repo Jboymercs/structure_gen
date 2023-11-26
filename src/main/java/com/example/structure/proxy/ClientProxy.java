@@ -1,9 +1,12 @@
 package com.example.structure.proxy;
 
+import com.example.structure.event_handler.ClientRender;
 import com.example.structure.util.handlers.RenderHandler;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ClientProxy extends CommonProxy {
 
@@ -21,5 +24,14 @@ public class ClientProxy extends CommonProxy {
         //Registers Geckolib Entities
         RenderHandler.registerGeoEntityRenderers();
         super.init();
+    }
+
+
+    @SideOnly(Side.CLIENT)
+    public static float getClientEffect(int selector, float defaultVal) {
+        switch (selector) {
+            case 1: return ClientRender.SCREEN_SHAKE;
+            default: return defaultVal;
+        }
     }
 }

@@ -13,6 +13,7 @@ import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAIWanderAvoidWater;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
@@ -20,12 +21,17 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.BossInfo;
+import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.World;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 public class EntityAbstractEndKing extends EntityModBase implements IEntityMultiPart, IPitch {
     protected Vec3d chargeDir;
+
+    protected final BossInfoServer bossInfo = (new BossInfoServer(this.getDisplayName(), BossInfo.Color.RED, BossInfo.Overlay.NOTCHED_12));
 
     //Boolean to check for any nearby swords
     protected boolean hasSwordsNearby = false;
@@ -42,7 +48,13 @@ public class EntityAbstractEndKing extends EntityModBase implements IEntityMulti
     protected static final DataParameter<Boolean> SUMMON_CRYSTALS_ATTACK = EntityDataManager.createKey(EntityModBase.class, DataSerializers.BOOLEAN);
     protected static final DataParameter<Boolean> SUMMON_FIREBALLS_ATTACK = EntityDataManager.createKey(EntityModBase.class, DataSerializers.BOOLEAN);
 
+
+    //
+    protected static final DataParameter<Boolean> TOP_HP = EntityDataManager.createKey(EntityModBase.class, DataSerializers.BOOLEAN);
+
     protected static final DataParameter<Float> LOOK = EntityDataManager.createKey(EntityModBase.class, DataSerializers.FLOAT);
+    public void setTopHp(boolean value) {this.dataManager.set(TOP_HP, Boolean.valueOf(value));}
+    public boolean isTopHP() {return this.dataManager.get(TOP_HP);}
     public void setFightMode(boolean value) {this.dataManager.set(FIGHT_MODE, Boolean.valueOf(value));}
     public boolean isFightMode() {return this.dataManager.get(FIGHT_MODE);}
     public void setSwingingArms(boolean value) {this.dataManager.set(SWINGING_ARMS, Boolean.valueOf(value));}
@@ -59,17 +71,20 @@ public class EntityAbstractEndKing extends EntityModBase implements IEntityMulti
     public boolean isSummonFireBallsAttack() {return this.dataManager.get(SUMMON_FIREBALLS_ATTACK);}
     private final MultiPartEntityPart[] hitboxParts;
     private final MultiPartEntityPart model = new MultiPartEntityPart(this, "model", 0f, 0f);
-    private final MultiPartEntityPart legsL = new MultiPartEntityPart(this, "legsL", 0.5f, 1.1f);
-    private final MultiPartEntityPart legsR = new MultiPartEntityPart(this, "legsR", 0.5f, 1.1f);
+    private final MultiPartEntityPart legsWhole = new MultiPartEntityPart(this, "legsWhole", 1.0f, 1.1f);
     private final MultiPartEntityPart torso = new MultiPartEntityPart(this, "torso", 1.2f, 1.7f);
     private final MultiPartEntityPart head = new MultiPartEntityPart(this, "head", 0.7f, 0.7f);
+
 
 
     public float variable_distance = 10f;
     public EntityAbstractEndKing(World world) {
         super(world);
-        this.hitboxParts = new MultiPartEntityPart[]{model, legsL, legsR, torso, head};
+        this.hitboxParts = new MultiPartEntityPart[]{model, legsWhole, torso, head};
         this.setSize(2.0f, 3.7f);
+        this.isImmuneToFire = true;
+        this.isImmuneToExplosions();
+
     }
 
     @Override
@@ -83,6 +98,7 @@ public class EntityAbstractEndKing extends EntityModBase implements IEntityMulti
         this.dataManager.register(LEAP_SWEEP_ATTACK, Boolean.valueOf(false));
         this.dataManager.register(SUMMON_CRYSTALS_ATTACK, Boolean.valueOf(false));
         this.dataManager.register(SUMMON_FIREBALLS_ATTACK, Boolean.valueOf(false));
+        this.dataManager.register(TOP_HP, Boolean.valueOf(true));
         super.entityInit();
 
     }
@@ -102,9 +118,11 @@ public class EntityAbstractEndKing extends EntityModBase implements IEntityMulti
     @Override
     public void onUpdate() {
         super.onUpdate();
+        this.bossInfo.setPercent(this.getHealth() / this.getMaxHealth());
         double HealthChange = this.getHealth() / this.getMaxHealth();
         if(HealthChange > 0.67) {
             variable_distance = 2.0f;
+            this.setTopHp(false);
         }
 
         List<ProjectileSpinSword> nearbySwords = this.world.getEntitiesWithinAABB(ProjectileSpinSword.class, this.getEntityBoundingBox().grow(4D), e -> !e.getIsInvulnerable());
@@ -114,6 +132,8 @@ public class EntityAbstractEndKing extends EntityModBase implements IEntityMulti
             hasSwordsNearby = false;
         }
     }
+
+
     @Override
     public void onLivingUpdate() {
         super.onLivingUpdate();
@@ -122,8 +142,7 @@ public class EntityAbstractEndKing extends EntityModBase implements IEntityMulti
             avec3d[j] = new Vec3d(this.hitboxParts[j].posX, this.hitboxParts[j].posY, this.hitboxParts[j].posZ);
         }
         //Location of Hitboxes
-        this.setHitBoxPos(legsL, new Vec3d(0, -0.1, 0.25));
-        this.setHitBoxPos(legsR, new Vec3d(0, -0.1, -0.25));
+        this.setHitBoxPos(legsWhole, new Vec3d(0, -0.1, 0));
         this.setHitBoxPos(torso, new Vec3d(0, 1.0, 0));
         this.setHitBoxPos(head, new Vec3d(0, 2.7, 0));
 
@@ -141,7 +160,7 @@ public class EntityAbstractEndKing extends EntityModBase implements IEntityMulti
     public void applyEntityAttributes() {
         super.applyEntityAttributes();
         this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(100D);
-        this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(24D);
+        this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(32D);
         this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.23D);
         this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(0.8D);
         this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(8.0D);
@@ -157,6 +176,8 @@ public class EntityAbstractEndKing extends EntityModBase implements IEntityMulti
         this.targetTasks.addTask(2, new EntityAINearestAttackableTarget<EntityCrystalKnight>(this, EntityCrystalKnight.class, 1, true, false, null));
         this.targetTasks.addTask(3, new EntityAIHurtByTarget(this, false));
     }
+
+
 
     public void setPosition(BlockPos pos) {
         this.setPosition(pos.getX(), pos.getY(), pos.getZ());
@@ -177,9 +198,42 @@ public class EntityAbstractEndKing extends EntityModBase implements IEntityMulti
         return this.hitboxParts;
     }
 
+    public boolean damageKing;
+
     @Override
-    public boolean attackEntityFromPart(MultiPartEntityPart dragonPart, DamageSource source, float damage) {
+    public boolean attackEntityFromPart(@Nonnull MultiPartEntityPart part, @Nonnull DamageSource source, float damage) {
+        if(!this.isPhaseMode()) {
+            if(part == this.head) {
+
+                damageKing = true;
+                return this.attackEntityFrom(source, damage);
+            }
+        }
+
+        if (damage > 0.0F && !source.isUnblockable()) {
+            if (!source.isProjectile()) {
+                Entity entity = source.getImmediateSource();
+
+                if (entity instanceof EntityLivingBase) {
+                    this.blockUsingShield((EntityLivingBase) entity);
+                }
+
+            }
+            return false;
+        }
+
         return false;
+    }
+
+    @Override
+    public final boolean attackEntityFrom(DamageSource source, float amount) {
+        if(!damageKing && !source.isUnblockable()) {
+            return false;
+
+        }
+
+        damageKing = false;
+        return super.attackEntityFrom(source, amount);
     }
 
     @Override

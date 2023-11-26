@@ -22,6 +22,12 @@ public class ModSoundHandler {
     public static SoundEvent BOSS_DRAW_HAMMER;
     public static SoundEvent BOSS_DRAW_SWORD;
 
+    //King Action Sounds
+    public static SoundEvent KING_DASH;
+
+    //NuclearBomb Souns
+    public static SoundEvent BOMB_EXPLODE;
+
     public static void registerSounds() {
         BOSS_IDLE = registerSound("boss.idle", "entity");
         BOSS_HURT = registerSound("boss.hurt", "entity");
@@ -32,6 +38,10 @@ public class ModSoundHandler {
         BOSS_DRAW_SWORD = registerSound("boss.sword", "entity");
         BOSS_DASH = registerSound("boss.dash", "entity");
         BOSS_CAST_AMBIENT = registerSound("boss.cast", "entity");
+
+        KING_DASH = registerSound("king.dash", "entity");
+
+        BOMB_EXPLODE = registerSound("king.explode", "entity");
     }
 
 

@@ -19,6 +19,10 @@ public class ModelEndKing extends AnimatedGeoModel<EntityEndKing> {
     public ResourceLocation getTextureLocation(EntityEndKing entityEndKing) {
         if(entityEndKing.isPhaseMode()) {
             return new ResourceLocation(ModReference.MOD_ID, "textures/entity/ghost_king.png");
+        }
+        if(!entityEndKing.isPhaseMode() && entityEndKing.isTopHP()) {
+                return new ResourceLocation(ModReference.MOD_ID, "textures/entity/king_top.png");
+
         } else {
             return new ResourceLocation(ModReference.MOD_ID, "textures/entity/king.png");
         }
