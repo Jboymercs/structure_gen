@@ -3,9 +3,12 @@ package com.example.structure;
 import com.example.structure.init.ModEntities;
 import com.example.structure.proxy.CommonProxy;
 import com.example.structure.util.ModReference;
+import com.example.structure.util.handlers.BiomeRegister;
+import com.example.structure.util.handlers.FogHandler;
 import com.example.structure.util.handlers.ModSoundHandler;
 import com.example.structure.world.WorldGenCustomStructure;
 import net.minecraft.init.Blocks;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -13,6 +16,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import software.bernie.geckolib3.GeckoLib;
 
@@ -36,6 +40,8 @@ public class Main
     @SidedProxy(clientSide = ModReference.CLIENT_PROXY_CLASS, serverSide = ModReference.COMMON_PROXY_CLASS)
     public static CommonProxy proxy;
     public static SimpleNetworkWrapper network;
+
+    public static final Logger LOGGER = LogManager.getLogger(ModReference.MOD_ID);
     @Mod.Instance
     public static Main instance;
 
@@ -47,19 +53,21 @@ public class Main
         GeckoLib.initialize();
         logger = event.getModLog();
 
+
         //Register Entities
         ModEntities.registerEntities();
         ModEntities.RegisterEntitySpawns();
         //Register World Gen
         GameRegistry.registerWorldGenerator(new WorldGenCustomStructure(), 3);
-
+        //Register Fog
+        MinecraftForge.EVENT_BUS.register(new FogHandler());
         proxy.init();
     }
 
     @EventHandler
     public void init(FMLInitializationEvent event)
     {
-
+        BiomeRegister.registerBiomes();
         ModSoundHandler.registerSounds();
     }
 }
