@@ -1,8 +1,6 @@
 package com.example.structure.init;
 
-import com.example.structure.blocks.BlockBase;
-import com.example.structure.blocks.BlockDisappearingSpawner;
-import com.example.structure.blocks.BlockKey;
+import com.example.structure.blocks.*;
 import com.example.structure.entity.EntityCrystalKnight;
 import com.example.structure.entity.EntityExplosion;
 import net.minecraft.block.Block;
@@ -30,8 +28,9 @@ public class ModBlocks {
 
 
     public static final Block LAMENTED_END_STONE = new BlockBase("lamented_end_stone", Material.ROCK, STONE_HARDNESS, STONE_RESISTANCE, SoundType.STONE).setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
-    public static final Block RED_CRYSTAL = new BlockBase("red_crystal", Material.GLASS, WOOD_HARDNESS, WOOD_RESISTANCE, SoundType.GLASS).setCreativeTab(CreativeTabs.BUILDING_BLOCKS).setLightLevel(0.3f);
-    public static final Block END_ASH = new BlockBase("end_ash", Material.ROCK, STONE_HARDNESS, STONE_RESISTANCE, SoundType.STONE).setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
+    public static final Block RED_CRYSTAL = new BlockBase("red_crystal", Material.GLASS, WOOD_HARDNESS, WOOD_RESISTANCE, SoundType.GLASS).setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
+    public static final Block RED_CRYSTAL_TOP = new BlockCrystalTopBase("red_crystal_top", Material.GLASS).setHardness(WOOD_HARDNESS).setResistance(WOOD_RESISTANCE).setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
+    public static final Block END_ASH = new BlockAsh("end_ash", Material.ROCK, STONE_HARDNESS, STONE_RESISTANCE, SoundType.STONE).setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
 
     public static final Block END_KEY_BLOCK = new BlockKey("key_block", ModItems.END_KEY, ((world, pos) -> new EntityExplosion(world, pos.getX(), pos.getY(), pos.getZ(), null)));
 

@@ -6,6 +6,7 @@ import com.example.structure.util.ModRand;
 import com.example.structure.world.Biome.decorator.EEBiomeDecorator;
 import com.example.structure.world.Biome.generation.WorldGenAshHeights;
 import com.example.structure.world.Biome.generation.WorldGenAshSpikes;
+import com.example.structure.world.Biome.generation.WorldGenRedCrystals;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -30,9 +31,11 @@ public class BiomeAshWasteland extends BiomeFogged{
     private static final IBlockState AIR = Blocks.AIR.getDefaultState();
 
     public int spikesPerChunk = 3;
+    public int crystalSelect = ModRand.range(1, 3);
 
     public WorldGenAshSpikes spikes = new WorldGenAshSpikes();
     public WorldGenerator ashHeights = new WorldGenAshHeights();
+    public WorldGenerator crystalOre = new WorldGenRedCrystals();
     private static final IBlockState END_FLOOR = ModBlocks.END_ASH.getDefaultState();
     private Random random;
     public BiomeAshWasteland() {
@@ -71,12 +74,15 @@ public class BiomeAshWasteland extends BiomeFogged{
 
     public void decorate(World world, Random rand, BlockPos pos)
     {
+        //Ash Heights
         if(rand.nextInt(2) == 0) {
             int yHieght = getEndSurfaceHeight(world, pos.add(16, 0, 16), 50, 70);
             if(yHieght > 0) {
                 ashHeights.generate(world, rand, pos.add(ModRand.range(1, 16), yHieght + 1, ModRand.range(1, 16)));
             }
         }
+
+        //Ash Spikes
         for (int k2 = 0; k2 < this.spikesPerChunk; ++k2)
         {
             int l6 = random.nextInt(16) + 8;
@@ -86,6 +92,17 @@ public class BiomeAshWasteland extends BiomeFogged{
                 this.spikes.generate(world, random, pos.add(l6, yHieght, k10));
             }
 
+        }
+        //Red Crystal Ore
+        if(rand.nextInt(7) == 1) {
+            for (int k2 = 0; k2 < this.crystalSelect; ++k2) {
+                int l6 = random.nextInt(16) + 8;
+                int k10 = random.nextInt(16) + 8;
+                int yHieght = getEndSurfaceHeight(world, pos.add(16, 0, 16), 50, 70);
+                if (yHieght > 0) {
+                this.crystalOre.generate(world, random, pos.add(l6, yHieght, k10));
+                }
+            }
         }
     }
 

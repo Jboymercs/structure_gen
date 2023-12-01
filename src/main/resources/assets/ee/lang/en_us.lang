@@ -17,6 +17,7 @@ entity.entity_idle.name=idle
 tile.lamented_end_stone.name=Lamented End Stone
 tile.end_ash.name=Ashed End Stone
 tile.red_crystal.name=Endergetic Crystal
+tile.red_crystal_top.name=Small Endergetic Crystal
 tile.key_block.name=End Dungeon Key Block
 tile.disappearing_spawner.name=Disappearing Spawner
 item.key.name=Lamented End Key
