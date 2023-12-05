@@ -1,5 +1,6 @@
 package com.example.structure.world.Biome;
 
+import com.example.structure.init.ModBlocks;
 import com.example.structure.world.Biome.decorator.WorldGenLongVein;
 import net.minecraft.block.BlockChorusFlower;
 import net.minecraft.block.BlockFalling;
@@ -31,6 +32,7 @@ import java.util.Random;
 public class WorldChunkGeneratorEE extends ChunkGeneratorEnd {
     private final Random rand;
     protected static final IBlockState END_STONE = Blocks.END_STONE.getDefaultState();
+    protected static final IBlockState ASH_WASTE = ModBlocks.END_ASH.getDefaultState();
     protected static final IBlockState AIR = Blocks.AIR.getDefaultState();
     private NoiseGeneratorOctaves lperlinNoise1;
     private NoiseGeneratorOctaves lperlinNoise2;
@@ -123,6 +125,7 @@ public class WorldChunkGeneratorEE extends ChunkGeneratorEnd {
 
                                 if (d15 > 0.0D)
                                 {
+
 
                                     iblockstate = END_STONE;
                                 }

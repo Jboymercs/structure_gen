@@ -1,5 +1,6 @@
 package com.example.structure.world.Biome;
 
+import com.example.structure.entity.EntityEndBug;
 import com.example.structure.init.ModBlocks;
 import com.example.structure.util.IBiomeMisty;
 import com.example.structure.util.ModRand;
@@ -16,13 +17,16 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeDecorator;
+import net.minecraft.world.biome.BiomeHell;
 import net.minecraft.world.gen.feature.WorldGenerator;
+import net.minecraftforge.client.IRenderHandler;
+import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.Random;
 
-public class BiomeAshWasteland extends BiomeFogged{
+public class BiomeAshWasteland extends BiomeFogged implements IBiomeMisty{
 
 
     private float fogRangeInterpolateStart = 0.0F;
@@ -39,11 +43,12 @@ public class BiomeAshWasteland extends BiomeFogged{
     private static final IBlockState END_FLOOR = ModBlocks.END_ASH.getDefaultState();
     private Random random;
     public BiomeAshWasteland() {
-        super(properties.setBaseHeight(0.3f).setHeightVariation(0.8f));
+        super(properties.setBaseHeight(0.9f).setHeightVariation(1.2f).setRainDisabled().setTemperature(0.8F));
         this.spawnableMonsterList.clear();
         this.spawnableCreatureList.clear();
         this.spawnableWaterCreatureList.clear();
         this.spawnableCaveCreatureList.clear();
+        this.spawnableCreatureList.add(new SpawnListEntry(EntityEndBug.class, 2, 1, 3));
         this.topBlock = END_FLOOR;
         this.fillerBlock = END_FLOOR;
         random = new Random();
@@ -52,6 +57,7 @@ public class BiomeAshWasteland extends BiomeFogged{
 
 
     }
+
 
 
     @SideOnly(Side.CLIENT)
@@ -123,7 +129,13 @@ public class BiomeAshWasteland extends BiomeFogged{
     }
 
 
+    @Override
+    public float getMistDensity(int var1, int var2, int var3) {
+        return 0.1F;
+    }
 
-
-
+    @Override
+    public int getMistColour(int var1, int var2, int var3) {
+        return 0;
+    }
 }

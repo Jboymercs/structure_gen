@@ -1,7 +1,9 @@
 package com.example.structure.proxy;
 
+import com.example.structure.entity.animation.IAnimatedEntity;
 import com.example.structure.event_handler.ClientRender;
 import com.example.structure.util.handlers.RenderHandler;
+import ibxm.Player;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.player.EntityPlayer;
@@ -47,4 +49,6 @@ public class ClientProxy extends CommonProxy {
             default: return defaultVal;
         }
     }
+
+
 }

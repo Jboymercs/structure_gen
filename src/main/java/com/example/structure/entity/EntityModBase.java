@@ -150,7 +150,7 @@ public abstract class EntityModBase extends EntityCreature {
         this.tasks.addTask(1, new EntityAISwimming(this));
         this.tasks.addTask(8, new EntityAILookIdle(this));
         this.targetTasks.addTask(3, new EntityAIHurtByTarget(this, false));
-        this.targetTasks.addTask(1, new EntityAINearestAttackableTarget<EntityPlayer>(this, EntityPlayer.class, 1, true, false, null));
+
     }
 
     /**

@@ -22,7 +22,7 @@ public class BlockAsh extends BlockBase{
     @SideOnly(Side.CLIENT)
     public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand) {
         if (rand.nextInt(3) == 0) {
-            ParticleManager.spawnColoredSmoke(worldIn, new Vec3d(pos.getX() + rand.nextDouble(), pos.getY() + 1.1f, pos.getZ() + rand.nextDouble()), ModColors.GREY, new Vec3d(0, 0.1, 0));
+            ParticleManager.spawnColoredSmoke(worldIn, new Vec3d(pos.getX() + rand.nextDouble(), pos.getY() + 1.1f, pos.getZ() + rand.nextDouble()), ModColors.RANDOM_GREY, new Vec3d(0, 0.1, 0));
         }
     }
 }

@@ -60,7 +60,7 @@ public class Main
         //Register World Gen
         GameRegistry.registerWorldGenerator(new WorldGenCustomStructure(), 3);
         //Register Fog
-        MinecraftForge.EVENT_BUS.register(new FogHandler());
+        handleClientFog();
         proxy.init();
     }
 
@@ -69,5 +69,9 @@ public class Main
     {
         BiomeRegister.registerBiomes();
         ModSoundHandler.registerSounds();
+    }
+
+    public static void handleClientFog() {
+        MinecraftForge.EVENT_BUS.register(new FogHandler());
     }
 }

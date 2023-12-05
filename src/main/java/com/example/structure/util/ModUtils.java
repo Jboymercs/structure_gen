@@ -368,6 +368,11 @@ public class ModUtils {
             return true;
         }
     }
+
+    public static float clamp(double value, double min, double max) {
+        return (float) Math.max(min, Math.min(max, value));
+    }
+
     public static void lineCallback(Vec3d start, Vec3d end, int points, BiConsumer<Vec3d, Integer> callback) {
         Vec3d dir = end.subtract(start).scale(1 / (float) (points - 1));
         Vec3d pos = start;

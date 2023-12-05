@@ -62,6 +62,8 @@ public class ModEntities {
         registerEntity("fire_ball_red", EntityFireBall.class, ENTITY_START_ID++, 60);
         //Nuclear Explosion
         registerEntity("nuke", EntityNuclearExplosion.class, ENTITY_START_ID++, 60);
+        //End Bug
+        registerEntityWithID("end_bug", EntityEndBug.class, ENTITY_START_ID++, 60, end_mobs);
     }
 
     public static void RegisterEntitySpawns() {

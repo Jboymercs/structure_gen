@@ -74,5 +74,7 @@ public class RenderHandler {
         RenderingRegistry.registerEntityRenderingHandler(EntityFireBall.class, RenderFireball::new);
         //Nuclear Explosion
         RenderingRegistry.registerEntityRenderingHandler(EntityNuclearExplosion.class, RenderNuclearExplosion::new);
+        //End Bug
+        RenderingRegistry.registerEntityRenderingHandler(EntityEndBug.class, RenderEndBug::new);
     }
 }

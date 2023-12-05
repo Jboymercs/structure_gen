@@ -24,6 +24,8 @@ public class ModItems {
 
     public static final Item BOSS_SWORD = new ToolBossSword("sword", "sword_desc", SWORD);
 
+    public static final Item RED_CRYSTAL_ITEM = new ItemBase("red_crystal_item", CreativeTabs.MATERIALS);
+
     public static final Item CRYSTAL_BALL = new CrystalBallItem("crystalball", null);
 
     public static final Item SPIN_SWORD_ITEM = new SpinSwordItem("spinsword", null);

@@ -4,8 +4,10 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.WorldProviderEnd;
 import net.minecraft.world.WorldServer;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.end.DragonFightManager;
 import net.minecraft.world.gen.IChunkGenerator;
+import net.minecraftforge.client.IRenderHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 

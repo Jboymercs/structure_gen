@@ -10,12 +10,27 @@ public class ModColors {
 
     public static final Vec3d GREY = new Vec3d(0.5, 0.5, 0.5);
 
+    public static final Vec3d RANDOM_GREY = randomSetColors();
+
     public static Vec3d variateColor(Vec3d baseColor, float variance) {
         float f = ModRand.getFloat(variance);
 
         return new Vec3d((float) Math.min(Math.max(0, baseColor.x + f), 1),
                 (float) Math.min(Math.max(0, baseColor.y + f), 1),
                 (float) Math.min(Math.max(0, baseColor.z + f), 1));
+    }
+
+    public static Vec3d randomSetColors() {
+        int randomGenerator = ModRand.range(1, 9);
+        if(randomGenerator <= 3) {
+            return new Vec3d(0.3, 0.3, 0.3);
+        }
+        if(randomGenerator > 4 && randomGenerator <= 6) {
+            return new Vec3d(0.2, 0.2, 0.2);
+        }
+        else {
+            return new Vec3d(0.05, 0.05, 0.05);
+        }
     }
 
     public static int toIntegerColor(int r, int g, int b, int a) {

@@ -11,11 +11,13 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
+import net.minecraft.potion.Potion;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.client.event.EntityViewRenderEvent.FogColors;
 import net.minecraftforge.client.event.EntityViewRenderEvent.RenderFogEvent;
 import net.minecraftforge.common.ForgeModContainer;
@@ -30,9 +32,13 @@ public class FogHandler {
     private static boolean MistInit;
     private static float MistFarPlaneDistance;
 
+    public FogHandler(){
+
+    }
+
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
-    public void onGetMistColour(FogColors event) {
+    public void onGetMistColour(EntityViewRenderEvent.FogColors event) {
         if (event.getEntity() instanceof EntityPlayer) {
             EntityPlayer player = (EntityPlayer) event.getEntity();
             World world = player.world;
@@ -58,7 +64,7 @@ public class FogHandler {
 
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
-    public void onRenderMist(RenderFogEvent event) {
+    public void onRenderMist(EntityViewRenderEvent.RenderFogEvent event) {
         Entity entity = event.getEntity();
         World world = entity.world;
         int playerX = MathHelper.floor(entity.posX);
@@ -120,55 +126,54 @@ public class FogHandler {
         }
     }
 
-    private static void renderMist(int mistMode, float farPlaneDistance, float farPlaneDistanceScale) {
-        if (mistMode < 0) {
-            GL11.glFogf(GL11.GL_FOG_START, 0.0F);
-            GL11.glFogf(GL11.GL_FOG_END, farPlaneDistance);
+    private static void renderMist(int MistMode, float farPlaneDistance, float farPlaneDistanceScale) {
+        if (MistMode < 0) {
+            GL11.glFogf(2915, 0.0F);
+            GL11.glFogf(2916, farPlaneDistance);
         } else {
-            GL11.glFogf(GL11.GL_FOG_START, farPlaneDistance * farPlaneDistanceScale);
-            GL11.glFogf(GL11.GL_FOG_END, farPlaneDistance);
+            GL11.glFogf(2915, farPlaneDistance * farPlaneDistanceScale);
+            GL11.glFogf(2916, farPlaneDistance);
         }
     }
 
     private static Vec3d postProcessColor(World world, EntityLivingBase player, double r, double g, double b, double renderPartialTicks) {
         double darkScale = (player.lastTickPosY + (player.posY - player.lastTickPosY) * renderPartialTicks) * world.provider.getVoidFogYFactor();
-        if (player.isPotionActive(MobEffects.BLINDNESS)) {
-            int duration = player.getActivePotionEffect(MobEffects.BLINDNESS).getDuration();
-            darkScale *= (duration < 20) ? (1 - duration / 20f) : 0;
+        int aR;
+        if (player.isPotionActive(Potion.getPotionById(15))) {
+            aR = player.getActivePotionEffect(Potion.getPotionById(15)).getDuration();
+            darkScale *= aR < 20 ? (double)(1.0F - (float)aR / 20.0F) : 0.0;
         }
 
-        if (darkScale < 1) {
-            darkScale = (darkScale < 0) ? 0 : darkScale * darkScale;
-            r *= darkScale;
-            g *= darkScale;
-            b *= darkScale;
+        if (darkScale < 1.0) {
+            darkScale = darkScale < 0.0 ? 0.0 : darkScale * darkScale;
+            r = (float)((double)r * darkScale);
+            g = (float)((double)g * darkScale);
+            b = (float)((double)b * darkScale);
         }
 
-        if (player.isPotionActive(MobEffects.NIGHT_VISION)) {
-            int duration = player.getActivePotionEffect(MobEffects.NIGHT_VISION).getDuration();
-            float brightness = (duration > 200) ? 1 : 0.7f + MathHelper.sin((float) ((duration - renderPartialTicks) * Math.PI * 0.2f)) * 0.3f;
-
-            double scale = 1 / r;
-            scale = Math.min(scale, 1 / g);
-            scale = Math.min(scale, 1 / b);
-
-            r = r * (1 - brightness) + r * scale * brightness;
-            g = g * (1 - brightness) + g * scale * brightness;
-            b = b * (1 - brightness) + b * scale * brightness;
+        double aG;
+        double aB;
+        if (player.isPotionActive(Potion.getPotionById(16))) {
+            aR = player.getActivePotionEffect(Potion.getPotionById(16)).getDuration();
+            aG = aR > 200 ? 1.0F : 0.7F + MathHelper.sin((float)(((double)aR - renderPartialTicks) * Math.PI * 0.20000000298023224)) * 0.3F;
+            aB = 1.0F / r;
+            aB = Math.min(aB, 1.0F / g);
+            aB = Math.min(aB, 1.0F / b);
+            r = r * (1.0F - aG) + r * aB * aG;
+            g = g * (1.0F - aG) + g * aB * aG;
+            b = b * (1.0F - aG) + b * aB * aG;
         }
-
 
         if (Minecraft.getMinecraft().gameSettings.anaglyph) {
-            double aR = (r * 30 + g * 59 + b * 11) / 100;
-            double aG = (r * 30 + g * 70) / 100;
-            double aB = (r * 30 + b * 70) / 100;
-
-            r = aR;
+            float aR1 = (float) ((r * 30.0F + g * 59.0F + b * 11.0F) / 100.0F);
+            aG = (r * 30.0F + g * 70.0F) / 100.0F;
+            aB = (r * 30.0F + b * 70.0F) / 100.0F;
+            r = aR1;
             g = aG;
             b = aB;
         }
 
-        return new Vec3d(r, g, b);
+        return new Vec3d((double)r, (double)g, (double)b);
     }
 
     private static Vec3d getMistBlendColorWater(World world, EntityLivingBase playerEntity, int playerX, int playerY, int playerZ, double renderPartialTicks) {
@@ -243,43 +248,43 @@ public class FogHandler {
         float rainStrength;
         float thunderStrength;
         float weightMixed;
-        for (int celestialAngle = -distance; celestialAngle <= distance; ++celestialAngle) {
-            for (int baseScale = -distance; baseScale <= distance; ++baseScale) {
-                Biome rScale = world.getBiomeForCoordsBody(new BlockPos(playerX + celestialAngle, playerY + celestialAngle, playerZ + baseScale));
+        for(int celestialAngle = -distance; celestialAngle <= distance; ++celestialAngle) {
+            for(int baseScale = -distance; baseScale <= distance; ++baseScale) {
+                Biome rScale = world.getBiomeForCoordsBody(new BlockPos(playerX + celestialAngle, playerZ + baseScale, playerZ));
                 if (rScale instanceof IBiomeMisty) {
-                    IBiomeMisty gScale = (IBiomeMisty) rScale;
+                    IBiomeMisty gScale = (IBiomeMisty)rScale;
                     int bScale = gScale.getMistColour(playerX + celestialAngle, playerY, playerZ + baseScale);
-                    rainStrength = (float) ((bScale & 16711680) >> 16);
-                    thunderStrength = (float) ((bScale & '\uff00') >> 8);
-                    float processedColor = (float) (bScale & 255);
+                    rainStrength = (float)(bScale >> 16);
+                    thunderStrength = (float)(bScale >> 8);
+                    float processedColor = (float)bScale;
                     weightMixed = 1.0F;
                     double weightDefault;
                     if (celestialAngle == -distance) {
-                        weightDefault = 1.0D - (playerEntity.posX - (double) playerX);
-                        rainStrength = (float) ((double) rainStrength * weightDefault);
-                        thunderStrength = (float) ((double) thunderStrength * weightDefault);
-                        processedColor = (float) ((double) processedColor * weightDefault);
-                        weightMixed = (float) ((double) weightMixed * weightDefault);
+                        weightDefault = 1.0 - (playerEntity.posX - (double)playerX);
+                        rainStrength = (float)((double)rainStrength * weightDefault);
+                        thunderStrength = (float)((double)thunderStrength * weightDefault);
+                        processedColor = (float)((double)processedColor * weightDefault);
+                        weightMixed = (float)((double)weightMixed * weightDefault);
                     } else if (celestialAngle == distance) {
-                        weightDefault = playerEntity.posX - (double) playerX;
-                        rainStrength = (float) ((double) rainStrength * weightDefault);
-                        thunderStrength = (float) ((double) thunderStrength * weightDefault);
-                        processedColor = (float) ((double) processedColor * weightDefault);
-                        weightMixed = (float) ((double) weightMixed * weightDefault);
+                        weightDefault = playerEntity.posX - (double)playerX;
+                        rainStrength = (float)((double)rainStrength * weightDefault);
+                        thunderStrength = (float)((double)thunderStrength * weightDefault);
+                        processedColor = (float)((double)processedColor * weightDefault);
+                        weightMixed = (float)((double)weightMixed * weightDefault);
                     }
 
                     if (baseScale == -distance) {
-                        weightDefault = 1.0D - (playerEntity.posZ - (double) playerZ);
-                        rainStrength = (float) ((double) rainStrength * weightDefault);
-                        thunderStrength = (float) ((double) thunderStrength * weightDefault);
-                        processedColor = (float) ((double) processedColor * weightDefault);
-                        weightMixed = (float) ((double) weightMixed * weightDefault);
+                        weightDefault = 1.0 - (playerEntity.posZ - (double)playerZ);
+                        rainStrength = (float)((double)rainStrength * weightDefault);
+                        thunderStrength = (float)((double)thunderStrength * weightDefault);
+                        processedColor = (float)((double)processedColor * weightDefault);
+                        weightMixed = (float)((double)weightMixed * weightDefault);
                     } else if (baseScale == distance) {
-                        weightDefault = playerEntity.posZ - (double) playerZ;
-                        rainStrength = (float) ((double) rainStrength * weightDefault);
-                        thunderStrength = (float) ((double) thunderStrength * weightDefault);
-                        processedColor = (float) ((double) processedColor * weightDefault);
-                        weightMixed = (float) ((double) weightMixed * weightDefault);
+                        weightDefault = playerEntity.posZ - (double)playerZ;
+                        rainStrength = (float)((double)rainStrength * weightDefault);
+                        thunderStrength = (float)((double)thunderStrength * weightDefault);
+                        processedColor = (float)((double)processedColor * weightDefault);
+                        weightMixed = (float)((double)weightMixed * weightDefault);
                     }
 
                     rBiomeMist += rainStrength;
@@ -291,45 +296,43 @@ public class FogHandler {
         }
 
         if (weightBiomeMist == 0.0F) {
-            return new Vec3d((double) defR, (double) defG, (double) defB);
+            return new Vec3d((double)defR, (double)defG, (double)defB);
         } else {
             rBiomeMist /= 255.0F;
             gBiomeMist /= 255.0F;
             bBiomeMist /= 255.0F;
-            float var28 = world.getCelestialAngle((float) renderPartialTicks);
-            float var29 = MathHelper.clamp(MathHelper.cos(var28 * 3.1415927F * 2.0F) * 2.0F + 0.5F, 0.0F, 1.0F);
-            float var30 = var29 * 0.94F + 0.06F;
-            float var31 = var29 * 0.94F + 0.06F;
-            float var32 = var29 * 0.91F + 0.09F;
-            rainStrength = world.getRainStrength((float) renderPartialTicks);
+            float var31 = world.getCelestialAngle((float)renderPartialTicks);
+            float var32 = MathHelper.clamp(MathHelper.cos(var31 * 3.1415927F * 2.0F) * 2.0F + 0.5F, 0.0F, 1.0F);
+            float var33 = var32 * 0.94F + 0.06F;
+            float var34 = var32 * 0.94F + 0.06F;
+            float var28 = var32 * 0.91F + 0.09F;
+            rainStrength = world.getRainStrength((float)renderPartialTicks);
             if (rainStrength > 0.0F) {
-                var30 *= 1.0F - rainStrength * 0.5F;
-                var31 *= 1.0F - rainStrength * 0.5F;
-                var32 *= 1.0F - rainStrength * 0.4F;
+                var33 *= 1.0F - rainStrength * 0.5F;
+                var34 *= 1.0F - rainStrength * 0.5F;
+                var28 *= 1.0F - rainStrength * 0.4F;
             }
 
-            thunderStrength = world.getThunderStrength((float) renderPartialTicks);
+            thunderStrength = world.getThunderStrength((float)renderPartialTicks);
             if (thunderStrength > 0.0F) {
-                var30 *= 1.0F - thunderStrength * 0.5F;
-                var31 *= 1.0F - thunderStrength * 0.5F;
-                var32 *= 1.0F - thunderStrength * 0.5F;
+                var33 *= 1.0F - thunderStrength * 0.5F;
+                var34 *= 1.0F - thunderStrength * 0.5F;
+                var28 *= 1.0F - thunderStrength * 0.5F;
             }
 
-            rBiomeMist *= var30 / weightBiomeMist;
-            gBiomeMist *= var31 / weightBiomeMist;
-            bBiomeMist *= var32 / weightBiomeMist;
-            Vec3d var33 = postProcessColor(world, playerEntity, rBiomeMist, gBiomeMist, bBiomeMist, renderPartialTicks);
-            rBiomeMist = (float) var33.x;
-            gBiomeMist = (float) var33.y;
-            bBiomeMist = (float) var33.z;
-            weightMixed = (float) (distance * 2 * distance * 2);
-
-            float var34 = weightMixed - weightBiomeMist;
-            double rFinal = (double) ((rBiomeMist * weightBiomeMist + defR * var34) / weightMixed);
-            double gFinal = (double) ((gBiomeMist * weightBiomeMist + defG * var34) / weightMixed);
-            double bFinal = (double) ((bBiomeMist * weightBiomeMist + defB * var34) / weightMixed);
-
-            return new Vec3d(rFinal, gFinal, bFinal);
+            rBiomeMist *= var33 / weightBiomeMist;
+            gBiomeMist *= var34 / weightBiomeMist;
+            bBiomeMist *= var28 / weightBiomeMist;
+            Vec3d var29 = postProcessColor(world, playerEntity, rBiomeMist, gBiomeMist, bBiomeMist, renderPartialTicks);
+            rBiomeMist = (float)var29.x;
+            gBiomeMist = (float)var29.y;
+            bBiomeMist = (float)var29.z;
+            weightMixed = (float)(distance * 2 * distance * 2);
+            float var30 = weightMixed - weightBiomeMist;
+            var29.x = (double)((rBiomeMist * weightBiomeMist + defR * var30) / weightMixed);
+            var29.y = (double)((gBiomeMist * weightBiomeMist + defG * var30) / weightMixed);
+            var29.z = (double)((bBiomeMist * weightBiomeMist + defB * var30) / weightMixed);
+            return var29;
         }
     }
 }
