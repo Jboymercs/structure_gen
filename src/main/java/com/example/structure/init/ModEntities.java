@@ -4,7 +4,9 @@ import com.example.structure.Main;
 import com.example.structure.config.ModConfig;
 import com.example.structure.entity.*;
 import com.example.structure.entity.endking.*;
+import com.example.structure.entity.tileentity.TileEntityDeactivate;
 import com.example.structure.entity.tileentity.TileEntityDisappearingSpawner;
+import com.example.structure.entity.tileentity.TileEntityDoorStart;
 import com.example.structure.entity.tileentity.TileEntityUpdater;
 import com.example.structure.util.ModReference;
 import com.example.structure.util.ModUtils;
@@ -50,6 +52,10 @@ public class ModEntities {
         registerEntity("projectile_quake", ProjectileQuake.class, ENTITY_START_ID++, 50);
         //Tile Entity - Utility
         registerTileEntity(TileEntityDisappearingSpawner.class, "disappearing_spawner_entity");
+        //Tile Entity - Utility
+        registerTileEntity(TileEntityDoorStart.class, "door");
+        //Tile Entity - Utility
+        registerTileEntity(TileEntityDeactivate.class, "door_deactivate");
         //Ender Knight
         registerEntityWithID("end_knight", EntityEnderKnight.class, ENTITY_START_ID++, 50, end_mobs);
         //End King
