@@ -13,6 +13,7 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -26,12 +27,15 @@ import java.util.List;
 
 public class BlockDoorDeactivation extends BlockBase implements IBlockUpdater, ITileEntityProvider {
     int counter = 0;
+
+    private Item activationItem;
     protected static final AxisAlignedBB AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 1.0D, 1.0D);
 
-    public BlockDoorDeactivation(String name, Material material) {
+    public BlockDoorDeactivation(String name, Material material, Item item) {
         super(name, material);
         this.setBlockUnbreakable();
         this.hasTileEntity = true;
+        this.activationItem = item;
         this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
         this.setSoundType(SoundType.STONE);
     }
@@ -66,7 +70,7 @@ public class BlockDoorDeactivation extends BlockBase implements IBlockUpdater, I
             List<EntityPlayerSP> list = world.<EntityPlayerSP>getPlayers(EntityPlayerSP.class, new Predicate<EntityPlayerSP>() {
                 @Override
                 public boolean apply(@Nullable EntityPlayerSP player) {
-                    return player.getHeldItemMainhand().isEmpty();
+                    return player.getHeldItem(EnumHand.MAIN_HAND).isEmpty();
                 }
             });
 
@@ -81,6 +85,8 @@ public class BlockDoorDeactivation extends BlockBase implements IBlockUpdater, I
 
     }
 
+
+
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY,
                                     float hitZ) {
@@ -88,6 +94,7 @@ public class BlockDoorDeactivation extends BlockBase implements IBlockUpdater, I
         if (playerIn.getHeldItemMainhand().isEmpty()) {
             playerIn.inventory.add(1, ModItems.RED_CRYSTAL_ITEM.getDefaultInstance());
             worldIn.setBlockState(pos, ModBlocks.END_ASH_DOOR.getDefaultState());
+
         }
         return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
     }

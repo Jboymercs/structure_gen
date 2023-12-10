@@ -23,8 +23,9 @@ public class ModItems {
     public static final Item LAMENTED_EYE = new ItemLamentedEye("lamented", "lamented_eye", CreativeTabs.MISC);
 
     public static final Item BOSS_SWORD = new ToolBossSword("sword", "sword_desc", SWORD);
+    public static  final Item RED_CRYSTAL_ITEM = new ItemRedCrystal("red_crystal_item", "red_crystal",CreativeTabs.MATERIALS);
 
-    public static final Item RED_CRYSTAL_ITEM = new ItemBase("red_crystal_item", CreativeTabs.MATERIALS);
+    public static final Item PURPLE_CRYSTAL_ITEM = new ItemPurpleCrystal("purple_crystal_item", "purple_crystal", CreativeTabs.MATERIALS);
 
     public static final Item CRYSTAL_BALL = new CrystalBallItem("crystalball", null);
 

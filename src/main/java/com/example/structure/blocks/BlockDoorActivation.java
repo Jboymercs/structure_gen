@@ -1,10 +1,13 @@
 package com.example.structure.blocks;
 
 import com.example.structure.entity.EntityGroundCrystal;
+import com.example.structure.entity.tileentity.TileEntityActivate;
 import com.example.structure.entity.tileentity.TileEntityUpdater;
 import com.example.structure.init.ModBlocks;
+import com.example.structure.init.ModItems;
 import com.google.common.base.Predicate;
 import jdk.nashorn.internal.ir.Block;
+import net.minecraft.block.BlockEndPortalFrame;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -16,6 +19,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemEnderEye;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -77,7 +81,7 @@ public class BlockDoorActivation extends BlockBase implements IBlockUpdater, ITi
     @Nullable
     @Override
     public TileEntity createNewTileEntity(World world, int i) {
-        return new TileEntityUpdater();
+        return new TileEntityActivate();
     }
 
     @Override
@@ -88,14 +92,17 @@ public class BlockDoorActivation extends BlockBase implements IBlockUpdater, ITi
 
     }
 
+
+
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY,
                                     float hitZ) {
 
         if (playerIn.getHeldItemMainhand() != null && playerIn.getHeldItemMainhand().getItem() == this.activationItem) {
             playerIn.playSound(SoundEvents.BLOCK_END_PORTAL_FRAME_FILL, 1.0f, 1.0f);
-            playerIn.getHeldItemMainhand().damageItem(1, playerIn);
             worldIn.setBlockState(pos, ModBlocks.END_ASH_DOOR_ACTIVATE.getDefaultState());
+
+
         }
         return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
     }

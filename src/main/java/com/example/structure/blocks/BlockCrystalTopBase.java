@@ -62,7 +62,7 @@ public class BlockCrystalTopBase extends BlockBush implements IHasModel {
 
     @Override
     protected boolean canSustainBush(IBlockState state) {
-        return state.getBlock() == ModBlocks.RED_CRYSTAL;
+        return state.getBlock() == ModBlocks.RED_CRYSTAL || state.getBlock() == ModBlocks.PURPLE_CRYSTAL;
     }
 
     @Override

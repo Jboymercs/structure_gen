@@ -4,10 +4,7 @@ import com.example.structure.Main;
 import com.example.structure.config.ModConfig;
 import com.example.structure.entity.*;
 import com.example.structure.entity.endking.*;
-import com.example.structure.entity.tileentity.TileEntityDeactivate;
-import com.example.structure.entity.tileentity.TileEntityDisappearingSpawner;
-import com.example.structure.entity.tileentity.TileEntityDoorStart;
-import com.example.structure.entity.tileentity.TileEntityUpdater;
+import com.example.structure.entity.tileentity.*;
 import com.example.structure.util.ModReference;
 import com.example.structure.util.ModUtils;
 import net.minecraft.entity.Entity;
@@ -56,6 +53,10 @@ public class ModEntities {
         registerTileEntity(TileEntityDoorStart.class, "door");
         //Tile Entity - Utility
         registerTileEntity(TileEntityDeactivate.class, "door_deactivate");
+        //Tile Entity - Utility
+        registerTileEntity(TileEntityActivate.class, "door_activate");
+        //Tile Entity - Utility
+        registerTileEntity(TileEntityTrap.class, "floor_trap");
         //Ender Knight
         registerEntityWithID("end_knight", EntityEnderKnight.class, ENTITY_START_ID++, 50, end_mobs);
         //End King

@@ -37,6 +37,8 @@ public class EntityRedCrystal extends EntityModBase implements IAnimatable {
         this.setImmovable(true);
         this.setNoAI(true);
         this.setSize(0.9f, 2.0f);
+        this.setNoGravity(true);
+        this.noClip = true;
 
     }
 

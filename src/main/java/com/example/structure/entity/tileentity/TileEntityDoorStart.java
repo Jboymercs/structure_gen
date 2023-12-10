@@ -203,6 +203,8 @@ public class TileEntityDoorStart extends TileEntity implements ITickable {
                     if(!world.getBlockState(modifiedPos).isFullBlock() && !world.getBlockState(modifiedPos).isBlockNormalCube() && !world.getBlockState(modifiedPos).isFullCube() && !world.getBlockState(modifiedPos).isSideSolid(world, modifiedPos, facing.getOpposite())) {
 
                         world.setBlockState(modifiedPos, ModBlocks.END_BARRIER.getDefaultState());
+                    } else {
+                        return;
                     }
                 }
 

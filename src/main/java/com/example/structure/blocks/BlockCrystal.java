@@ -14,10 +14,10 @@ import javax.annotation.Nullable;
 import java.util.Random;
 
 public class BlockCrystal extends BlockBase {
-    private Item itemDropped = ModItems.RED_CRYSTAL_ITEM;
-    public BlockCrystal(String name, Material material) {
+    private Item itemDropped;
+    public BlockCrystal(String name, Material material, Item item) {
         super(name, material);
-
+        this.itemDropped = item;
     }
 
     @Override
