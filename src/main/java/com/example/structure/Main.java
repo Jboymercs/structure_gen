@@ -1,7 +1,9 @@
 package com.example.structure;
 
+import com.example.structure.entity.tileentity.TileEntityAltar;
 import com.example.structure.init.ModEntities;
 import com.example.structure.proxy.CommonProxy;
+import com.example.structure.renderer.RenderAltarTile;
 import com.example.structure.util.ModReference;
 import com.example.structure.util.handlers.BiomeRegister;
 import com.example.structure.util.handlers.FogHandler;
@@ -9,6 +11,7 @@ import com.example.structure.util.handlers.ModSoundHandler;
 import com.example.structure.world.WorldGenCustomStructure;
 import net.minecraft.init.Blocks;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -16,6 +19,8 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import software.bernie.geckolib3.GeckoLib;
@@ -62,6 +67,13 @@ public class Main
         //Register Fog
         handleClientFog();
         proxy.init();
+    }
+
+    @SideOnly(Side.CLIENT)
+    @Mod.EventHandler
+    public void registerRenderers(FMLPreInitializationEvent event) {
+        //Specific for blocks handling geckolib data
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAltar.class, new RenderAltarTile());
     }
 
     @EventHandler

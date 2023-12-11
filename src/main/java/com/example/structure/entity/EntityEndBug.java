@@ -147,7 +147,7 @@ public class EntityEndBug extends EntityModBase implements IAnimatable, IAnimate
                     addEvent(() -> this.setDigging(false), 23);
                     addEvent(() -> this.setImmovable(false), 23);
                     addEvent(() -> {
-                        this.dropItem(ModItems.RED_CRYSTAL_ITEM, 1);
+                        this.dropItem(ModItems.INFUSION_CORE, 1);
                         this.playSound(SoundEvents.ENTITY_ITEMFRAME_REMOVE_ITEM, 1.0f, 1.0f);
                     }, 15);
                     digTimer = 6000 + (int) ModRand.getFloat(1000);

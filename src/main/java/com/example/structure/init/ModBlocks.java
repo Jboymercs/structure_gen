@@ -1,6 +1,7 @@
 package com.example.structure.init;
 
 import com.example.structure.blocks.*;
+import com.example.structure.blocks.atlar.BlockAltar;
 import com.example.structure.blocks.slab.BlockDoubleSlab;
 import com.example.structure.blocks.slab.BlockHalfSlab;
 import com.example.structure.entity.EntityCrystalKnight;
@@ -47,6 +48,8 @@ public class ModBlocks {
     public static final Block LIGHTING_UPDATER = new BlockLightingUpdater("lighting_updater", Material.AIR).setLightLevel(0.1f);
 
     public static final Block RED_LAMP = new BlockLamp("red_lamp", Material.ROCK, STONE_HARDNESS, STONE_RESISTANCE, SoundType.STONE).setLightLevel(1.0f).setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
+
+    public static final Block ALTAR = new BlockAltar("altar", Material.ROCK);
 
 
     public static final Block END_ASH_DOOR_ACTIVATE = new BlockDoorDeactivation("door_on", Material.ROCK, ModItems.RED_CRYSTAL_ITEM).setResistance(OBSIDIAN_RESISTANCE).setHardness(OBSIDIAN_HARDNESS);

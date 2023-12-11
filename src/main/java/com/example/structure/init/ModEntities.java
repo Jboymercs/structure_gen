@@ -57,6 +57,8 @@ public class ModEntities {
         registerTileEntity(TileEntityActivate.class, "door_activate");
         //Tile Entity - Utility
         registerTileEntity(TileEntityTrap.class, "floor_trap");
+        //Altar - Tile Entity
+        registerTileEntity(TileEntityAltar.class, "altar");
         //Ender Knight
         registerEntityWithID("end_knight", EntityEnderKnight.class, ENTITY_START_ID++, 50, end_mobs);
         //End King

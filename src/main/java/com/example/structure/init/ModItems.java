@@ -27,6 +27,12 @@ public class ModItems {
 
     public static final Item PURPLE_CRYSTAL_ITEM = new ItemPurpleCrystal("purple_crystal_item", "purple_crystal", CreativeTabs.MATERIALS);
 
+    public static final Item INFUSED_CRYSTAL = new ItemInfusedCrystal("infused_crystal", "infuse", CreativeTabs.MATERIALS);
+
+    public static final Item INFUSION_CORE = new ItemInfusionCore("infusion_core", "core", CreativeTabs.MATERIALS);
+
+    public static Item ALTAR;
+
     public static final Item CRYSTAL_BALL = new CrystalBallItem("crystalball", null);
 
     public static final Item SPIN_SWORD_ITEM = new SpinSwordItem("spinsword", null);
