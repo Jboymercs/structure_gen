@@ -2,6 +2,7 @@ package com.example.structure.util.handlers;
 
 
 import com.example.structure.blocks.atlar.BlockAltar;
+import com.example.structure.entity.tileentity.TileEntityAltar;
 import com.example.structure.init.ModBlocks;
 import com.example.structure.init.ModItems;
 import com.example.structure.items.CrystalBallItem;
@@ -14,6 +15,7 @@ import com.example.structure.util.IHasModel;
 import com.example.structure.util.ModReference;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -21,6 +23,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -70,6 +73,7 @@ public class RegistryHandler {
         ModelLoader.setCustomModelResourceLocation(ModItems.BOSS_SWORD, 0, new ModelResourceLocation(ModReference.MOD_ID + ":sword", "inventory"));
         ModelLoader.setCustomModelResourceLocation(ModItems.SPIN_SWORD_ITEM, 0, new ModelResourceLocation(ModReference.MOD_ID + ":spinsword", "inventory"));
         ModelLoader.setCustomModelResourceLocation(ModItems.ALTAR, 0, new ModelResourceLocation(ModReference.MOD_ID + ":altar", "inventory"));
+
         ModItems.CRYSTAL_BALL.setTileEntityItemStackRenderer(new RenderCrystalBall());
         ModItems.BOSS_SWORD.setTileEntityItemStackRenderer(new RenderBossSword());
         ModItems.SPIN_SWORD_ITEM.setTileEntityItemStackRenderer(new RenderSpinSword());

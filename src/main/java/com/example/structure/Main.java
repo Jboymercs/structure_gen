@@ -1,5 +1,6 @@
 package com.example.structure;
 
+
 import com.example.structure.entity.tileentity.TileEntityAltar;
 import com.example.structure.init.ModEntities;
 import com.example.structure.proxy.CommonProxy;
@@ -17,6 +18,7 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
@@ -58,7 +60,7 @@ public class Main
         GeckoLib.initialize();
         logger = event.getModLog();
 
-
+        NetworkRegistry.INSTANCE.registerGuiHandler(instance, proxy);
         //Register Entities
         ModEntities.registerEntities();
         ModEntities.RegisterEntitySpawns();

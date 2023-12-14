@@ -45,6 +45,7 @@ item.red_crystal_item.name=Unholy Crystal
 item.purple_crystal_item.name=Pure Crystal
 item.infused_crystal.name=Infused Crystal
 item.infusion_core.name=Infusion Core
+
 ee.desc.dimensional_key=Right click on the key block to awaken the Lamentor
 ee.desc.lamented_eye=Right Click to enable Levitation 3 for a short period of time.
 ee.desc.sword_desc=The Lamentors Sword, a fast and deadly blade. Right click to find out
