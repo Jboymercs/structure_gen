@@ -1,10 +1,13 @@
 package com.example.structure.server.container;
 
 import com.example.structure.entity.tileentity.TileEntityAltar;
+import com.example.structure.server.container.slot.SlotOutput;
 import com.example.structure.server.container.slot.SlotRestriction;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -12,6 +15,21 @@ import net.minecraft.util.math.BlockPos;
 import software.bernie.example.registry.BlockRegistry;
 
 public class ContainterAltar extends Container {
+
+    private static class SlotAltarOutput extends SlotOutput {
+
+        public SlotAltarOutput(IInventory inventory, int index, int xPos, int yPos, Container container) {
+            super(inventory, index, xPos, yPos, container);
+        }
+
+        @Override
+        public ItemStack onTake(EntityPlayer thePlayer, ItemStack stack) {
+            if(thePlayer instanceof EntityPlayerMP) {
+               //Play Some Advancement here if you want too
+            }
+            return super.onTake(thePlayer, stack);
+        }
+    }
     private final EntityPlayer player;
 
     private final TileEntityAltar tile;
@@ -27,6 +45,7 @@ public class ContainterAltar extends Container {
         addSlotToContainer(new SlotRestriction(tile, 2, 116, 70, 1));
 
         //Output
+        addSlotToContainer(new SlotAltarOutput(tile, 3, 80, 70, this));
 
         for (int l = 0; l < 3; ++l)
             for (int j1 = 0; j1 < 9; ++j1)
@@ -45,7 +64,7 @@ public class ContainterAltar extends Container {
             ItemStack stack1 = slot.getStack();
             stack = stack1.copy();
 
-            if (slotIndex > 3) {
+            if (slotIndex > 4) {
                 if (!this.mergeItemStack(stack1, 1, 4, false))
                     return ItemStack.EMPTY;
 

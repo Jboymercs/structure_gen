@@ -57,5 +57,11 @@ public class ParticleManager {
         Minecraft.getMinecraft().effectRenderer.addEffect(particle);
     }
 
+    public static void spawnSwirl2(World worldIn, Vec3d pos, Vec3d baseColor, Vec3d motion) {
+        Particle particle = new ParticleFlame.Factory().createParticle(0, worldIn, pos.x, pos.y, pos.z, motion.x, motion.y, motion.z);
+
+        spawnParticleWithColor(particle, baseColor);
+    }
+
 
 }

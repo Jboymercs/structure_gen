@@ -1,6 +1,8 @@
 package com.example.structure.world.Biome;
 
 import com.example.structure.init.ModBlocks;
+import com.example.structure.util.MapGenModStructure;
+import com.example.structure.world.Biome.altardungeon.MapGenAltarDungeon;
 import com.example.structure.world.Biome.decorator.WorldGenLongVein;
 import net.minecraft.block.BlockChorusFlower;
 import net.minecraft.block.BlockFalling;
@@ -24,6 +26,7 @@ import net.minecraft.world.gen.NoiseGeneratorSimplex;
 import net.minecraft.world.gen.feature.WorldGenEndGateway;
 import net.minecraft.world.gen.feature.WorldGenEndIsland;
 import net.minecraft.world.gen.structure.MapGenEndCity;
+import net.minecraft.world.gen.structure.MapGenStructure;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -34,6 +37,8 @@ public class WorldChunkGeneratorEE extends ChunkGeneratorEnd {
     protected static final IBlockState END_STONE = Blocks.END_STONE.getDefaultState();
     protected static final IBlockState ASH_WASTE = ModBlocks.END_ASH.getDefaultState();
     protected static final IBlockState AIR = Blocks.AIR.getDefaultState();
+    public static final int ALTAR_STRUCTURE_SPACING = 10;
+    public static final int ALTAR_STRUCTURE_NUMBER = 0;
     private NoiseGeneratorOctaves lperlinNoise1;
     private NoiseGeneratorOctaves lperlinNoise2;
     private NoiseGeneratorOctaves perlinNoise1;
@@ -47,6 +52,8 @@ public class WorldChunkGeneratorEE extends ChunkGeneratorEnd {
     private final boolean mapFeaturesEnabled;
     private final BlockPos spawnPoint;
     private MapGenEndCity endCityGen = new MapGenEndCity(this);
+
+    public MapGenStructure[] structures = {new MapGenAltarDungeon(ALTAR_STRUCTURE_SPACING, ALTAR_STRUCTURE_NUMBER, 1, this)};
     private NoiseGeneratorSimplex islandNoise;
     private double[] buffer;
     /** The biomes that are used to generate the chunk */
@@ -79,6 +86,7 @@ public class WorldChunkGeneratorEE extends ChunkGeneratorEnd {
         this.noiseGen6 = ctx.getScale();
         this.islandNoise = ctx.getIsland();
         this.endCityGen = (MapGenEndCity) net.minecraftforge.event.terraingen.TerrainGen.getModdedMapGen(this.endCityGen, net.minecraftforge.event.terraingen.InitMapGenEvent.EventType.END_CITY);
+
     }
 
     public void setBlocksInChunk(int x, int z, ChunkPrimer primer)
@@ -216,7 +224,11 @@ public class WorldChunkGeneratorEE extends ChunkGeneratorEnd {
         if (this.mapFeaturesEnabled)
         {
             this.endCityGen.generate(this.world, x, z, chunkprimer);
+            for (MapGenStructure s : this.structures) {
+                s.generate(this.world, x, z, chunkprimer);
+            }
         }
+
 
         Chunk chunk = new Chunk(this.world, chunkprimer, x, z);
         byte[] abyte = chunk.getBiomeArray();
@@ -371,6 +383,9 @@ public class WorldChunkGeneratorEE extends ChunkGeneratorEnd {
         gen.generate(this.world, rand, pos.add(x1, y, z1));
     }
 
+    //Our private list for generating structures
+
+
 
     public void populate(int x, int z)
     {
@@ -465,21 +480,45 @@ public class WorldChunkGeneratorEE extends ChunkGeneratorEnd {
     @Nullable
     public BlockPos getNearestStructurePos(World worldIn, String structureName, BlockPos position, boolean findUnexplored)
     {
+
+        if (!this.mapFeaturesEnabled) {
+            return null;
+        }
+
+        for (MapGenStructure s : this.structures) {
+            if (s.getStructureName().equals(structureName)) {
+                return s.getNearestStructurePos(worldIn, position, findUnexplored);
+            }
+        }
+
         return "EndCity".equals(structureName) && this.endCityGen != null ? this.endCityGen.getNearestStructurePos(worldIn, position, findUnexplored) : null;
     }
 
     public boolean isInsideStructure(World worldIn, String structureName, BlockPos pos)
     {
+        if (!this.mapFeaturesEnabled) {
+            return false;
+        }
+
+        for (MapGenStructure s : this.structures) {
+            if (s.getStructureName().equals(structureName)) {
+                return s.isInsideStructure(pos);
+            }
+        }
         return "EndCity".equals(structureName) && this.endCityGen != null ? this.endCityGen.isInsideStructure(pos) : false;
     }
 
 
     /**
-     * Recreates data about structures intersecting given chunk (used for example by getPossibleCreatures), without
-     * placing any blocks. When called for the first time before any chunk is generated - also initializes the internal
-     * state needed by getPossibleCreatures.
+     * Recreates data about structures intersecting given chunk (used for example by
+     * getPossibleCreatures), without placing any blocks. When called for the first
+     * time before any chunk is generated - also initializes the internal state
+     * needed by getPossibleCreatures.
      */
-    public void recreateStructures(Chunk chunkIn, int x, int z)
-    {
+    @Override
+    public void recreateStructures(Chunk chunkIn, int x, int z) {
+        for (MapGenStructure s : this.structures) {
+            s.generate(this.world, x, z, (ChunkPrimer) null);
+        }
     }
 }

@@ -1,7 +1,10 @@
 package com.example.structure.entity.tileentity;
 
+import com.example.structure.blocks.atlar.BlockAltar;
+import com.example.structure.entity.EntityModBase;
 import com.example.structure.entity.animation.IAnimatedEntity;
 import com.example.structure.init.ModItems;
+import com.example.structure.util.ModUtils;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.entity.item.EntityItemFrame;
@@ -30,10 +33,11 @@ import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 import javax.annotation.Nullable;
+import java.util.PriorityQueue;
 
 public class TileEntityAltar extends TileEntity implements IAnimatable, ITickable, IInventory {
 
-    public NonNullList<ItemStack> inventory = NonNullList.<ItemStack>withSize(3, ItemStack.EMPTY);
+    public NonNullList<ItemStack> inventory = NonNullList.<ItemStack>withSize(4, ItemStack.EMPTY);
     private final AnimationFactory factory = new AnimationFactory(this);
 
 
@@ -41,14 +45,53 @@ public class TileEntityAltar extends TileEntity implements IAnimatable, ITickabl
         super();
     }
 
-    public boolean hasRedCrystal = false;
-    public boolean hasPurpleCrystal = false;
-    public boolean hasInfusionCore = false;
+   public boolean beginRitual = false;
+    public boolean isDoingRitual = false;
+    public int animationPlay = 200;
+
 
 
     @Override
     public void update() {
+        if(!world.isRemote) {
+            //Infused Crystal Recipe
+            if (getStackInSlot(0).getItem() == ModItems.RED_CRYSTAL_ITEM && getStackInSlot(1).getItem() == ModItems.INFUSION_CORE && getStackInSlot(2).getItem() == ModItems.PURPLE_CRYSTAL_ITEM && !beginRitual) {
+                this.setBeginRitualInfusedCrystal();
+            } else if (this.beginRitual) {
+                animationPlay--;
+            }
 
+            if(animationPlay == 20 && isDoingRitual) {
+                setInventorySlotContents(0, ItemStack.EMPTY);
+                setInventorySlotContents(1, ItemStack.EMPTY);
+                setInventorySlotContents(2, ItemStack.EMPTY);
+                this.update();
+
+            } else if (animationPlay == 10 && isDoingRitual) {
+
+            }
+            if(animationPlay == 0) {
+                ItemStack stackInfused = new ItemStack(ModItems.INFUSED_CRYSTAL, 1);
+                infusedCrystalSummonItem(stackInfused);
+                this.update();
+                beginRitual = false;
+                isDoingRitual = false;
+                animationPlay = 220;
+
+            }
+
+
+        }
+    }
+
+    public void setBeginRitualInfusedCrystal() {
+        beginRitual = true;
+        isDoingRitual = true;
+
+    }
+
+    public void infusedCrystalSummonItem (ItemStack itemStack) {
+        this.setInventorySlotContents(3 ,itemStack);
     }
 
     public NonNullList<ItemStack> getItems() {
@@ -209,9 +252,12 @@ public class TileEntityAltar extends TileEntity implements IAnimatable, ITickabl
     }
 
     private <E extends TileEntity & IAnimatable> PlayState predicate(AnimationEvent<E> event) {
-        event.getController().transitionLengthTicks = 0.0;
-        event.getController().setAnimation((new AnimationBuilder()).addAnimation("infuse", false));
-        return PlayState.CONTINUE;
+        if(this.world.getBlockState(this.pos) == this.world.getBlockState(this.pos).withProperty(BlockAltar.ACTIVE, true)) {
+            event.getController().setAnimation((new AnimationBuilder()).addAnimation("infuse", false));
+            return PlayState.CONTINUE;
+        }
+        event.getController().markNeedsReload();
+        return PlayState.STOP;
     }
 
     @Override
@@ -221,10 +267,8 @@ public class TileEntityAltar extends TileEntity implements IAnimatable, ITickabl
 
     @Override
     public AnimationFactory getFactory() {
-        return factory;
+        return this.factory;
     }
-
-
 
 
 }

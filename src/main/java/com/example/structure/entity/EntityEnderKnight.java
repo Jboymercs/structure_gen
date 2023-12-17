@@ -2,6 +2,8 @@ package com.example.structure.entity;
 
 import com.example.structure.config.ModConfig;
 import com.example.structure.entity.ai.EntityAITimedAttack;
+import com.example.structure.entity.ai.EntityAITimedKnight;
+import com.example.structure.entity.knighthouse.EntityKnightBase;
 import com.example.structure.entity.model.ModelEnderKnight;
 import com.example.structure.entity.util.IAttack;
 import com.example.structure.util.ModColors;
@@ -40,29 +42,37 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
-public class EntityEnderKnight extends EntityModBase implements IAnimatable, IAttack {
+public class EntityEnderKnight extends EntityKnightBase implements IAnimatable, IAttack {
 
     private Vec3d chargeDir;
 
+    public boolean isRandomGetAway = false;
     private final String ANIM_IDLE = "idle";
 
-    private final String ANIM_WALKING_ARMS = "walkingArms";
-    private final String ANIM_WALKING_LEGS = "walkingLegs";
-    private final String ANIM_RUNNING_ARMS = "runningArms";
-    private final String ANIM_RUNNING_LEGS = "runningLegs";
-    private final String ANIM_STRIKE_ONE = "strike1";
+    private final String ANIM_WALKING_ARMS = "walk_upper";
+    private final String ANIM_WALKING_LEGS = "walk_lower";
+
+    private final String ANIM_STRIKE_ONE = "swing_upper";
+    private final String ANIM_STRIKE_TWO = "swing_upper_two";
+
+    private final String ANIM_STRIKE_THREE = "swing_upper_three";
     private final String ANIM_DASH = "dash";
     private static final DataParameter<Boolean> FIGHT_MODE = EntityDataManager.createKey(EntityEnderKnight.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Boolean> STRIKE_ATTACK = EntityDataManager.createKey(EntityEnderKnight.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Boolean> RUNNING_CHECK = EntityDataManager.createKey(EntityEnderKnight.class, DataSerializers.BOOLEAN);
      private static final DataParameter<Boolean> DASH_ATTACK = EntityDataManager.createKey(EntityEnderKnight.class, DataSerializers.BOOLEAN);
 
+     private static final DataParameter<Boolean> SECOND_STRIKE = EntityDataManager.createKey(EntityEnderKnight.class, DataSerializers.BOOLEAN);
+
+     private static final DataParameter<Boolean> THIRD_STRIKE = EntityDataManager.createKey(EntityEnderKnight.class, DataSerializers.BOOLEAN);
+
     private AnimationFactory factory = new AnimationFactory(this);
 
     public EntityEnderKnight(World worldIn) {
         super(worldIn);
-        this.setSize(0.8f, 2.3f);
+        this.setSize(0.8f, 2.0f);
     }
+
     @Override
     public void entityInit() {
         super.entityInit();
@@ -70,6 +80,8 @@ public class EntityEnderKnight extends EntityModBase implements IAnimatable, IAt
         this.dataManager.register(STRIKE_ATTACK, Boolean.valueOf(false));
         this.dataManager.register(RUNNING_CHECK, Boolean.valueOf(false));
         this.dataManager.register(DASH_ATTACK, Boolean.valueOf(false));
+        this.dataManager.register(SECOND_STRIKE, Boolean.valueOf(false));
+        this.dataManager.register(THIRD_STRIKE, Boolean.valueOf(false));
     }
     public void setFightMode(boolean value) {this.dataManager.set(FIGHT_MODE, Boolean.valueOf(value));}
     public boolean isFightMode() {return this.dataManager.get(FIGHT_MODE);}
@@ -81,6 +93,12 @@ public class EntityEnderKnight extends EntityModBase implements IAnimatable, IAt
     public boolean isRunningCheck(){return this.dataManager.get(RUNNING_CHECK);}
     public void setDashAttack(boolean value) {this.dataManager.set(DASH_ATTACK, Boolean.valueOf(value));}
     public boolean isDashAttack() {return this.dataManager.get(DASH_ATTACK);}
+
+    public void setSecondStrike(boolean value) {this.dataManager.set(SECOND_STRIKE, Boolean.valueOf(value));}
+    public boolean isSecondStrike() {return this.dataManager.get(SECOND_STRIKE);}
+
+    public void setThirdStrike(boolean value) {this.dataManager.set(THIRD_STRIKE, Boolean.valueOf(value));}
+    public boolean isThirdStrike() {return this.dataManager.get(THIRD_STRIKE);}
 
     @Override
     public void registerControllers(AnimationData animationData) {
@@ -101,34 +119,39 @@ public class EntityEnderKnight extends EntityModBase implements IAnimatable, IAt
             double distSq = this.getDistanceSq(target.posX, target.getEntityBoundingBox().minY, target.posZ);
             double distance = Math.sqrt(distSq);
 
-            if(distance > 3 && distance < 10 && !this.isFightMode() && dashMeter > 140) {
+            if(distance > 3 && distance < 10 && !this.isFightMode() && dashMeter > 140 && !this.isRandomGetAway) {
                 dashAttack.accept(target);
                 dashMeter = 0;
             }
             if(!this.isDashAttack()) {
                 dashMeter++;
             }
+
+            if(this.isRandomGetAway) {
+                double d0 = (this.posX - target.posX) * 0.035;
+                double d1 = (this.posY - target.posY) * 0.01;
+                double d2 = (this.posZ - target.posZ) * 0.035;
+                this.addVelocity(d0, d1, d2);
+            }
+
+
         }
     }
 
     @Override
     public void applyEntityAttributes() {
         super.applyEntityAttributes();
-        this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(10D);
-        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.2D);
-        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(20D);
+        this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(20D);
+        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.24D);
+        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(35D);
         this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(14.0D);
+        this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(1.0D);
     }
 
     @Override
     public void initEntityAI() {
         super.initEntityAI();
-        this.tasks.addTask(4, new EntityAITimedAttack<>(this, 1.5, 40, 3F, 0.3f));
-        this.tasks.addTask(6, new EntityAIWanderAvoidWater(this, 1.0D));
-        this.tasks.addTask(7, new EntityAILookIdle(this));
-        this.targetTasks.addTask(1, new EntityAINearestAttackableTarget<EntityPlayer>(this, EntityPlayer.class, 1, true, false, null));
-        this.targetTasks.addTask(2, new EntityAIHurtByTarget(this, false));
-
+        this.tasks.addTask(4, new EntityAITimedKnight<>(this, 1.5, 10, 3F, 0.2f));
     }
     private <E extends IAnimatable>PlayState predicateArms(AnimationEvent<E> event) {
 
@@ -149,7 +172,7 @@ public class EntityEnderKnight extends EntityModBase implements IAnimatable, IAt
 
     private<E extends IAnimatable> PlayState predicateIdle(AnimationEvent<E> event) {
 
-         if(event.getLimbSwingAmount() > -0.02F && event.getLimbSwingAmount() < 0.02F) {
+         if(event.getLimbSwingAmount() > -0.09F && event.getLimbSwingAmount() < 0.09F) {
             event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_IDLE, true));
             return PlayState.CONTINUE;
         }
@@ -161,8 +184,16 @@ public class EntityEnderKnight extends EntityModBase implements IAnimatable, IAt
             event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_STRIKE_ONE, false));
             return PlayState.CONTINUE;
         }
+        if(this.isSecondStrike()) {
+            event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_STRIKE_TWO, false));
+            return PlayState.CONTINUE;
+        }
         if(this.isDashAttack()) {
             event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_DASH, false));
+            return PlayState.CONTINUE;
+        }
+        if(this.isThirdStrike()) {
+            event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_STRIKE_THREE, false));
             return PlayState.CONTINUE;
         }
         event.getController().markNeedsReload();
@@ -203,19 +234,47 @@ public class EntityEnderKnight extends EntityModBase implements IAnimatable, IAt
     public int startAttack(EntityLivingBase target, float distanceSq, boolean strafingBackwards) {
         double distance = Math.sqrt(distanceSq);
         if(!this.isFightMode()) {
-            List<Consumer<EntityLivingBase>> attacks = new ArrayList<>(Arrays.asList(regularStrike));
+            List<Consumer<EntityLivingBase>> attacks = new ArrayList<>(Arrays.asList(regularStrike, strikeTwo, strikeThree, randomGetBack));
             double[] weights = {
-                    (distance < 4) ? 1/distance : 0 // Ground Slam
+                    (distance < 4 && prevAttack != regularStrike) ? 1/distance : 0, // Main Strike
+                    (distance < 4 && prevAttack != strikeTwo) ? 1/distance : 0, //Alt STrike
+                    (distance < 4 && prevAttack != strikeThree) ? 1/distance : 0, //Alt STrike 2
+                    (distance < 4 && prevAttack != randomGetBack) ? 1/distance : 0
             };
             prevAttack = ModRand.choice(attacks, rand, weights).next();
 
             prevAttack.accept(target);
         }
-        return 40;
+        return 10;
     }
-    private final Consumer<EntityLivingBase> regularStrike = (target) -> {
+
+    private final Consumer<EntityLivingBase> randomGetBack = (target) -> {
+      this.setFightMode(true);
+      this.isRandomGetAway = true;
+      addEvent(()-> {
+          this.setFightMode(false);
+          this.isRandomGetAway = false;
+      }, 25);
+    };
+    private final Consumer<EntityLivingBase> strikeThree = (target) -> {
         this.setFightMode(true);
-        this.setStrikeAttack(true);
+    this.setThirdStrike(true);
+        addEvent(()-> {
+            this.playSound(SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, 1.0f, 1.0f / (rand.nextFloat() * 0.4F + 0.4f));
+            Vec3d offset = this.getPositionVector().add(ModUtils.getRelativeOffset(this, new Vec3d(1.5,1.3,0)));
+            DamageSource source = ModDamageSource.builder().type(ModDamageSource.MOB).directEntity(this).disablesShields().build();
+            float damage = 5.0f;
+            ModUtils.handleAreaImpact(1.0f, (e)-> damage, this, offset, source, 0.4f, 0, false);
+        }, 12);
+
+        addEvent(()-> {
+            this.setFightMode(false);
+            this.setThirdStrike(false);
+        }, 21);
+    };
+    private final Consumer<EntityLivingBase> strikeTwo = (target) -> {
+    this.setFightMode(true);
+    this.setSecondStrike(true);
         addEvent(()-> {
             this.playSound(SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, 1.0f, 1.0f / (rand.nextFloat() * 0.4F + 0.4f));
             Vec3d offset = this.getPositionVector().add(ModUtils.getRelativeOffset(this, new Vec3d(1.0,1.3,0)));
@@ -226,8 +285,25 @@ public class EntityEnderKnight extends EntityModBase implements IAnimatable, IAt
 
         addEvent(()-> {
             this.setFightMode(false);
+            this.setSecondStrike(false);
+        }, 21);
+    };
+
+    private final Consumer<EntityLivingBase> regularStrike = (target) -> {
+        this.setFightMode(true);
+        this.setStrikeAttack(true);
+        addEvent(()-> {
+            this.playSound(SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, 1.0f, 1.0f / (rand.nextFloat() * 0.4F + 0.4f));
+            Vec3d offset = this.getPositionVector().add(ModUtils.getRelativeOffset(this, new Vec3d(1.0,1.3,0)));
+            DamageSource source = ModDamageSource.builder().type(ModDamageSource.MOB).directEntity(this).build();
+            float damage = 7.0f;
+            ModUtils.handleAreaImpact(1.0f, (e)-> damage, this, offset, source, 0.4f, 0, false);
+        }, 12);
+
+        addEvent(()-> {
+            this.setFightMode(false);
             this.setStrikeAttack(false);
-        }, 15);
+        }, 21);
     };
 
     protected boolean dashParticles = false;
@@ -238,7 +314,7 @@ public class EntityEnderKnight extends EntityModBase implements IAnimatable, IAt
 
       addEvent(()-> {
           //Used for the Initial Position this will dash too
-          Vec3d targetedPos = getAttackTarget().getPositionVector().add(ModUtils.yVec(1));
+          Vec3d targetedPos = target.getPositionVector().add(ModUtils.yVec(1));
           Vec3d startPos = this.getPositionVector().add(ModUtils.yVec(getEyeHeight()));
           Vec3d dir = targetedPos.subtract(startPos).normalize();
           AtomicReference<Vec3d> teleportPos = new AtomicReference<>(targetedPos);
@@ -260,7 +336,7 @@ public class EntityEnderKnight extends EntityModBase implements IAnimatable, IAt
                 this.setPositionAndUpdate(chargeDir.x, chargeDir.y, chargeDir.z);
 
             });
-        }, 5);
+        }, 10);
 
         addEvent(()-> {
             for(int i = 0; i < 10; i += 2) {
@@ -269,18 +345,18 @@ public class EntityEnderKnight extends EntityModBase implements IAnimatable, IAt
                     DamageSource source = ModDamageSource.builder().type(ModDamageSource.MOB).directEntity(this).disablesShields().build();
                     float damage = 4.0f;
                     ModUtils.handleAreaImpact(2.0f, (e)-> damage, this, offset, source, 0.6f, 0, false);
-                }, 5);
+                }, i);
             }
         }, 5);
-      }, 10);
+      }, 0);
 
-    addEvent(()-> dashParticles = false, 25);
+    addEvent(()-> dashParticles = false, 22);
 
       addEvent(()-> {
 
           this.setFightMode(false);
           this.setDashAttack(false);
-      }, 40);
+      }, 22);
     };
 
 }

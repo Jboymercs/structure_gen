@@ -1,6 +1,7 @@
 package com.example.structure.entity.endking;
 
 import com.example.structure.entity.Projectile;
+import com.example.structure.entity.knighthouse.EntityKnightBase;
 import com.example.structure.init.ModItems;
 import com.example.structure.util.ModColors;
 import com.example.structure.util.ModDamageSource;
@@ -110,6 +111,8 @@ public class ProjectileSpinSword extends Projectile {
 
     @Override
     protected void onHit(RayTraceResult result) {
+
+
         DamageSource source = ModDamageSource.builder()
                 .indirectEntity(shootingEntity)
                 .directEntity(this)

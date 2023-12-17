@@ -7,6 +7,8 @@ import com.example.structure.init.ModItems;
 import com.example.structure.proxy.CommonProxy;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.PropertyBool;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -22,11 +24,26 @@ import javax.annotation.Nullable;
 import javax.sound.midi.SysexMessage;
 
 public class BlockAltar extends BlockBase implements ITileEntityProvider {
-
+    public static final PropertyBool ACTIVE = PropertyBool.create("active");
     public BlockAltar(String name, Material material) {
         super(name, material);
         this.setBlockUnbreakable();
+        setDefaultState(this.blockState.getBaseState().withProperty(ACTIVE, false));
+    }
 
+    @Override
+    protected BlockStateContainer createBlockState() {
+        return new BlockStateContainer(this, ACTIVE);
+    }
+
+    @Override
+    public IBlockState getStateFromMeta(int meta) {
+        return getDefaultState().withProperty(ACTIVE, meta != 0);
+    }
+
+    @Override
+    public int getMetaFromState(IBlockState state) {
+        return state.getValue(ACTIVE) ? 1 : 0;
     }
 
     private TileEntityAltar getTEA(World world, BlockPos pos) {

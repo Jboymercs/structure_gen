@@ -9,6 +9,7 @@ import com.example.structure.util.ModReference;
 import com.example.structure.util.handlers.BiomeRegister;
 import com.example.structure.util.handlers.FogHandler;
 import com.example.structure.util.handlers.ModSoundHandler;
+import com.example.structure.util.handlers.StructureHandler;
 import com.example.structure.world.WorldGenCustomStructure;
 import net.minecraft.init.Blocks;
 import net.minecraftforge.common.MinecraftForge;
@@ -83,6 +84,7 @@ public class Main
     {
         BiomeRegister.registerBiomes();
         ModSoundHandler.registerSounds();
+        StructureHandler.handleStructureRegistries();
     }
 
     public static void handleClientFog() {

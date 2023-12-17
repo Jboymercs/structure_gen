@@ -1,7 +1,9 @@
 package com.example.structure.util;
 
 import com.example.structure.config.ModConfig;
+import com.example.structure.entity.EntityEnderKnight;
 import com.example.structure.entity.Projectile;
+import com.example.structure.entity.knighthouse.EntityEnderMage;
 import com.example.structure.entity.tileentity.MobSpawnerLogic;
 import com.google.common.collect.Sets;
 import net.minecraft.block.Block;
@@ -24,6 +26,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.storage.AnvilChunkLoader;
+import net.minecraft.world.gen.structure.StructureBoundingBox;
 import net.minecraftforge.event.ForgeEventFactory;
 
 import javax.annotation.Nullable;
@@ -32,6 +35,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class ModUtils {
     //VERY IMPORTANT
@@ -601,4 +605,64 @@ public class ModUtils {
     }
 
 
+    public static BlockPos posToChunk(BlockPos pos) {
+        return new BlockPos(pos.getX() / 16f, pos.getY(), pos.getZ() / 16f);
+    }
+
+    /**
+     * Determines if the chunk is already generated, in which case new structures cannot be placed
+     *
+     * @param box
+     * @param world
+     * @return
+     */
+    public static boolean chunksGenerated(StructureBoundingBox box, World world) {
+        return world.isChunkGeneratedAt(box.minX >> 4, box.minZ >> 4) || world.isChunkGeneratedAt(box.minX >> 4, box.maxZ >> 4)
+                || world.isChunkGeneratedAt(box.maxX >> 4, box.minZ >> 4) || world.isChunkGeneratedAt(box.maxX >> 4, box.maxZ >> 4);
+    }
+
+
+    public static Vec3d findEntityGroupCenter(Entity mob, double d) {
+        Vec3d groupCenter = mob.getPositionVector();
+        float numMobs = 1;
+        for (EntityLivingBase entity : ModUtils.getEntitiesInBox(mob, new AxisAlignedBB(mob.getPosition()).grow(d))) {
+            if (entity instanceof EntityEnderKnight && !(entity instanceof EntityEnderMage)) {
+                groupCenter = groupCenter.add(entity.getPositionVector());
+                numMobs += 1;
+            }
+        }
+
+        return groupCenter.scale(1 / numMobs);
+    }
+
+    public static List<EntityLivingBase> getEntitiesInBox(Entity entity, AxisAlignedBB bb) {
+        List<Entity> list = entity.world.getEntitiesWithinAABBExcludingEntity(entity, bb);
+
+        Predicate<Entity> isInstance = i -> i instanceof EntityLivingBase;
+        Function<Entity, EntityLivingBase> cast = i -> (EntityLivingBase) i;
+
+        return list.stream().filter(isInstance).map(cast).collect(Collectors.toList());
+    }
+
+    public static boolean canBlockDamageSource(DamageSource damageSourceIn, EntityLivingBase entity)
+    {
+        if (!damageSourceIn.isUnblockable() && entity.isActiveItemStackBlocking())
+        {
+            Vec3d vec3d = damageSourceIn.getDamageLocation();
+
+            if (vec3d != null)
+            {
+                Vec3d vec3d1 = entity.getLook(1.0F);
+                Vec3d vec3d2 = vec3d.subtractReverse(new Vec3d(entity.posX, entity.posY, entity.posZ)).normalize();
+                vec3d2 = new Vec3d(vec3d2.x, 0.0D, vec3d2.z);
+
+                if (vec3d2.dotProduct(vec3d1) < 0.0D)
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 }

@@ -3,6 +3,8 @@ package com.example.structure.entity;
 import com.example.structure.config.ModConfig;
 import com.example.structure.entity.ai.ActionGolemQuake;
 import com.example.structure.entity.ai.EntityAITimedAttack;
+import com.example.structure.entity.knighthouse.EntityEnderMage;
+import com.example.structure.entity.knighthouse.EntityEnderShield;
 import com.example.structure.entity.util.IAttack;
 import com.example.structure.entity.util.IPitch;
 import com.example.structure.util.ModRand;
@@ -148,11 +150,14 @@ public abstract class EntityAbstractBuffker extends EntityModBase implements IEn
         this.tasks.addTask(6, new EntityAIWanderAvoidWater(this, 1.0D));
         this.tasks.addTask(7, new EntityAILookIdle(this));
         this.targetTasks.addTask(1, new EntityAINearestAttackableTarget<EntityPlayer>(this, EntityPlayer.class, 1, true, false, null));
-        this.targetTasks.addTask(2, new EntityAINearestAttackableTarget<EntityCrystalKnight>(this, EntityCrystalKnight.class, 1, true, false, null));
-        this.targetTasks.addTask(3, new EntityAIHurtByTarget(this, false));
+        this.targetTasks.addTask(2, new EntityAINearestAttackableTarget<EntityEnderKnight>(this, EntityEnderKnight.class, 1, true, false, null));
+        this.targetTasks.addTask(3, new EntityAINearestAttackableTarget<EntityEnderMage>(this, EntityEnderMage.class, 1, true, false, null));
+        this.targetTasks.addTask(4, new EntityAINearestAttackableTarget<EntityEnderShield>(this, EntityEnderShield.class, 1, true, false, null));
+        this.targetTasks.addTask(5, new EntityAIHurtByTarget(this, false));
     }
     public static int constructor_cooldown_one = ModConfig.constructor_speed_one * 20;
     public static int constructor_cooldown_two = ModConfig.constructor_speed_two * 20;
+
 
 
 

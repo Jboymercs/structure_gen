@@ -1,5 +1,6 @@
 package com.example.structure.entity;
 
+import com.example.structure.blocks.atlar.BlockAltar;
 import com.example.structure.entity.ai.MobGroundNavigate;
 import com.example.structure.util.ModUtils;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -140,6 +141,7 @@ public abstract class EntityModBase extends EntityCreature {
     protected void entityInit() {
         super.entityInit();
         this.dataManager.register(IMMOVABLE, Boolean.valueOf(false));
+
     }
 
     public void doRender(RenderManager renderManager, double x, double y, double z, float entityYaw, float partialTicks) {
