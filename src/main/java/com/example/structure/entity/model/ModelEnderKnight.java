@@ -2,6 +2,7 @@ package com.example.structure.entity.model;
 
 import com.example.structure.entity.EntityBuffker;
 import com.example.structure.entity.EntityEnderKnight;
+import com.example.structure.util.ModRand;
 import com.example.structure.util.ModReference;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
@@ -20,6 +21,12 @@ public class ModelEnderKnight extends AnimatedGeoModel<EntityEnderKnight> {
 
     @Override
     public ResourceLocation getTextureLocation(EntityEnderKnight entityEnderKnight) {
+        if(entityEnderKnight.getSkin() == 1) {
+            return new ResourceLocation(ModReference.MOD_ID, "textures/entity/endknight_2.png");
+        }
+        else if(entityEnderKnight.getSkin() == 2) {
+            return new ResourceLocation(ModReference.MOD_ID, "textures/entity/endknight_3.png");
+        }
         return new ResourceLocation(ModReference.MOD_ID, "textures/entity/endknight.png");
     }
 

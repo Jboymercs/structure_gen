@@ -53,7 +53,7 @@ public class EntityEnderMage extends EntityKnightBase implements IAnimatable, IA
     private final String ANIM_WALKING_LEGS = "walk_lower";
     private final String ANIM_CAST_HEAL = "heal";
     private final String ANIM_CAST_ATTACK = "attack";
-    private static final DataParameter<Boolean> FIGHT_MODE = EntityDataManager.createKey(EntityEnderMage.class, DataSerializers.BOOLEAN);
+
     private static final DataParameter<Boolean> HEALING_MODE =EntityDataManager.createKey(EntityEnderMage.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Boolean> ATTACK_MODE = EntityDataManager.createKey(EntityEnderMage.class, DataSerializers.BOOLEAN);
 
@@ -70,7 +70,6 @@ public class EntityEnderMage extends EntityKnightBase implements IAnimatable, IA
     @Override
     public void entityInit() {
         super.entityInit();
-        this.dataManager.register(FIGHT_MODE, Boolean.valueOf(false));
         this.dataManager.register(HEALING_MODE, Boolean.valueOf(false));
         this.dataManager.register(ATTACK_MODE, Boolean.valueOf(false));
     }
@@ -78,30 +77,13 @@ public class EntityEnderMage extends EntityKnightBase implements IAnimatable, IA
     @Override
     public void onUpdate() {
         super.onUpdate();
-        List<EntityKnightBase> nearbySwords = this.world.getEntitiesWithinAABB(EntityKnightBase.class, this.getEntityBoundingBox().grow(16D), e -> !e.getIsInvulnerable());
-        for(EntityKnightBase nearbyEntities : nearbySwords) {
-            if(nearbyEntities != null && !selectEntity) {
-               selectSupportArea(nearbyEntities);
-            }
-            List<EntityKnightBase> nearbyEnderKnights = this.world.getEntitiesWithinAABB(EntityKnightBase.class, this.getEntityBoundingBox().grow(10D), e -> !e.getIsInvulnerable());
-            if(!nearbyEnderKnights.isEmpty()) {
-                this.isCloseTooAllies = true;
-            } else {
-                this.isCloseTooAllies = false;
-            }
-            if(nearbyEnderKnights.isEmpty()) {
-                EntityLivingBase target = this.getAttackTarget();
-                if(target != null) {
-                    double distSq = this.getDistanceSq(target.posX, target.getEntityBoundingBox().minY, target.posZ);
-                    double distance = Math.sqrt(distSq);
-                    if(distance < 6) {
-                        double d0 = (this.posX - target.posX) * 0.015;
-                        double d1 = (this.posY - target.posY) * 0.01;
-                        double d2 = (this.posZ - target.posZ) * 0.015;
-                        this.addVelocity(d0, d1, d2);
-                    }
-                }
-            }
+
+        List<EntityKnightBase> nearbyKnights = this.world.getEntitiesWithinAABB(EntityKnightBase.class, this.getEntityBoundingBox().grow(16D), e-> !e.getIsInvulnerable() && !EntityKnightBase.CAN_TARGET.apply(e));
+        if(!nearbyKnights.isEmpty()) {
+         this.isCloseTooAllies = true;
+        }
+        if(nearbyKnights.isEmpty()) {
+            this.isCloseTooAllies = false;
         }
 
         if(selectEntity) {
@@ -139,20 +121,19 @@ public class EntityEnderMage extends EntityKnightBase implements IAnimatable, IA
 
     }
 
-    public void setFightMode(boolean value) {this.dataManager.set(FIGHT_MODE, Boolean.valueOf(value));}
-    public boolean isFightMode() {return this.dataManager.get(FIGHT_MODE);}
+
     public void setHealingMode(boolean value) {this.dataManager.set(HEALING_MODE, Boolean.valueOf(value));}
     public boolean isHealingMode() {return this.dataManager.get(HEALING_MODE);}
 
     public void setAttackMode(boolean value) {this.dataManager.set(ATTACK_MODE, Boolean.valueOf(value));}
     public boolean isAttackMode() {return this.dataManager.get(ATTACK_MODE);}
     private <E extends IAnimatable> PlayState predicateArms(AnimationEvent<E> event) {
-
-        if(!(event.getLimbSwingAmount() > -0.10F && event.getLimbSwingAmount() < 0.10F) && !this.isFightMode()) {
+    if(!this.isInteract() && !this.isFightMode()) {
+        if (!(event.getLimbSwingAmount() > -0.10F && event.getLimbSwingAmount() < 0.10F)) {
             event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_WALKING_ARMS, true));
             return PlayState.CONTINUE;
         }
-
+    }
         return PlayState.STOP;
     }
 
@@ -183,6 +164,16 @@ public class EntityEnderMage extends EntityKnightBase implements IAnimatable, IA
         event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_CAST_ATTACK, false));
         return PlayState.CONTINUE;
     }
+        event.getController().markNeedsReload();
+        return PlayState.STOP;
+    }
+
+    private <E extends IAnimatable> PlayState predicateInteract(AnimationEvent<E> event) {
+
+        if(this.isInteract()) {
+
+
+        }
         event.getController().markNeedsReload();
         return PlayState.STOP;
     }
@@ -228,6 +219,7 @@ public class EntityEnderMage extends EntityKnightBase implements IAnimatable, IA
         animationData.addAnimationController(new AnimationController(this, "arms_controller", 0, this::predicateArms));
         animationData.addAnimationController(new AnimationController(this, "legs_controller", 0, this::predicateLegs));
         animationData.addAnimationController(new AnimationController(this, "attack_controller", 0, this::predicateAttack));
+        animationData.addAnimationController(new AnimationController(this, "interact_controller", 0, this::predicateInteract));
     }
 
     @Override
@@ -252,7 +244,7 @@ public class EntityEnderMage extends EntityKnightBase implements IAnimatable, IA
             this.setHealingMode(true);
             this.addEvent(() -> {
                 if (!world.isRemote) {
-                    EntityHealAura aura = new EntityHealAura(world);
+                    EntityHealAura aura = new EntityHealAura(world, target);
                     Vec3d pos = target.getPositionVector();
                     aura.setPosition(pos.x, pos.y, pos.z);
                     world.spawnEntity(aura);

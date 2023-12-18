@@ -17,6 +17,12 @@ public class ModelEnderShield extends AnimatedGeoModel<EntityEnderShield> {
 
     @Override
     public ResourceLocation getTextureLocation(EntityEnderShield entityEnderShield) {
+        if(entityEnderShield.getSkin() == 1) {
+            return new ResourceLocation(ModReference.MOD_ID, "textures/entity/endknight_2.png");
+        }
+        else if(entityEnderShield.getSkin() == 2) {
+            return new ResourceLocation(ModReference.MOD_ID, "textures/entity/endknight_3.png");
+        }
         return new ResourceLocation(ModReference.MOD_ID, "textures/entity/endknight.png");
     }
 

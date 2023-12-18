@@ -17,6 +17,12 @@ public class ModelEnderMage extends AnimatedGeoModel<EntityEnderMage> {
 
     @Override
     public ResourceLocation getTextureLocation(EntityEnderMage entityEnderMage) {
+        if(entityEnderMage.getSkin() == 1) {
+            return new ResourceLocation(ModReference.MOD_ID, "textures/entity/endknight_2.png");
+        }
+        else if(entityEnderMage.getSkin() == 2) {
+            return new ResourceLocation(ModReference.MOD_ID, "textures/entity/endknight_3.png");
+        }
         return new ResourceLocation(ModReference.MOD_ID, "textures/entity/endknight.png");
     }
 

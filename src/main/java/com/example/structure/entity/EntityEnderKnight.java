@@ -57,7 +57,10 @@ public class EntityEnderKnight extends EntityKnightBase implements IAnimatable, 
 
     private final String ANIM_STRIKE_THREE = "swing_upper_three";
     private final String ANIM_DASH = "dash";
-    private static final DataParameter<Boolean> FIGHT_MODE = EntityDataManager.createKey(EntityEnderKnight.class, DataSerializers.BOOLEAN);
+    private final String ANIM_INTERACT_ONE = "interact_1";
+    private final String ANIM_INTERACT_TWO = "interact_2";
+
+
     private static final DataParameter<Boolean> STRIKE_ATTACK = EntityDataManager.createKey(EntityEnderKnight.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Boolean> RUNNING_CHECK = EntityDataManager.createKey(EntityEnderKnight.class, DataSerializers.BOOLEAN);
      private static final DataParameter<Boolean> DASH_ATTACK = EntityDataManager.createKey(EntityEnderKnight.class, DataSerializers.BOOLEAN);
@@ -76,15 +79,13 @@ public class EntityEnderKnight extends EntityKnightBase implements IAnimatable, 
     @Override
     public void entityInit() {
         super.entityInit();
-        this.dataManager.register(FIGHT_MODE, Boolean.valueOf(false));
         this.dataManager.register(STRIKE_ATTACK, Boolean.valueOf(false));
         this.dataManager.register(RUNNING_CHECK, Boolean.valueOf(false));
         this.dataManager.register(DASH_ATTACK, Boolean.valueOf(false));
         this.dataManager.register(SECOND_STRIKE, Boolean.valueOf(false));
         this.dataManager.register(THIRD_STRIKE, Boolean.valueOf(false));
     }
-    public void setFightMode(boolean value) {this.dataManager.set(FIGHT_MODE, Boolean.valueOf(value));}
-    public boolean isFightMode() {return this.dataManager.get(FIGHT_MODE);}
+
     public void setStrikeAttack(boolean value) {this.dataManager.set(STRIKE_ATTACK, Boolean.valueOf(value));}
     public boolean isStrikeAttack() {return this.dataManager.get(STRIKE_ATTACK);}
     public void setRunningCheck(boolean value) {
@@ -106,6 +107,7 @@ public class EntityEnderKnight extends EntityKnightBase implements IAnimatable, 
         animationData.addAnimationController(new AnimationController(this, "arms_controller", 0, this::predicateArms));
         animationData.addAnimationController(new AnimationController(this, "legs_controller", 0, this::predicateLegs));
         animationData.addAnimationController(new AnimationController(this, "fight_controller", 0, this::predicateAttack));
+        animationData.addAnimationController(new AnimationController(this, "interact_controller", 0, this::predicateInteract));
     }
 
     public int dashMeter = 0;
@@ -142,7 +144,7 @@ public class EntityEnderKnight extends EntityKnightBase implements IAnimatable, 
     public void applyEntityAttributes() {
         super.applyEntityAttributes();
         this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(20D);
-        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.24D);
+        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.2D);
         this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(35D);
         this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(14.0D);
         this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(1.0D);
@@ -154,12 +156,12 @@ public class EntityEnderKnight extends EntityKnightBase implements IAnimatable, 
         this.tasks.addTask(4, new EntityAITimedKnight<>(this, 1.5, 10, 3F, 0.2f));
     }
     private <E extends IAnimatable>PlayState predicateArms(AnimationEvent<E> event) {
-
-        if(!(event.getLimbSwingAmount() > -0.10F && event.getLimbSwingAmount() < 0.10F) && !this.isFightMode()) {
+    if(!this.isFightMode() && !this.isInteract()) {
+        if (!(event.getLimbSwingAmount() > -0.10F && event.getLimbSwingAmount() < 0.10F)) {
             event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_WALKING_ARMS, true));
             return PlayState.CONTINUE;
         }
-
+    }
         return PlayState.STOP;
     }
     private <E extends IAnimatable>PlayState predicateLegs(AnimationEvent<E> event) {
@@ -171,11 +173,30 @@ public class EntityEnderKnight extends EntityKnightBase implements IAnimatable, 
     }
 
     private<E extends IAnimatable> PlayState predicateIdle(AnimationEvent<E> event) {
-
-         if(event.getLimbSwingAmount() > -0.09F && event.getLimbSwingAmount() < 0.09F) {
-            event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_IDLE, true));
-            return PlayState.CONTINUE;
+        if(!this.isFightMode() && !this.isInteract()) {
+            if (event.getLimbSwingAmount() > -0.09F && event.getLimbSwingAmount() < 0.09F) {
+                event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_IDLE, true));
+                return PlayState.CONTINUE;
+            }
         }
+        return PlayState.STOP;
+    }
+
+    public int r = world.rand.nextInt(2);
+    private <E extends IAnimatable> PlayState predicateInteract(AnimationEvent<E> event) {
+        if(!this.isFightMode()) {
+            if(this.isInteract()) {
+
+                if(r == 1) {
+                    event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_INTERACT_ONE, false));
+                    return PlayState.CONTINUE;
+                } else {
+                    event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_INTERACT_TWO, false));
+                    return PlayState.CONTINUE;
+                }
+            }
+        }
+        event.getController().markNeedsReload();
         return PlayState.STOP;
     }
 
@@ -209,11 +230,11 @@ public class EntityEnderKnight extends EntityKnightBase implements IAnimatable, 
     public void handleStatusUpdate(byte id) {
         super.handleStatusUpdate(id);
         if(id == ModUtils.PARTICLE_BYTE) {
-            ParticleManager.spawnColoredSmoke(world, getPositionVector().add(ModUtils.yVec(0.5)), ModColors.MAELSTROM, Vec3d.ZERO);
-            ParticleManager.spawnColoredSmoke(world, getPositionVector().add(ModUtils.yVec(0.9)), ModColors.MAELSTROM, Vec3d.ZERO);
-            ParticleManager.spawnColoredSmoke(world, getPositionVector().add(ModUtils.yVec(1.3)), ModColors.MAELSTROM, Vec3d.ZERO);
-            ParticleManager.spawnColoredSmoke(world, getPositionVector().add(ModUtils.yVec(1.7)), ModColors.MAELSTROM, Vec3d.ZERO);
-            ParticleManager.spawnColoredSmoke(world, getPositionVector().add(ModUtils.yVec(2.0)), ModColors.MAELSTROM, Vec3d.ZERO);
+            ParticleManager.spawnColoredSmoke(world, getPositionVector().add(ModUtils.yVec(0.5)), ModColors.RED, Vec3d.ZERO);
+            ParticleManager.spawnColoredSmoke(world, getPositionVector().add(ModUtils.yVec(0.9)), ModColors.RED, Vec3d.ZERO);
+            ParticleManager.spawnColoredSmoke(world, getPositionVector().add(ModUtils.yVec(1.3)), ModColors.RED, Vec3d.ZERO);
+            ParticleManager.spawnColoredSmoke(world, getPositionVector().add(ModUtils.yVec(1.7)), ModColors.RED, Vec3d.ZERO);
+            ParticleManager.spawnColoredSmoke(world, getPositionVector().add(ModUtils.yVec(2.0)), ModColors.RED, Vec3d.ZERO);
         }
     }
 

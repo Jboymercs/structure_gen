@@ -6,6 +6,7 @@ import com.example.structure.entity.EntityModBase;
 import com.example.structure.util.ModColors;
 import com.example.structure.util.ModUtils;
 import com.example.structure.util.handlers.ParticleManager;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -22,18 +23,25 @@ import software.bernie.geckolib3.core.manager.AnimationFactory;
 import java.util.List;
 
 public class EntityHealAura extends EntityModBase implements IAnimatable {
+    EntityLivingBase targetStay;
 
     private String ANIM_SCALE = "scale";
     private AnimationFactory factory = new AnimationFactory(this);
     public EntityHealAura(World worldIn, float x, float y, float z) {
         super(worldIn, x, y, z);
     }
-
     public EntityHealAura(World worldIn) {
         super(worldIn);
         this.setImmovable(true);
         this.setSize(0.1f, 0.1f);
         this.setNoAI(true);
+    }
+    public EntityHealAura(World worldIn, EntityLivingBase target) {
+        super(worldIn);
+        this.setImmovable(true);
+        this.setSize(0.1f, 0.1f);
+        this.noClip = true;
+        this.targetStay = target;
     }
 
     @Override
@@ -56,11 +64,15 @@ public class EntityHealAura extends EntityModBase implements IAnimatable {
         this.renderYawOffset = 0;
         this.motionX = 0;
         this.motionZ = 0;
-        List<EntityEnderKnight> nearbyEnderKnights = this.world.getEntitiesWithinAABB(EntityEnderKnight.class, this.getEntityBoundingBox().grow(2D), e -> !e.getIsInvulnerable());
-        List<EntityEnderKnight> nearbyEnderShield = this.world.getEntitiesWithinAABB(EntityEnderKnight.class, this.getEntityBoundingBox().grow(2D), e -> !e.getIsInvulnerable());
+
+        if(targetStay != null) {
+
+            ModUtils.setEntityPosition(this, targetStay.getPositionVector().add(ModUtils.yVec(1)));
+        }
+        List<EntityKnightBase> nearbyEnderKnights = this.world.getEntitiesWithinAABB(EntityKnightBase.class, this.getEntityBoundingBox().grow(2D), e -> !e.getIsInvulnerable());
         if(ticksExisted == 15 || ticksExisted == 30 || ticksExisted == 45) {
             if (!nearbyEnderKnights.isEmpty()) {
-                for (EntityEnderKnight knight : nearbyEnderKnights) {
+                for (EntityKnightBase knight : nearbyEnderKnights) {
                     float maxHealth = knight.getHealth() / knight.getMaxHealth();
                     if (maxHealth < 1) {
                         knight.heal(5F);
@@ -70,7 +82,7 @@ public class EntityHealAura extends EntityModBase implements IAnimatable {
             }
         }
 
-        if(this.ticksExisted > 15 && this.ticksExisted <= 50) {
+        if(this.ticksExisted > 20 && this.ticksExisted <= 50) {
            world.setEntityState(this, ModUtils.PARTICLE_BYTE);
         }
         if(ticksExisted == 60) {
@@ -82,10 +94,13 @@ public class EntityHealAura extends EntityModBase implements IAnimatable {
     @SideOnly(Side.CLIENT)
     public void handleStatusUpdate(byte id) {
         if (id == ModUtils.PARTICLE_BYTE) {
-            ModUtils.circleCallback(2, 30, (pos)-> {
-                pos = new Vec3d(pos.x, 0, pos.y);
-                ParticleManager.spawnColoredSmoke(world, this.getPositionVector(), ModColors.RED, pos.normalize().add(ModUtils.yVec(0.1f)));
+            for (int i = -5; i < 2; i++) {
+                final float yOff = i * 0.5f;
+            ModUtils.circleCallback(1, 20, (pos)-> {
+                pos = new Vec3d(pos.x, yOff, pos.y);
+                ParticleManager.spawnColoredSmoke(world, pos.add(this.getPositionVector()), ModColors.RED, ModUtils.yVec(0.1));
             });
+            }
         }
         super.handleStatusUpdate(id);
     }

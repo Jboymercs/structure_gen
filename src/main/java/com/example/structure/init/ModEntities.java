@@ -62,8 +62,6 @@ public class ModEntities {
         registerTileEntity(TileEntityTrap.class, "floor_trap");
         //Altar - Tile Entity
         registerTileEntity(TileEntityAltar.class, "altar");
-        //Ender Knight
-        registerEntityWithID("end_knight", EntityEnderKnight.class, ENTITY_START_ID++, 50, end_mobs);
         //End King
         registerEntityWithID("end_king", EntityEndKing.class, ENTITY_START_ID++, 50, end_mobs);
         //Red Crystal
@@ -76,10 +74,12 @@ public class ModEntities {
         registerEntity("nuke", EntityNuclearExplosion.class, ENTITY_START_ID++, 60);
         //End Bug
         registerEntityWithID("end_bug", EntityEndBug.class, ENTITY_START_ID++, 60, end_mobs);
-        //Ender Mage
-        registerEntityWithID("end_mage", EntityEnderMage.class, ENTITY_START_ID++, 60, end_mobs);
+        //Ender Knight
+        registerEntityWithID("end_knight", EntityEnderKnight.class, ENTITY_START_ID++, 50, end_mobs);
         //Ender Shield
         registerEntityWithID("end_shield", EntityEnderShield.class, ENTITY_START_ID++, 60, end_mobs);
+        //Ender Mage
+        registerEntityWithID("end_mage", EntityEnderMage.class, ENTITY_START_ID++, 60, end_mobs);
         //Heal Aura
         registerEntity("heal_aura", EntityHealAura.class, ENTITY_START_ID++, 60);
     }

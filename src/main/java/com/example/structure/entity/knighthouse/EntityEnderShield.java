@@ -1,28 +1,19 @@
 package com.example.structure.entity.knighthouse;
 
-import com.example.structure.entity.EntityBuffker;
-import com.example.structure.entity.EntityCrystalKnight;
+
 import com.example.structure.entity.EntityEnderKnight;
-import com.example.structure.entity.EntityModBase;
-import com.example.structure.entity.ai.EntityAITimedKnight;
+import com.example.structure.entity.EntityEnderKnight;
 import com.example.structure.entity.ai.EntityTimedAttackShield;
 import com.example.structure.entity.endking.EntityEndKing;
-import com.example.structure.entity.endking.EntityRedCrystal;
 import com.example.structure.entity.util.IAttack;
 import com.example.structure.util.ModColors;
 import com.example.structure.util.ModDamageSource;
 import com.example.structure.util.ModRand;
 import com.example.structure.util.ModUtils;
 import com.example.structure.util.handlers.ParticleManager;
-import com.sun.jna.platform.win32.WinBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityAIHurtByTarget;
-import net.minecraft.entity.ai.EntityAILookIdle;
-import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
-import net.minecraft.entity.ai.EntityAIWanderAvoidWater;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
@@ -57,13 +48,12 @@ public class EntityEnderShield extends EntityKnightBase implements IAnimatable, 
     protected boolean shieldLowered = false;
     private Consumer<EntityLivingBase> prevAttack;
     private AnimationFactory factory = new AnimationFactory(this);
-    private static final DataParameter<Boolean> FIGHT_MODE = EntityDataManager.createKey(EntityEnderShield.class, DataSerializers.BOOLEAN);
+
     private static final DataParameter<Boolean> SHIELDED = EntityDataManager.createKey(EntityEnderShield.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Boolean> PIERCE_ATTACK = EntityDataManager.createKey(EntityEnderShield.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Boolean> REGULAR_ATTACK = EntityDataManager.createKey(EntityEnderShield.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Boolean> SHIELD_ATTACK = EntityDataManager.createKey(EntityEnderShield.class, DataSerializers.BOOLEAN);
-    public void setFightMode(boolean value) {this.dataManager.set(FIGHT_MODE, Boolean.valueOf(value));}
-    public boolean isFightMode() {return this.dataManager.get(FIGHT_MODE);}
+
     public void setShielded(boolean value) {this.dataManager.set(SHIELDED, Boolean.valueOf(value));}
     public boolean isShielded() {return this.dataManager.get(SHIELDED);}
     public void setPierceAttack(boolean value) {this.dataManager.set(PIERCE_ATTACK, Boolean.valueOf(value));}
@@ -73,14 +63,14 @@ public class EntityEnderShield extends EntityKnightBase implements IAnimatable, 
     public void setShieldAttack(boolean value) {this.dataManager.set(SHIELD_ATTACK, Boolean.valueOf(value));}
     public boolean isShieldAttack() {return this.dataManager.get(SHIELD_ATTACK);}
 
-    public EntityEnderShield(World worldIn, float x, float y, float z) {
-        super(worldIn, x, y, z);
+    public EntityEnderShield(World worldIn) {
+        super(worldIn);
+        this.setSize(0.8f, 2.0f);
     }
 
     @Override
     public void entityInit() {
         super.entityInit();
-        this.dataManager.register(FIGHT_MODE, Boolean.valueOf(false));
         this.dataManager.register(SHIELDED, Boolean.valueOf(false));
         this.dataManager.register(REGULAR_ATTACK, Boolean.valueOf(false));
         this.dataManager.register(PIERCE_ATTACK, Boolean.valueOf(false));
@@ -97,10 +87,6 @@ public class EntityEnderShield extends EntityKnightBase implements IAnimatable, 
         this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(1.0D);
     }
 
-    public EntityEnderShield(World worldIn) {
-        super(worldIn);
-        this.setSize(0.8f, 2.0f);
-    }
     //To avoid weird movements of the shield
     public int standbyTimer = 40;
     @Override
@@ -135,7 +121,7 @@ public class EntityEnderShield extends EntityKnightBase implements IAnimatable, 
     }
 
     private <E extends IAnimatable> PlayState predicateArms(AnimationEvent<E> event) {
-        if (!this.isFightMode()) {
+        if (!this.isFightMode() && !this.isInteract()) {
         if (!(event.getLimbSwingAmount() > -0.10F && event.getLimbSwingAmount() < 0.10F)) {
             if(this.isShielded()) {
                 event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_WALKING_ARMS_SHIELD, true));
@@ -146,6 +132,16 @@ public class EntityEnderShield extends EntityKnightBase implements IAnimatable, 
         }
     }
 
+        return PlayState.STOP;
+    }
+
+    private <E extends IAnimatable> PlayState predicateInteract(AnimationEvent<E> event) {
+
+            if(this.isInteract()) {
+
+
+        }
+        event.getController().markNeedsReload();
         return PlayState.STOP;
     }
 
@@ -303,6 +299,7 @@ public class EntityEnderShield extends EntityKnightBase implements IAnimatable, 
         animationData.addAnimationController(new AnimationController(this, "arms_controller", 0, this::predicateArms));
         animationData.addAnimationController(new AnimationController(this, "legs_controller", 0, this::predicateLegs));
         animationData.addAnimationController(new AnimationController(this, "attack_controller", 0, this::predicateAttack));
+        animationData.addAnimationController(new AnimationController(this, "interact_controller", 0, this::predicateInteract));
     }
 
     @Override

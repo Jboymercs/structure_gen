@@ -28,6 +28,9 @@ public class ModSoundHandler {
     //NuclearBomb Souns
     public static SoundEvent BOMB_EXPLODE;
 
+    //Knight Household
+    public static SoundEvent KNIGHT_STEP;
+
     public static void registerSounds() {
         BOSS_IDLE = registerSound("boss.idle", "entity");
         BOSS_HURT = registerSound("boss.hurt", "entity");
@@ -42,6 +45,7 @@ public class ModSoundHandler {
         KING_DASH = registerSound("king.dash", "entity");
 
         BOMB_EXPLODE = registerSound("king.explode", "entity");
+        KNIGHT_STEP = registerSound("knight.step", "entity");
     }
 
 

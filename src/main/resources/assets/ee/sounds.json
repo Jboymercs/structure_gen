@@ -98,5 +98,15 @@
         "stream": true
       }
     ]
+  },
+  "entity.knight.step": {
+    "category": "entity",
+    "subtitle": "entity.knight.step",
+    "sounds": [
+      {
+        "name": "ee:entity/knight/step",
+        "stream": true
+      }
+    ]
   }
 }

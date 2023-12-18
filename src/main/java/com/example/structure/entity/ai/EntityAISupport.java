@@ -3,6 +3,7 @@ package com.example.structure.entity.ai;
 
 import com.example.structure.entity.EntityModBase;
 import com.example.structure.entity.knighthouse.EntityEnderMage;
+import com.example.structure.entity.knighthouse.EntityEnderShield;
 import com.example.structure.entity.knighthouse.EntityKnightBase;
 import com.example.structure.util.ModRand;
 import com.example.structure.util.ModUtils;
@@ -61,12 +62,10 @@ public class EntityAISupport extends EntityAIBase {
         EntityLivingBase optimalMob = null;
         double health = 2;
         for (EntityLivingBase entity : ModUtils.getEntitiesInBox(supporter, new AxisAlignedBB(supporter.getPosition()).grow(supporter.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).getAttributeValue()))) {
-
-                if (!EntityKnightBase.CAN_TARGET.apply(entity) && entity.getHealth() / entity.getMaxHealth() < health && this.supporter.getDistanceSq(entity) < Math.pow(supportDistance, 2)) {
-                    optimalMob = entity;
-                    health = entity.getHealth() / entity.getMaxHealth();
-                }
-
+            if (!EntityKnightBase.CAN_TARGET.apply(entity) || entity instanceof EntityEnderShield && entity.getHealth() / entity.getMaxHealth() < health && this.supporter.getDistanceSq(entity) < Math.pow(supportDistance, 2)) {
+                optimalMob = entity;
+                health = entity.getHealth() / entity.getMaxHealth();
+            }
         }
 
         if (optimalMob != null && hasGroup) {
@@ -83,7 +82,8 @@ public class EntityAISupport extends EntityAIBase {
             if (this.cooldown <= 0) {
                 this.supporter.attackEntityWithRangedAttack(optimalMob, (float) this.supporter.getDistanceSq(optimalMob));
                 this.cooldown = supportCooldown;
-            } else if( this.cooldown >= 20) {
+            }
+            else if( this.cooldown >= 20) {
                 EntityLivingBase target = this.supporter.getAttackTarget();
                 if(target != null) {
                     this.supporter.startAttack(target, 16F, false);
