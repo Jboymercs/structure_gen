@@ -71,10 +71,10 @@ public class EntityEnderShield extends EntityKnightBase implements IAnimatable, 
     @Override
     public void entityInit() {
         super.entityInit();
-        this.dataManager.register(SHIELDED, Boolean.valueOf(false));
         this.dataManager.register(REGULAR_ATTACK, Boolean.valueOf(false));
         this.dataManager.register(PIERCE_ATTACK, Boolean.valueOf(false));
         this.dataManager.register(SHIELD_ATTACK, Boolean.valueOf(false));
+        this.dataManager.register(SHIELDED, Boolean.valueOf(false));
     }
 
     @Override
@@ -121,8 +121,8 @@ public class EntityEnderShield extends EntityKnightBase implements IAnimatable, 
     }
 
     private <E extends IAnimatable> PlayState predicateArms(AnimationEvent<E> event) {
-        if (!this.isFightMode() && !this.isInteract()) {
-        if (!(event.getLimbSwingAmount() > -0.10F && event.getLimbSwingAmount() < 0.10F)) {
+
+        if (!(event.getLimbSwingAmount() > -0.10F && event.getLimbSwingAmount() < 0.10F) && !this.isFightMode()) {
             if(this.isShielded()) {
                 event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_WALKING_ARMS_SHIELD, true));
             } else {
@@ -130,20 +130,12 @@ public class EntityEnderShield extends EntityKnightBase implements IAnimatable, 
             }
             return PlayState.CONTINUE;
         }
-    }
+
 
         return PlayState.STOP;
     }
 
-    private <E extends IAnimatable> PlayState predicateInteract(AnimationEvent<E> event) {
 
-            if(this.isInteract()) {
-
-
-        }
-        event.getController().markNeedsReload();
-        return PlayState.STOP;
-    }
 
     private <E extends IAnimatable>PlayState predicateLegs(AnimationEvent<E> event) {
         if(!(event.getLimbSwingAmount() > -0.10F && event.getLimbSwingAmount() < 0.10F)) {
@@ -156,8 +148,8 @@ public class EntityEnderShield extends EntityKnightBase implements IAnimatable, 
 
     private<E extends IAnimatable> PlayState predicateIdle(AnimationEvent<E> event) {
 
-        if(event.getLimbSwingAmount() > -0.09F && event.getLimbSwingAmount() < 0.09F) {
-            if(this.isShielded() && !this.isFightMode()) {
+        if(event.getLimbSwingAmount() > -0.09F && event.getLimbSwingAmount() < 0.09F && !this.isFightMode()) {
+            if(this.isShielded()) {
                 event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_IDLE, true));
             } else {
                 event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_IDLE, true));
@@ -245,6 +237,7 @@ public class EntityEnderShield extends EntityKnightBase implements IAnimatable, 
                                     .build();
                             float damage = 6.0F;
                             ModUtils.handleAreaImpact(0.5f, (e) -> damage, this, pos, source, 0.6F, 0, false );
+                            this.playSound(SoundEvents.ITEM_SHIELD_BLOCK,1.0f, 0.6f - ModRand.getFloat(0.3f) );
                         }
                     }
                 }
@@ -299,7 +292,7 @@ public class EntityEnderShield extends EntityKnightBase implements IAnimatable, 
         animationData.addAnimationController(new AnimationController(this, "arms_controller", 0, this::predicateArms));
         animationData.addAnimationController(new AnimationController(this, "legs_controller", 0, this::predicateLegs));
         animationData.addAnimationController(new AnimationController(this, "attack_controller", 0, this::predicateAttack));
-        animationData.addAnimationController(new AnimationController(this, "interact_controller", 0, this::predicateInteract));
+
     }
 
     @Override

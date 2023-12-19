@@ -128,12 +128,12 @@ public class EntityEnderMage extends EntityKnightBase implements IAnimatable, IA
     public void setAttackMode(boolean value) {this.dataManager.set(ATTACK_MODE, Boolean.valueOf(value));}
     public boolean isAttackMode() {return this.dataManager.get(ATTACK_MODE);}
     private <E extends IAnimatable> PlayState predicateArms(AnimationEvent<E> event) {
-    if(!this.isInteract() && !this.isFightMode()) {
-        if (!(event.getLimbSwingAmount() > -0.10F && event.getLimbSwingAmount() < 0.10F)) {
+
+        if (!(event.getLimbSwingAmount() > -0.10F && event.getLimbSwingAmount() < 0.10F) && !this.isFightMode()) {
             event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_WALKING_ARMS, true));
             return PlayState.CONTINUE;
         }
-    }
+
         return PlayState.STOP;
     }
 
@@ -168,15 +168,7 @@ public class EntityEnderMage extends EntityKnightBase implements IAnimatable, IA
         return PlayState.STOP;
     }
 
-    private <E extends IAnimatable> PlayState predicateInteract(AnimationEvent<E> event) {
 
-        if(this.isInteract()) {
-
-
-        }
-        event.getController().markNeedsReload();
-        return PlayState.STOP;
-    }
 
     @Override
     public int startAttack(EntityLivingBase target, float distanceSq, boolean strafingBackwards) {
@@ -219,7 +211,7 @@ public class EntityEnderMage extends EntityKnightBase implements IAnimatable, IA
         animationData.addAnimationController(new AnimationController(this, "arms_controller", 0, this::predicateArms));
         animationData.addAnimationController(new AnimationController(this, "legs_controller", 0, this::predicateLegs));
         animationData.addAnimationController(new AnimationController(this, "attack_controller", 0, this::predicateAttack));
-        animationData.addAnimationController(new AnimationController(this, "interact_controller", 0, this::predicateInteract));
+
     }
 
     @Override

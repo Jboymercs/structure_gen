@@ -107,7 +107,7 @@ public class EntityEnderKnight extends EntityKnightBase implements IAnimatable, 
         animationData.addAnimationController(new AnimationController(this, "arms_controller", 0, this::predicateArms));
         animationData.addAnimationController(new AnimationController(this, "legs_controller", 0, this::predicateLegs));
         animationData.addAnimationController(new AnimationController(this, "fight_controller", 0, this::predicateAttack));
-        animationData.addAnimationController(new AnimationController(this, "interact_controller", 0, this::predicateInteract));
+
     }
 
     public int dashMeter = 0;
@@ -156,7 +156,7 @@ public class EntityEnderKnight extends EntityKnightBase implements IAnimatable, 
         this.tasks.addTask(4, new EntityAITimedKnight<>(this, 1.5, 10, 3F, 0.2f));
     }
     private <E extends IAnimatable>PlayState predicateArms(AnimationEvent<E> event) {
-    if(!this.isFightMode() && !this.isInteract()) {
+    if(!this.isFightMode()) {
         if (!(event.getLimbSwingAmount() > -0.10F && event.getLimbSwingAmount() < 0.10F)) {
             event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_WALKING_ARMS, true));
             return PlayState.CONTINUE;
@@ -173,7 +173,7 @@ public class EntityEnderKnight extends EntityKnightBase implements IAnimatable, 
     }
 
     private<E extends IAnimatable> PlayState predicateIdle(AnimationEvent<E> event) {
-        if(!this.isFightMode() && !this.isInteract()) {
+        if(!this.isFightMode()) {
             if (event.getLimbSwingAmount() > -0.09F && event.getLimbSwingAmount() < 0.09F) {
                 event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_IDLE, true));
                 return PlayState.CONTINUE;
@@ -182,23 +182,7 @@ public class EntityEnderKnight extends EntityKnightBase implements IAnimatable, 
         return PlayState.STOP;
     }
 
-    public int r = world.rand.nextInt(2);
-    private <E extends IAnimatable> PlayState predicateInteract(AnimationEvent<E> event) {
-        if(!this.isFightMode()) {
-            if(this.isInteract()) {
 
-                if(r == 1) {
-                    event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_INTERACT_ONE, false));
-                    return PlayState.CONTINUE;
-                } else {
-                    event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_INTERACT_TWO, false));
-                    return PlayState.CONTINUE;
-                }
-            }
-        }
-        event.getController().markNeedsReload();
-        return PlayState.STOP;
-    }
 
     private <E extends IAnimatable> PlayState predicateAttack(AnimationEvent<E> event) {
         if(this.isStrikeAttack()) {

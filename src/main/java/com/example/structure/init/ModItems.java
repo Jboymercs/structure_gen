@@ -2,9 +2,14 @@ package com.example.structure.init;
 
 import com.example.structure.config.ModConfig;
 import com.example.structure.items.*;
+import com.example.structure.items.armor.ItemSlideBoots;
 import com.example.structure.items.tools.ToolBossSword;
+import com.example.structure.util.ModReference;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.init.SoundEvents;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemArmor;
 import net.minecraftforge.common.util.EnumHelper;
 
 import java.util.ArrayList;
@@ -14,6 +19,7 @@ public class ModItems {
 
     private static final Item.ToolMaterial SWORD = EnumHelper.addToolMaterial("rare_sword", 2, 100, 8.0f, ModConfig.sword_damage, 20);
 
+    private static final ItemArmor.ArmorMaterial ARMOR = EnumHelper.addArmorMaterial("skate", ModReference.MOD_ID + ":skate", 200, new int[]{3, 6, 8, 3}, 16, SoundEvents.ITEM_ARMOR_EQUIP_GOLD, 0);
 
     public static final List<Item> ITEMS = new ArrayList<Item>();
     public static final Item INVISIBLE = new ItemBase("invisible", null);
@@ -36,6 +42,8 @@ public class ModItems {
     public static final Item CRYSTAL_BALL = new CrystalBallItem("crystalball", null);
 
     public static final Item SPIN_SWORD_ITEM = new SpinSwordItem("spinsword", null);
+
+    public static final Item SKATE_BOOTS = new ItemSlideBoots("skate_boots", ARMOR, 1, EntityEquipmentSlot.FEET,  "skate");
     public ModItems() {
 
 

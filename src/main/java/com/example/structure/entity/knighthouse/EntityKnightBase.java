@@ -17,6 +17,7 @@ import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.monster.EntityIronGolem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
@@ -36,10 +37,8 @@ public abstract class EntityKnightBase extends EntityModBase {
 
     private static final DataParameter<Integer> SKIN_TYPE = EntityDataManager.<Integer>createKey(EntityKnightBase.class, DataSerializers.VARINT);
     private static final DataParameter<Boolean> INTERACT = EntityDataManager.createKey(EntityKnightBase.class, DataSerializers.BOOLEAN);
-    private static final DataParameter<Boolean> FIGHT_MODE = EntityDataManager.createKey(EntityEnderKnight.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<Boolean> FIGHT_MODE = EntityDataManager.createKey(EntityKnightBase.class, DataSerializers.BOOLEAN);
 
-    public void setInteract(boolean value) {this.dataManager.set(INTERACT, Boolean.valueOf(value));}
-    public boolean isInteract() {return this.dataManager.get(INTERACT);}
     public void setFightMode(boolean value) {this.dataManager.set(FIGHT_MODE, Boolean.valueOf(value));}
     public boolean isFightMode() {return this.dataManager.get(FIGHT_MODE);}
     /**
@@ -64,43 +63,8 @@ public abstract class EntityKnightBase extends EntityModBase {
         return true;
     }
 
-    public int interactTimer = 200 + ModRand.range(10, 100);
-    public int animationTimer = 40;
-    public boolean currentlyOnInteract = false;
-    @Override
-    public void onUpdate() {
-        super.onUpdate();
-        EntityLivingBase target = this.getAttackTarget();
-        List<EntityKnightBase> nearbyKnights = this.world.getEntitiesWithinAABB(EntityKnightBase.class, this.getEntityBoundingBox().grow(4D), e-> !e.getIsInvulnerable() && !EntityKnightBase.CAN_TARGET.apply(e));
-        if(target == null && interactTimer < 0 && !currentlyOnInteract && !this.isFightMode()) {
-           InteractIdeal();
-        }
-        if(this.isInteract()) {
-            animationTimer--;
-        }
-        if(animationTimer == 0) {
-            stopInteract();
-        }
-
-        if(!this.currentlyOnInteract) {
-            interactTimer--;
-        }
 
 
-
-    }
-
-    public void InteractIdeal() {
-        this.setInteract(true);
-        this.currentlyOnInteract = true;
-        interactTimer = 200  + ModRand.range(10, 100);
-    }
-
-    public void stopInteract() {
-        this.setInteract(false);
-        this.currentlyOnInteract = false;
-        animationTimer = 40;
-    }
 
     @Override
     public void initEntityAI() {
@@ -118,7 +82,6 @@ public abstract class EntityKnightBase extends EntityModBase {
     protected void entityInit() {
         super.entityInit();
         this.getDataManager().register(SKIN_TYPE, Integer.valueOf(this.rand.nextInt(3)));
-        this.dataManager.register(INTERACT, Boolean.valueOf(false));
         this.dataManager.register(FIGHT_MODE, Boolean.valueOf(false));
     }
 
@@ -127,6 +90,7 @@ public abstract class EntityKnightBase extends EntityModBase {
         return !CAN_TARGET.apply(entity);
     }
     public static final Predicate<Entity> CAN_TARGET = entity -> {
+
         return !(entity instanceof EntityKnightBase);
     };
     @Override
