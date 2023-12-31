@@ -3,6 +3,7 @@ package com.example.structure.world.Biome;
 import com.example.structure.init.ModBlocks;
 import com.example.structure.util.MapGenModStructure;
 import com.example.structure.world.Biome.altardungeon.MapGenAltarDungeon;
+import com.example.structure.world.Biome.bridgestructure.MapGenBridgeStructure;
 import com.example.structure.world.Biome.decorator.WorldGenLongVein;
 import net.minecraft.block.BlockChorusFlower;
 import net.minecraft.block.BlockFalling;
@@ -39,6 +40,10 @@ public class WorldChunkGeneratorEE extends ChunkGeneratorEnd {
     protected static final IBlockState AIR = Blocks.AIR.getDefaultState();
     public static final int ALTAR_STRUCTURE_SPACING = 10;
     public static final int ALTAR_STRUCTURE_NUMBER = 0;
+
+    public static final int BRIDGE_SPACING = 5;
+
+    public static final int BRIDGE_NUMBER = 0;
     private NoiseGeneratorOctaves lperlinNoise1;
     private NoiseGeneratorOctaves lperlinNoise2;
     private NoiseGeneratorOctaves perlinNoise1;
@@ -53,7 +58,8 @@ public class WorldChunkGeneratorEE extends ChunkGeneratorEnd {
     private final BlockPos spawnPoint;
     private MapGenEndCity endCityGen = new MapGenEndCity(this);
 
-    public MapGenStructure[] structures = {new MapGenAltarDungeon(ALTAR_STRUCTURE_SPACING, ALTAR_STRUCTURE_NUMBER, 1, this)};
+    private MapGenBridgeStructure bridges = new MapGenBridgeStructure(BRIDGE_SPACING, BRIDGE_NUMBER, 1, this);
+
     private NoiseGeneratorSimplex islandNoise;
     private double[] buffer;
     /** The biomes that are used to generate the chunk */
@@ -224,9 +230,8 @@ public class WorldChunkGeneratorEE extends ChunkGeneratorEnd {
         if (this.mapFeaturesEnabled)
         {
             this.endCityGen.generate(this.world, x, z, chunkprimer);
-            for (MapGenStructure s : this.structures) {
-                s.generate(this.world, x, z, chunkprimer);
-            }
+            this.bridges.generate(this.world, x, z, chunkprimer);
+
         }
 
 
@@ -485,10 +490,8 @@ public class WorldChunkGeneratorEE extends ChunkGeneratorEnd {
             return null;
         }
 
-        for (MapGenStructure s : this.structures) {
-            if (s.getStructureName().equals(structureName)) {
-                return s.getNearestStructurePos(worldIn, position, findUnexplored);
-            }
+        if("Bridge Ruins".equals(structureName) && this.bridges != null) {
+            return this.bridges.getNearestStructurePos(worldIn, position, findUnexplored);
         }
 
         return "EndCity".equals(structureName) && this.endCityGen != null ? this.endCityGen.getNearestStructurePos(worldIn, position, findUnexplored) : null;
@@ -500,11 +503,10 @@ public class WorldChunkGeneratorEE extends ChunkGeneratorEnd {
             return false;
         }
 
-        for (MapGenStructure s : this.structures) {
-            if (s.getStructureName().equals(structureName)) {
-                return s.isInsideStructure(pos);
-            }
+        if("Bridge Ruins".equals(structureName) && this.bridges != null) {
+            return this.bridges.isInsideStructure(pos);
         }
+
         return "EndCity".equals(structureName) && this.endCityGen != null ? this.endCityGen.isInsideStructure(pos) : false;
     }
 
@@ -517,8 +519,7 @@ public class WorldChunkGeneratorEE extends ChunkGeneratorEnd {
      */
     @Override
     public void recreateStructures(Chunk chunkIn, int x, int z) {
-        for (MapGenStructure s : this.structures) {
-            s.generate(this.world, x, z, (ChunkPrimer) null);
-        }
+
+        bridges.generate(this.world, x, z, (ChunkPrimer) null);
     }
 }

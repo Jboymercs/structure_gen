@@ -79,7 +79,7 @@ public class EntityAISupport extends EntityAIBase {
             /**
              * Provide support if close enough
              */
-            if (this.cooldown <= 0) {
+            if (this.cooldown <= 0 && !supporter.isFightMode()) {
                 this.supporter.attackEntityWithRangedAttack(optimalMob, (float) this.supporter.getDistanceSq(optimalMob));
                 this.cooldown = supportCooldown;
             }

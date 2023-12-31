@@ -38,9 +38,12 @@ public abstract class EntityKnightBase extends EntityModBase {
     private static final DataParameter<Integer> SKIN_TYPE = EntityDataManager.<Integer>createKey(EntityKnightBase.class, DataSerializers.VARINT);
     private static final DataParameter<Boolean> INTERACT = EntityDataManager.createKey(EntityKnightBase.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Boolean> FIGHT_MODE = EntityDataManager.createKey(EntityKnightBase.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<Boolean> MARKED_FOR_UNHOLY = EntityDataManager.createKey(EntityKnightBase.class, DataSerializers.BOOLEAN);
 
     public void setFightMode(boolean value) {this.dataManager.set(FIGHT_MODE, Boolean.valueOf(value));}
     public boolean isFightMode() {return this.dataManager.get(FIGHT_MODE);}
+    public boolean isMarkedForUnholy() {return this.dataManager.get(MARKED_FOR_UNHOLY);}
+    public void setMarkedForUnholy(boolean value) {this.dataManager.set(MARKED_FOR_UNHOLY, Boolean.valueOf(value));}
     /**
      * Allows me to insert specific AI and make them seem like they work more like a group
      * @param worldIn
@@ -83,6 +86,7 @@ public abstract class EntityKnightBase extends EntityModBase {
         super.entityInit();
         this.getDataManager().register(SKIN_TYPE, Integer.valueOf(this.rand.nextInt(3)));
         this.dataManager.register(FIGHT_MODE, Boolean.valueOf(false));
+        this.dataManager.register(MARKED_FOR_UNHOLY, Boolean.valueOf(false));
     }
 
 

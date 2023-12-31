@@ -4,6 +4,7 @@ import com.example.structure.config.ModConfig;
 import com.example.structure.entity.EntityCrystalKnight;
 import com.example.structure.entity.EntityGroundCrystal;
 import com.example.structure.entity.EntityModBase;
+import com.example.structure.entity.knighthouse.EntityKnightBase;
 import com.example.structure.util.ModDamageSource;
 import com.example.structure.util.ModUtils;
 import net.minecraft.entity.EntityLivingBase;
@@ -53,7 +54,7 @@ public class EntityRedCrystal extends EntityModBase implements IAnimatable {
         this.rotationPitch = 0;
         this.rotationYawHead = 0;
         this.renderYawOffset = 0;
-        List<EntityLivingBase> targets = this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox(), e -> !e.getIsInvulnerable() && (!(e instanceof EntityEndKing || e instanceof EntityRedCrystal)));
+        List<EntityLivingBase> targets = this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox(), e -> !e.getIsInvulnerable() && (!(e instanceof EntityEndKing || e instanceof EntityRedCrystal || e instanceof EntityKnightBase)));
 
         if(!targets.isEmpty()) {
             Vec3d pos = this.getPositionVector().add(ModUtils.yVec(0.7));

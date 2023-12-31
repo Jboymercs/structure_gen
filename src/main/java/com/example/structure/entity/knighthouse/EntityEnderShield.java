@@ -11,6 +11,7 @@ import com.example.structure.util.ModDamageSource;
 import com.example.structure.util.ModRand;
 import com.example.structure.util.ModUtils;
 import com.example.structure.util.handlers.ParticleManager;
+import net.minecraft.block.BlockWall;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -96,7 +97,7 @@ public class EntityEnderShield extends EntityKnightBase implements IAnimatable, 
         if(target != null) {
             double distSq = this.getDistanceSq(target.posX, target.getEntityBoundingBox().minY, target.posZ);
             double distance = Math.sqrt(distSq);
-            if(distance < 8 ) {
+            if(distance < 8 && !this.isRandomGetAway) {
                 this.setShielded(true);
                 standbyTimer = 40;
             } else if(distance > 8 && standbyTimer < 0){
@@ -200,6 +201,7 @@ public class EntityEnderShield extends EntityKnightBase implements IAnimatable, 
     @Override
     @SideOnly(Side.CLIENT)
     public void handleStatusUpdate(byte id) {
+
         if (id == ModUtils.PARTICLE_BYTE) {
             ModUtils.circleCallback(1, 30, (pos)-> {
                 pos = new Vec3d(pos.x, 0, pos.y);
@@ -214,9 +216,11 @@ public class EntityEnderShield extends EntityKnightBase implements IAnimatable, 
     private final Consumer<EntityLivingBase> randomGetBack = (target) -> {
       this.setFightMode(true);
       this.isRandomGetAway = true;
+      this.shieldLowered = true;
       addEvent(()-> {
           this.isRandomGetAway = false;
           this.setFightMode(false);
+          this.shieldLowered = false;
       }, 25);
     };
     private final Consumer<EntityLivingBase> shieldBash = (target) -> {

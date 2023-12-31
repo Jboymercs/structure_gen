@@ -4,12 +4,14 @@ import com.example.structure.config.ModConfig;
 import com.example.structure.entity.ai.EntityAITimedAttack;
 import com.example.structure.entity.ai.EntityAITimedKnight;
 import com.example.structure.entity.knighthouse.EntityKnightBase;
+import com.example.structure.entity.knighthouse.EntityKnightLord;
 import com.example.structure.entity.model.ModelEnderKnight;
 import com.example.structure.entity.util.IAttack;
 import com.example.structure.util.ModColors;
 import com.example.structure.util.ModDamageSource;
 import com.example.structure.util.ModRand;
 import com.example.structure.util.ModUtils;
+import com.example.structure.util.handlers.ModSoundHandler;
 import com.example.structure.util.handlers.ParticleManager;
 import net.minecraft.client.model.ModelCreeper;
 import net.minecraft.entity.EntityLivingBase;
@@ -57,6 +59,7 @@ public class EntityEnderKnight extends EntityKnightBase implements IAnimatable, 
 
     private final String ANIM_STRIKE_THREE = "swing_upper_three";
     private final String ANIM_DASH = "dash";
+    private final String ANIM_DEATH = "death";
     private final String ANIM_INTERACT_ONE = "interact_1";
     private final String ANIM_INTERACT_TWO = "interact_2";
 
@@ -68,6 +71,7 @@ public class EntityEnderKnight extends EntityKnightBase implements IAnimatable, 
      private static final DataParameter<Boolean> SECOND_STRIKE = EntityDataManager.createKey(EntityEnderKnight.class, DataSerializers.BOOLEAN);
 
      private static final DataParameter<Boolean> THIRD_STRIKE = EntityDataManager.createKey(EntityEnderKnight.class, DataSerializers.BOOLEAN);
+     private static final DataParameter<Boolean> DEATH_KNIGHT = EntityDataManager.createKey(EntityEnderKnight.class, DataSerializers.BOOLEAN);
 
     private AnimationFactory factory = new AnimationFactory(this);
 
@@ -84,6 +88,7 @@ public class EntityEnderKnight extends EntityKnightBase implements IAnimatable, 
         this.dataManager.register(DASH_ATTACK, Boolean.valueOf(false));
         this.dataManager.register(SECOND_STRIKE, Boolean.valueOf(false));
         this.dataManager.register(THIRD_STRIKE, Boolean.valueOf(false));
+        this.dataManager.register(DEATH_KNIGHT, Boolean.valueOf(false));
     }
 
     public void setStrikeAttack(boolean value) {this.dataManager.set(STRIKE_ATTACK, Boolean.valueOf(value));}
@@ -100,6 +105,8 @@ public class EntityEnderKnight extends EntityKnightBase implements IAnimatable, 
 
     public void setThirdStrike(boolean value) {this.dataManager.set(THIRD_STRIKE, Boolean.valueOf(value));}
     public boolean isThirdStrike() {return this.dataManager.get(THIRD_STRIKE);}
+    public void setDeathKnight(boolean value) {this.dataManager.set(DEATH_KNIGHT, Boolean.valueOf(value));}
+    public boolean isDeathKnight() {return this.dataManager.get(DEATH_KNIGHT);}
 
     @Override
     public void registerControllers(AnimationData animationData) {
@@ -107,6 +114,7 @@ public class EntityEnderKnight extends EntityKnightBase implements IAnimatable, 
         animationData.addAnimationController(new AnimationController(this, "arms_controller", 0, this::predicateArms));
         animationData.addAnimationController(new AnimationController(this, "legs_controller", 0, this::predicateLegs));
         animationData.addAnimationController(new AnimationController(this, "fight_controller", 0, this::predicateAttack));
+        animationData.addAnimationController(new AnimationController(this, "death_controller", 0, this::predicateDeath));
 
     }
 
@@ -121,7 +129,7 @@ public class EntityEnderKnight extends EntityKnightBase implements IAnimatable, 
             double distSq = this.getDistanceSq(target.posX, target.getEntityBoundingBox().minY, target.posZ);
             double distance = Math.sqrt(distSq);
 
-            if(distance > 3 && distance < 10 && !this.isFightMode() && dashMeter > 140 && !this.isRandomGetAway) {
+            if(distance > 3 && distance < 10 && !this.isFightMode() && dashMeter > 140 && !this.isRandomGetAway && !this.isDeathKnight()) {
                 dashAttack.accept(target);
                 dashMeter = 0;
             }
@@ -155,8 +163,16 @@ public class EntityEnderKnight extends EntityKnightBase implements IAnimatable, 
         super.initEntityAI();
         this.tasks.addTask(4, new EntityAITimedKnight<>(this, 1.5, 10, 3F, 0.2f));
     }
+
+    private<E extends IAnimatable> PlayState predicateDeath(AnimationEvent<E> event) {
+        if(this.isDeathKnight()) {
+            event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_DEATH, false));
+            return PlayState.CONTINUE;
+        }
+        return PlayState.STOP;
+    }
     private <E extends IAnimatable>PlayState predicateArms(AnimationEvent<E> event) {
-    if(!this.isFightMode()) {
+    if(!this.isFightMode() && !this.isDeathKnight()) {
         if (!(event.getLimbSwingAmount() > -0.10F && event.getLimbSwingAmount() < 0.10F)) {
             event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_WALKING_ARMS, true));
             return PlayState.CONTINUE;
@@ -165,7 +181,7 @@ public class EntityEnderKnight extends EntityKnightBase implements IAnimatable, 
         return PlayState.STOP;
     }
     private <E extends IAnimatable>PlayState predicateLegs(AnimationEvent<E> event) {
-        if(!(event.getLimbSwingAmount() > -0.10F && event.getLimbSwingAmount() < 0.10F)) {
+        if(!(event.getLimbSwingAmount() > -0.10F && event.getLimbSwingAmount() < 0.10F) && !this.isDeathKnight()) {
             event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_WALKING_LEGS, true));
             return PlayState.CONTINUE;
         }
@@ -173,7 +189,7 @@ public class EntityEnderKnight extends EntityKnightBase implements IAnimatable, 
     }
 
     private<E extends IAnimatable> PlayState predicateIdle(AnimationEvent<E> event) {
-        if(!this.isFightMode()) {
+        if(!this.isFightMode() && !this.isDeathKnight()) {
             if (event.getLimbSwingAmount() > -0.09F && event.getLimbSwingAmount() < 0.09F) {
                 event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_IDLE, true));
                 return PlayState.CONTINUE;
@@ -185,21 +201,23 @@ public class EntityEnderKnight extends EntityKnightBase implements IAnimatable, 
 
 
     private <E extends IAnimatable> PlayState predicateAttack(AnimationEvent<E> event) {
-        if(this.isStrikeAttack()) {
-            event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_STRIKE_ONE, false));
-            return PlayState.CONTINUE;
-        }
-        if(this.isSecondStrike()) {
-            event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_STRIKE_TWO, false));
-            return PlayState.CONTINUE;
-        }
-        if(this.isDashAttack()) {
-            event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_DASH, false));
-            return PlayState.CONTINUE;
-        }
-        if(this.isThirdStrike()) {
-            event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_STRIKE_THREE, false));
-            return PlayState.CONTINUE;
+        if(!this.isDeathKnight()) {
+            if (this.isStrikeAttack()) {
+                event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_STRIKE_ONE, false));
+                return PlayState.CONTINUE;
+            }
+            if (this.isSecondStrike()) {
+                event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_STRIKE_TWO, false));
+                return PlayState.CONTINUE;
+            }
+            if (this.isDashAttack()) {
+                event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_DASH, false));
+                return PlayState.CONTINUE;
+            }
+            if (this.isThirdStrike()) {
+                event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_STRIKE_THREE, false));
+                return PlayState.CONTINUE;
+            }
         }
         event.getController().markNeedsReload();
         return PlayState.STOP;
@@ -220,6 +238,10 @@ public class EntityEnderKnight extends EntityKnightBase implements IAnimatable, 
             ParticleManager.spawnColoredSmoke(world, getPositionVector().add(ModUtils.yVec(1.7)), ModColors.RED, Vec3d.ZERO);
             ParticleManager.spawnColoredSmoke(world, getPositionVector().add(ModUtils.yVec(2.0)), ModColors.RED, Vec3d.ZERO);
         }
+
+        if(id == ModUtils.SECOND_PARTICLE_BYTE) {
+            ParticleManager.spawnColoredSmoke(world, getPositionVector().add(ModUtils.getRelativeOffset(this, new Vec3d(0, 1.5, 0))), ModColors.RED, new Vec3d(ModRand.getFloat(1) * 0.1,ModRand.getFloat(1) * 0.1,ModRand.getFloat(1) * 0.1));
+        }
     }
 
     //Particle Call
@@ -227,9 +249,13 @@ public class EntityEnderKnight extends EntityKnightBase implements IAnimatable, 
     public void onEntityUpdate() {
         super.onEntityUpdate();
         if(dashParticles) {
-
         world.setEntityState(this, ModUtils.PARTICLE_BYTE);
+        }
 
+        if(this.isDeathKnight() || this.isMarkedForUnholy()) {
+            if(rand.nextInt(2) == 0) {
+                world.setEntityState(this, ModUtils.SECOND_PARTICLE_BYTE);
+            }
         }
     }
 
@@ -238,7 +264,7 @@ public class EntityEnderKnight extends EntityKnightBase implements IAnimatable, 
     @Override
     public int startAttack(EntityLivingBase target, float distanceSq, boolean strafingBackwards) {
         double distance = Math.sqrt(distanceSq);
-        if(!this.isFightMode()) {
+        if(!this.isFightMode() && !this.isDeathKnight()) {
             List<Consumer<EntityLivingBase>> attacks = new ArrayList<>(Arrays.asList(regularStrike, strikeTwo, strikeThree, randomGetBack));
             double[] weights = {
                     (distance < 4 && prevAttack != regularStrike) ? 1/distance : 0, // Main Strike
@@ -363,5 +389,30 @@ public class EntityEnderKnight extends EntityKnightBase implements IAnimatable, 
           this.setDashAttack(false);
       }, 22);
     };
+
+    @Override
+    public void onDeath(DamageSource cause) {
+        this.setHealth(0.0001f);
+        if(world.rand.nextInt(6) == 0 || this.isMarkedForUnholy()) {
+            this.setDeathKnight(true);
+            this.setImmovable(true);
+        }
+        if(this.isDeathKnight()) {
+            addEvent(()-> {
+                this.setImmovable(false);
+                this.setDeathKnight(false);
+                this.setDead();
+                if(!world.isRemote) {
+                    EntityKnightLord lord = new EntityKnightLord(this.world);
+                    lord.copyLocationAndAnglesFrom(this);
+                    this.world.spawnEntity(lord);
+                }
+            }, 50);
+
+        } else {
+            this.setDead();
+        }
+        super.onDeath(cause);
+    }
 
 }

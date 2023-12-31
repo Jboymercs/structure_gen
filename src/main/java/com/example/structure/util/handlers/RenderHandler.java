@@ -5,6 +5,7 @@ import com.example.structure.entity.endking.*;
 import com.example.structure.entity.knighthouse.EntityEnderMage;
 import com.example.structure.entity.knighthouse.EntityEnderShield;
 import com.example.structure.entity.knighthouse.EntityHealAura;
+import com.example.structure.entity.knighthouse.EntityKnightLord;
 import com.example.structure.entity.render.*;
 import com.example.structure.init.ModItems;
 import net.minecraft.client.Minecraft;
@@ -85,5 +86,7 @@ public class RenderHandler {
         RenderingRegistry.registerEntityRenderingHandler(EntityHealAura.class, RenderHealingAura::new);
         //Ender Shield
         RenderingRegistry.registerEntityRenderingHandler(EntityEnderShield.class, RenderEnderShield::new);
+        //Ender Lord
+        RenderingRegistry.registerEntityRenderingHandler(EntityKnightLord.class, RenderKnightLord::new);
     }
 }

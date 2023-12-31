@@ -48,14 +48,19 @@ public class EntityEnderMage extends EntityKnightBase implements IAnimatable, IA
     private Consumer<EntityLivingBase> prevAttack;
     public boolean isCloseTooAllies = false;
     public boolean selectEntity = false;
-    protected int reCheckArea = 400;
+
+    public boolean nearbyMarked = false;
+
     private final String ANIM_WALKING_ARMS = "walk_upper";
     private final String ANIM_WALKING_LEGS = "walk_lower";
     private final String ANIM_CAST_HEAL = "heal";
     private final String ANIM_CAST_ATTACK = "attack";
+    private final String ANIM_MARKED = "mark";
 
+    public int randomMarkTimer = 800 + ModRand.range(50, 3000);
     private static final DataParameter<Boolean> HEALING_MODE =EntityDataManager.createKey(EntityEnderMage.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Boolean> ATTACK_MODE = EntityDataManager.createKey(EntityEnderMage.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<Boolean> MARKED = EntityDataManager.createKey(EntityEnderMage.class, DataSerializers.BOOLEAN);
 
     private AnimationFactory factory = new AnimationFactory(this);
     public EntityEnderMage(World worldIn, float x, float y, float z) {
@@ -67,11 +72,14 @@ public class EntityEnderMage extends EntityKnightBase implements IAnimatable, IA
         this.setSize(0.8f, 2.0f);
     }
 
+
+
     @Override
     public void entityInit() {
         super.entityInit();
         this.dataManager.register(HEALING_MODE, Boolean.valueOf(false));
         this.dataManager.register(ATTACK_MODE, Boolean.valueOf(false));
+        this.dataManager.register(MARKED, Boolean.valueOf(false));
     }
 
     @Override
@@ -86,20 +94,57 @@ public class EntityEnderMage extends EntityKnightBase implements IAnimatable, IA
             this.isCloseTooAllies = false;
         }
 
-        if(selectEntity) {
-            reCheckArea--;
+        List<EntityEnderKnight> nearbyChadKnight = this.world.getEntitiesWithinAABB(EntityEnderKnight.class, this.getEntityBoundingBox().grow(20D), e-> !e.getIsInvulnerable() && !EntityKnightBase.CAN_TARGET.apply(e));
+        if(!nearbyChadKnight.isEmpty()) {
+            for(EntityEnderKnight knight : nearbyChadKnight) {
+                if(knight.isMarkedForUnholy()) {
+                    nearbyMarked = true;
+                }
+            }
+
+        }
+        if(nearbyChadKnight.isEmpty()) {
+            nearbyMarked =false;
         }
 
-        if(reCheckArea == 0) {
-            this.selectEntity = false;
+        EntityLivingBase target = this.getAttackTarget();
+        List<EntityEnderKnight> nearbyCurses = this.world.getEntitiesWithinAABB(EntityEnderKnight.class, this.getEntityBoundingBox().grow(4D), e-> !e.getIsInvulnerable() && !EntityKnightBase.CAN_TARGET.apply(e));
+        if(!nearbyCurses.isEmpty() && target == null && randomMarkTimer < 0 && !this.nearbyMarked) {
+            for(EntityEnderKnight knight : nearbyCurses) {
+                if(!knight.isMarkedForUnholy() && !this.selectEntity) {
+                    castUnholyMarking(knight);
+                }
+            }
+        } else if (!this.selectEntity){
+            randomMarkTimer--;
         }
     }
 
-    public void selectSupportArea(EntityKnightBase selection) {
-        this.getNavigator().tryMoveToEntityLiving(selection, 1.5D);
-        addEvent(()->this.getNavigator().tryMoveToEntityLiving(selection, 1.5D) , 20);
-        addEvent(()->this.getNavigator().tryMoveToEntityLiving(selection, 1.5D) , 40);
+    //Ender Mages can only perform this task once, making it limiting to how many Unholy Ender Knights can be in an area
+    public void castUnholyMarking(EntityEnderKnight knight) {
+        this.setFightMode(true);
+        this.setMarked(true);
+        this.setImmovable(true);
+        this.faceEntity(knight, 30.0f, 30.0f);
         this.selectEntity = true;
+        addEvent(()-> {
+            if(!world.isRemote) {
+                knight.setMarkedForUnholy(true);
+            }
+
+            for (int i = -5; i < 2; i++) {
+                final float yOff = i * 0.5f;
+                ModUtils.circleCallback(1, 20, (pos)-> {
+                    pos = new Vec3d(pos.x, yOff, pos.y);
+                    ParticleManager.spawnColoredSmoke(world, pos.add(knight.getPositionVector().add(ModUtils.yVec(0.3D))), ModColors.RED, ModUtils.yVec(0.1));
+                });
+            }
+        }, 20);
+        addEvent(()-> {
+            this.setMarked(false);
+            this.setFightMode(false);
+            this.setImmovable(false);
+        }, 35);
     }
 
     @Override
@@ -117,8 +162,6 @@ public class EntityEnderMage extends EntityKnightBase implements IAnimatable, IA
         super.initEntityAI();
         this.tasks.addTask(4, new EntityAISupport(this, 1.2, 0, 10f, 100));
         this.tasks.addTask(5, new EntityAITimedAttack<>(this, 1.5, 20, 16F, 0.4f));
-
-
     }
 
 
@@ -127,6 +170,8 @@ public class EntityEnderMage extends EntityKnightBase implements IAnimatable, IA
 
     public void setAttackMode(boolean value) {this.dataManager.set(ATTACK_MODE, Boolean.valueOf(value));}
     public boolean isAttackMode() {return this.dataManager.get(ATTACK_MODE);}
+    public void setMarked(boolean value) {this.dataManager.set(MARKED, Boolean.valueOf(value));}
+    public boolean isMarked() {return this.dataManager.get(MARKED);}
     private <E extends IAnimatable> PlayState predicateArms(AnimationEvent<E> event) {
 
         if (!(event.getLimbSwingAmount() > -0.10F && event.getLimbSwingAmount() < 0.10F) && !this.isFightMode()) {
@@ -162,6 +207,10 @@ public class EntityEnderMage extends EntityKnightBase implements IAnimatable, IA
     }
     if(this.isAttackMode()) {
         event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_CAST_ATTACK, false));
+        return PlayState.CONTINUE;
+    }
+    if(this.isMarked()) {
+        event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_MARKED, false));
         return PlayState.CONTINUE;
     }
         event.getController().markNeedsReload();
@@ -225,6 +274,8 @@ public class EntityEnderMage extends EntityKnightBase implements IAnimatable, IA
         if (id == ModUtils.SECOND_PARTICLE_BYTE) {
             ParticleManager.spawnSwirl2(world, this.getPositionVector(), ModColors.RED, Vec3d.ZERO);
         }
+
+
         super.handleStatusUpdate(id);
     }
 

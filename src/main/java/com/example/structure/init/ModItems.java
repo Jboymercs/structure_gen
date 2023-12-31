@@ -43,7 +43,7 @@ public class ModItems {
 
     public static final Item SPIN_SWORD_ITEM = new SpinSwordItem("spinsword", null);
 
-    public static final Item SKATE_BOOTS = new ItemSlideBoots("skate_boots", ARMOR, 1, EntityEquipmentSlot.FEET,  "skate");
+   //public static final Item SKATE_BOOTS = new ItemSlideBoots("skate_boots", ARMOR, 1, EntityEquipmentSlot.FEET,  "skate");
     public ModItems() {
 
 

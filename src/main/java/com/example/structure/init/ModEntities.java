@@ -7,6 +7,7 @@ import com.example.structure.entity.endking.*;
 import com.example.structure.entity.knighthouse.EntityEnderMage;
 import com.example.structure.entity.knighthouse.EntityEnderShield;
 import com.example.structure.entity.knighthouse.EntityHealAura;
+import com.example.structure.entity.knighthouse.EntityKnightLord;
 import com.example.structure.entity.tileentity.*;
 import com.example.structure.util.ModReference;
 import com.example.structure.util.ModUtils;
@@ -80,6 +81,8 @@ public class ModEntities {
         registerEntityWithID("end_shield", EntityEnderShield.class, ENTITY_START_ID++, 60, end_mobs);
         //Ender Mage
         registerEntityWithID("end_mage", EntityEnderMage.class, ENTITY_START_ID++, 60, end_mobs);
+        //Ender Sword Ultra
+        registerEntityWithID("end_lord", EntityKnightLord.class, ENTITY_START_ID++, 60, end_mobs);
         //Heal Aura
         registerEntity("heal_aura", EntityHealAura.class, ENTITY_START_ID++, 60);
     }
