@@ -20,7 +20,8 @@ public class WorldGenEndDungeon extends WorldGenStructure{
 
     @Override
     public boolean generate(World worldIn, Random random, BlockPos blockPos) {
-        return super.generate(worldIn, random, blockPos.add(new BlockPos(0,yOffset,0)));
+        BlockPos offset = this.getCenter(worldIn).subtract(this.getCenter(worldIn));
+        return super.generate(worldIn, random, offset.add(new BlockPos(0,yOffset,0)));
     }
 
     @Override

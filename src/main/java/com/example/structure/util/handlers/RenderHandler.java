@@ -88,5 +88,7 @@ public class RenderHandler {
         RenderingRegistry.registerEntityRenderingHandler(EntityEnderShield.class, RenderEnderShield::new);
         //Ender Lord
         RenderingRegistry.registerEntityRenderingHandler(EntityKnightLord.class, RenderKnightLord::new);
+        //Snatcher
+        RenderingRegistry.registerEntityRenderingHandler(EntitySnatcher.class, RenderSnatcher::new);
     }
 }

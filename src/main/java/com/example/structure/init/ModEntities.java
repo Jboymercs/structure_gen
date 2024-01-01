@@ -83,6 +83,8 @@ public class ModEntities {
         registerEntityWithID("end_mage", EntityEnderMage.class, ENTITY_START_ID++, 60, end_mobs);
         //Ender Sword Ultra
         registerEntityWithID("end_lord", EntityKnightLord.class, ENTITY_START_ID++, 60, end_mobs);
+        //Snatcher
+        registerEntityWithID("snatcher", EntitySnatcher.class, ENTITY_START_ID++, 70, end_mobs);
         //Heal Aura
         registerEntity("heal_aura", EntityHealAura.class, ENTITY_START_ID++, 60);
     }

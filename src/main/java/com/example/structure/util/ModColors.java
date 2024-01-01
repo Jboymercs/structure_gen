@@ -12,6 +12,8 @@ public class ModColors {
 
     public static final Vec3d RANDOM_GREY = randomSetColors();
 
+    public static final Vec3d YELLOW = new Vec3d(0.8, 0.8, 0.4);
+
     public static Vec3d variateColor(Vec3d baseColor, float variance) {
         float f = ModRand.getFloat(variance);
 

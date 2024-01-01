@@ -392,10 +392,10 @@ public class EntityEnderKnight extends EntityKnightBase implements IAnimatable, 
 
     @Override
     public void onDeath(DamageSource cause) {
-        this.setHealth(0.0001f);
         if(world.rand.nextInt(6) == 0 || this.isMarkedForUnholy()) {
             this.setDeathKnight(true);
             this.setImmovable(true);
+            this.setHealth(0.0001f);
         }
         if(this.isDeathKnight()) {
             addEvent(()-> {
@@ -409,8 +409,6 @@ public class EntityEnderKnight extends EntityKnightBase implements IAnimatable, 
                 }
             }, 50);
 
-        } else {
-            this.setDead();
         }
         super.onDeath(cause);
     }

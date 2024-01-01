@@ -2,6 +2,7 @@ package com.example.structure.world.Biome;
 
 import com.example.structure.init.ModBlocks;
 import com.example.structure.util.MapGenModStructure;
+import com.example.structure.util.handlers.BiomeRegister;
 import com.example.structure.world.Biome.altardungeon.MapGenAltarDungeon;
 import com.example.structure.world.Biome.bridgestructure.MapGenBridgeStructure;
 import com.example.structure.world.Biome.decorator.WorldGenLongVein;
@@ -19,6 +20,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeEnd;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkPrimer;
 import net.minecraft.world.gen.ChunkGeneratorEnd;
@@ -28,6 +30,7 @@ import net.minecraft.world.gen.feature.WorldGenEndGateway;
 import net.minecraft.world.gen.feature.WorldGenEndIsland;
 import net.minecraft.world.gen.structure.MapGenEndCity;
 import net.minecraft.world.gen.structure.MapGenStructure;
+import net.minecraftforge.common.BiomeDictionary;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -36,7 +39,8 @@ import java.util.Random;
 public class WorldChunkGeneratorEE extends ChunkGeneratorEnd {
     private final Random rand;
     protected static final IBlockState END_STONE = Blocks.END_STONE.getDefaultState();
-    protected static final IBlockState ASH_WASTE = ModBlocks.END_ASH.getDefaultState();
+    protected static final IBlockState ASH_WASTE = ModBlocks.BROWN_END_STONE.getDefaultState();
+    protected static final IBlockState ASH_SURFACE = ModBlocks.END_ASH.getDefaultState();
     protected static final IBlockState AIR = Blocks.AIR.getDefaultState();
     public static final int ALTAR_STRUCTURE_SPACING = 10;
     public static final int ALTAR_STRUCTURE_NUMBER = 0;
@@ -64,6 +68,8 @@ public class WorldChunkGeneratorEE extends ChunkGeneratorEnd {
     private double[] buffer;
     /** The biomes that are used to generate the chunk */
     private Biome[] biomesForGeneration;
+
+    private Biome[] biomesIncluded = {BiomeRegister.END_ASH_WASTELANDS};
     double[] pnr;
     double[] ar;
     double[] br;
@@ -139,9 +145,8 @@ public class WorldChunkGeneratorEE extends ChunkGeneratorEnd {
 
                                 if (d15 > 0.0D)
                                 {
+                                        iblockstate = END_STONE;
 
-
-                                    iblockstate = END_STONE;
                                 }
 
                                 int k2 = i2 + i1 * 8;
@@ -177,44 +182,88 @@ public class WorldChunkGeneratorEE extends ChunkGeneratorEnd {
                 int l = -1;
                 Biome current = biomeMap[i + j * 16]; //some backwards ass shit
                 IBlockState surface = END_STONE;
+                IBlockState surface2 = ASH_SURFACE;
                 IBlockState filler = END_STONE;
-                if(current != Biomes.SKY)
+                IBlockState filler2 = ASH_WASTE;
+                if(current == BiomeRegister.END_ASH_WASTELANDS) {
+                    filler2 = current.fillerBlock;
+                    surface2 = current.topBlock;
+                }
+                 else if(current != Biomes.SKY)
                 {
                     surface = current.topBlock;
                     filler = current.fillerBlock;
+
                 }
 
-
-                for (int i1 = 127; i1 >= 0; --i1)
-                {
-                    IBlockState iblockstate2 = primer.getBlockState(i, i1, j);
-
-                    if (iblockstate2.getMaterial() == Material.AIR)
+                if(current == BiomeRegister.END_ASH_WASTELANDS) {
+                    for (int i1 = 127; i1 >= 0; --i1)
                     {
-                        l = -1;
-                    }
-                    else if (iblockstate2 == END_STONE)
-                    {
-                        if (l == -1)
+                        IBlockState iblockstate2 = primer.getBlockState(i, i1, j);
+
+                        if (iblockstate2.getMaterial() == Material.AIR)
                         {
-                            l = 3+rand.nextInt(2);
+                            l = -1;
+                        }
+                        else if (iblockstate2 == END_STONE)
+                        {
+                            if (l == -1)
+                            {
+                                l = 36 +rand.nextInt(2);
 
-                            if (i1 >= 0)
-                            {
-                                primer.setBlockState(i, i1, j, surface);
+                                if (i1 >= 0)
+                                {
+                                    primer.setBlockState(i, i1, j, surface2);
+                                }
+                                else
+                                {
+                                    primer.setBlockState(i, i1, j, filler2);
+                                }
                             }
-                            else
+                            else if (l > 0)
                             {
+
+
+                                --l;
+                                primer.setBlockState(i, i1, j, filler2);
+                            }
+                        }
+                    }
+                } else {
+                    for (int i1 = 127; i1 >= 0; --i1)
+                    {
+                        IBlockState iblockstate2 = primer.getBlockState(i, i1, j);
+
+                        if (iblockstate2.getMaterial() == Material.AIR)
+                        {
+                            l = -1;
+                        }
+                        else if (iblockstate2 == END_STONE)
+                        {
+                            if (l == -1)
+                            {
+                                l = 3+rand.nextInt(2);
+
+                                if (i1 >= 0)
+                                {
+                                    primer.setBlockState(i, i1, j, surface);
+                                }
+                                else
+                                {
+                                    primer.setBlockState(i, i1, j, filler);
+                                }
+                            }
+                            else if (l > 0)
+                            {
+
+
+                                --l;
                                 primer.setBlockState(i, i1, j, filler);
                             }
                         }
-                        else if (l > 0)
-                        {
-                            --l;
-                            primer.setBlockState(i, i1, j, filler);
-                        }
                     }
                 }
+
             }
         }
     }
@@ -230,7 +279,7 @@ public class WorldChunkGeneratorEE extends ChunkGeneratorEnd {
         if (this.mapFeaturesEnabled)
         {
             this.endCityGen.generate(this.world, x, z, chunkprimer);
-            this.bridges.generate(this.world, x, z, chunkprimer);
+
 
         }
 
@@ -490,9 +539,9 @@ public class WorldChunkGeneratorEE extends ChunkGeneratorEnd {
             return null;
         }
 
-        if("Bridge Ruins".equals(structureName) && this.bridges != null) {
-            return this.bridges.getNearestStructurePos(worldIn, position, findUnexplored);
-        }
+       // if("Bridge Ruins".equals(structureName) && this.bridges != null) {
+          //  return this.bridges.getNearestStructurePos(worldIn, position, findUnexplored);
+       // }
 
         return "EndCity".equals(structureName) && this.endCityGen != null ? this.endCityGen.getNearestStructurePos(worldIn, position, findUnexplored) : null;
     }
@@ -503,9 +552,9 @@ public class WorldChunkGeneratorEE extends ChunkGeneratorEnd {
             return false;
         }
 
-        if("Bridge Ruins".equals(structureName) && this.bridges != null) {
-            return this.bridges.isInsideStructure(pos);
-        }
+       // if("Bridge Ruins".equals(structureName) && this.bridges != null) {
+         //   return this.bridges.isInsideStructure(pos);
+       // }
 
         return "EndCity".equals(structureName) && this.endCityGen != null ? this.endCityGen.isInsideStructure(pos) : false;
     }
@@ -520,6 +569,6 @@ public class WorldChunkGeneratorEE extends ChunkGeneratorEnd {
     @Override
     public void recreateStructures(Chunk chunkIn, int x, int z) {
 
-        bridges.generate(this.world, x, z, (ChunkPrimer) null);
+
     }
 }

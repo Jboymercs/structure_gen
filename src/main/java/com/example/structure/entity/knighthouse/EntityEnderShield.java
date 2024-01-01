@@ -46,6 +46,10 @@ public class EntityEnderShield extends EntityKnightBase implements IAnimatable, 
     private final String ANIM_PIERCE = "pierce";
     private final String ANIM_ATTACK = "attack";
     private final String ANIM_SHIELD = "shield_bash";
+
+    private final String ANIM_STUN = "stun";
+
+    protected boolean openToParry = false;
     protected boolean shieldLowered = false;
     private Consumer<EntityLivingBase> prevAttack;
     private AnimationFactory factory = new AnimationFactory(this);
@@ -54,6 +58,7 @@ public class EntityEnderShield extends EntityKnightBase implements IAnimatable, 
     private static final DataParameter<Boolean> PIERCE_ATTACK = EntityDataManager.createKey(EntityEnderShield.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Boolean> REGULAR_ATTACK = EntityDataManager.createKey(EntityEnderShield.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Boolean> SHIELD_ATTACK = EntityDataManager.createKey(EntityEnderShield.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<Boolean> STUNNED = EntityDataManager.createKey(EntityEnderShield.class, DataSerializers.BOOLEAN);
 
     public void setShielded(boolean value) {this.dataManager.set(SHIELDED, Boolean.valueOf(value));}
     public boolean isShielded() {return this.dataManager.get(SHIELDED);}
@@ -63,6 +68,8 @@ public class EntityEnderShield extends EntityKnightBase implements IAnimatable, 
     public boolean isRegularAttack() {return this.dataManager.get(REGULAR_ATTACK);}
     public void setShieldAttack(boolean value) {this.dataManager.set(SHIELD_ATTACK, Boolean.valueOf(value));}
     public boolean isShieldAttack() {return this.dataManager.get(SHIELD_ATTACK);}
+    public void setStunned(boolean value) {this.dataManager.set(STUNNED, Boolean.valueOf(value));}
+    public boolean isStunned() {return this.dataManager.get(STUNNED);}
 
     public EntityEnderShield(World worldIn) {
         super(worldIn);
@@ -76,6 +83,7 @@ public class EntityEnderShield extends EntityKnightBase implements IAnimatable, 
         this.dataManager.register(PIERCE_ATTACK, Boolean.valueOf(false));
         this.dataManager.register(SHIELD_ATTACK, Boolean.valueOf(false));
         this.dataManager.register(SHIELDED, Boolean.valueOf(false));
+        this.dataManager.register(STUNNED, Boolean.valueOf(false));
     }
 
     @Override
@@ -113,6 +121,11 @@ public class EntityEnderShield extends EntityKnightBase implements IAnimatable, 
 
                 standbyTimer--;
         }
+        if(this.isStunned()) {
+            this.setRegularAttack(false);
+            this.setPierceAttack(false);
+
+        }
     }
 
     @Override
@@ -123,7 +136,7 @@ public class EntityEnderShield extends EntityKnightBase implements IAnimatable, 
 
     private <E extends IAnimatable> PlayState predicateArms(AnimationEvent<E> event) {
 
-        if (!(event.getLimbSwingAmount() > -0.10F && event.getLimbSwingAmount() < 0.10F) && !this.isFightMode()) {
+        if (!(event.getLimbSwingAmount() > -0.10F && event.getLimbSwingAmount() < 0.10F) && !this.isFightMode() && !this.isStunned()) {
             if(this.isShielded()) {
                 event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_WALKING_ARMS_SHIELD, true));
             } else {
@@ -137,6 +150,14 @@ public class EntityEnderShield extends EntityKnightBase implements IAnimatable, 
     }
 
 
+    private <E extends  IAnimatable> PlayState predicateStunned(AnimationEvent<E> event) {
+        if(this.isStunned()) {
+            event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_STUN, false));
+            return PlayState.CONTINUE;
+        }
+        event.getController().markNeedsReload();
+        return PlayState.STOP;
+    }
 
     private <E extends IAnimatable>PlayState predicateLegs(AnimationEvent<E> event) {
         if(!(event.getLimbSwingAmount() > -0.10F && event.getLimbSwingAmount() < 0.10F)) {
@@ -149,9 +170,9 @@ public class EntityEnderShield extends EntityKnightBase implements IAnimatable, 
 
     private<E extends IAnimatable> PlayState predicateIdle(AnimationEvent<E> event) {
 
-        if(event.getLimbSwingAmount() > -0.09F && event.getLimbSwingAmount() < 0.09F && !this.isFightMode()) {
+        if(event.getLimbSwingAmount() > -0.09F && event.getLimbSwingAmount() < 0.09F && !this.isFightMode() && !this.isStunned()) {
             if(this.isShielded()) {
-                event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_IDLE, true));
+                event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_IDLE_SHIELD, true));
             } else {
                 event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_IDLE, true));
             }
@@ -162,7 +183,7 @@ public class EntityEnderShield extends EntityKnightBase implements IAnimatable, 
     }
 
     private <E extends IAnimatable> PlayState predicateAttack(AnimationEvent<E> event) {
-        if(this.isFightMode()) {
+        if(this.isFightMode() && !this.isStunned()) {
             if(this.isPierceAttack()) {
                 event.getController().setAnimation(new AnimationBuilder().addAnimation(ANIM_PIERCE, false));
                 return PlayState.CONTINUE;
@@ -183,7 +204,7 @@ public class EntityEnderShield extends EntityKnightBase implements IAnimatable, 
     @Override
     public int startAttack(EntityLivingBase target, float distanceSq, boolean strafingBackwards) {
         double distance = Math.sqrt(distanceSq);
-        if(!this.isFightMode()) {
+        if(!this.isFightMode() && !this.isStunned()) {
             List<Consumer<EntityLivingBase>> attacks = new ArrayList<>(Arrays.asList(simpleSwing, pierceAttack, shieldBash, randomGetBack));
             double[] weights = {
                     (distance < 4 && prevAttack != simpleSwing) ? 1/distance : 0, //Regular Attack
@@ -258,35 +279,53 @@ public class EntityEnderShield extends EntityKnightBase implements IAnimatable, 
     private final Consumer<EntityLivingBase> pierceAttack = (target) -> {
       this.setFightMode(true);
       this.setPierceAttack(true);
+      this.openToParry = true;
+      addEvent(()-> this.openToParry = false, 14);
     addEvent(()-> this.shieldLowered = true, 10);
     addEvent(()-> {
-        this.playSound(SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, 1.0f, 1.0f / (rand.nextFloat() * 0.4F + 0.4f));
-        Vec3d offset = this.getPositionVector().add(ModUtils.getRelativeOffset(this, new Vec3d(1.7,1.3,0)));
-        DamageSource source = ModDamageSource.builder().type(ModDamageSource.MOB).directEntity(this).disablesShields().build();
-        float damage = 5.0f;
-        ModUtils.handleAreaImpact(1.0f, (e)-> damage, this, offset, source, 0.6f, 0, false);
+        if(!this.isStunned()) {
+            this.playSound(SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, 1.0f, 1.0f / (rand.nextFloat() * 0.4F + 0.4f));
+            Vec3d offset = this.getPositionVector().add(ModUtils.getRelativeOffset(this, new Vec3d(1.7, 1.3, 0)));
+            DamageSource source = ModDamageSource.builder().type(ModDamageSource.MOB).directEntity(this).disablesShields().build();
+            float damage = 5.0f;
+            ModUtils.handleAreaImpact(1.0f, (e) -> damage, this, offset, source, 0.6f, 0, false);
+        }
     }, 15);
-    addEvent(()-> this.shieldLowered = false,24);
+    addEvent(()->{
+        if(!this.isStunned()) {
+        this.shieldLowered = false;}},24);
       addEvent(()-> {
-          this.setPierceAttack(false);
-          this.setFightMode(false);
+          if(!this.isStunned()) {
+              this.setPierceAttack(false);
+              this.setFightMode(false);
+          }
       }, 25);
     };
     private final Consumer<EntityLivingBase> simpleSwing = (target) -> {
       this.setFightMode(true);
       this.setRegularAttack(true);
+      this.openToParry = true;
+      addEvent(()-> this.openToParry = false, 18);
       addEvent(()-> this.shieldLowered = true, 15);
       addEvent(()-> {
-          this.playSound(SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, 1.0f, 1.0f / (rand.nextFloat() * 0.4F + 0.4f));
-          Vec3d offset = this.getPositionVector().add(ModUtils.getRelativeOffset(this, new Vec3d(1.2,1.3,0)));
-          DamageSource source = ModDamageSource.builder().type(ModDamageSource.MOB).directEntity(this).build();
-          float damage = 7.0f;
-          ModUtils.handleAreaImpact(1.0f, (e)-> damage, this, offset, source, 0.4f, 0, false);
+          if(!this.isStunned()) {
+              this.playSound(SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, 1.0f, 1.0f / (rand.nextFloat() * 0.4F + 0.4f));
+              Vec3d offset = this.getPositionVector().add(ModUtils.getRelativeOffset(this, new Vec3d(1.2, 1.3, 0)));
+              DamageSource source = ModDamageSource.builder().type(ModDamageSource.MOB).directEntity(this).build();
+              float damage = 7.0f;
+              ModUtils.handleAreaImpact(1.0f, (e) -> damage, this, offset, source, 0.4f, 0, false);
+          }
       },20 );
-        addEvent(()-> this.shieldLowered = false, 30);
+        addEvent(()-> {
+            if(!this.isStunned()) {
+                this.shieldLowered = false;
+            }
+            }, 30);
       addEvent(()-> {
-          this.setRegularAttack(false);
-          this.setFightMode(false);
+          if(!this.isStunned()) {
+              this.setRegularAttack(false);
+              this.setFightMode(false);
+          }
       }, 30);
     };
 
@@ -296,6 +335,7 @@ public class EntityEnderShield extends EntityKnightBase implements IAnimatable, 
         animationData.addAnimationController(new AnimationController(this, "arms_controller", 0, this::predicateArms));
         animationData.addAnimationController(new AnimationController(this, "legs_controller", 0, this::predicateLegs));
         animationData.addAnimationController(new AnimationController(this, "attack_controller", 0, this::predicateAttack));
+        animationData.addAnimationController(new AnimationController(this, "stun_controller", 0, this::predicateStunned));
 
     }
 
@@ -318,11 +358,43 @@ public class EntityEnderShield extends EntityKnightBase implements IAnimatable, 
         return super.attackEntityFrom(source, amount);
     }
 
-    private boolean canBlockDamageSource(DamageSource damageSourceIn) {
-        if (!damageSourceIn.isUnblockable() && !this.shieldLowered && this.isShielded()) {
-            Vec3d vec3d = damageSourceIn.getDamageLocation();
+    protected void knightIsStunned() {
+        this.setStunned(true);
+        this.setImmovable(true);
+        this.setFightMode(true);
+        addEvent(()-> {
+            this.setFightMode(false);
+            this.setImmovable(false);
+        this.setStunned(false);
+        this.shieldLowered = false;
+        }, 30);
+    }
 
-            if (vec3d != null) {
+    @SideOnly(Side.CLIENT)
+    protected void spawnImpactParticles(Vec3d vec3d) {
+        Vec3d vec3d1 = vec3d.add(ModUtils.yVec(1.4));
+        ParticleManager.spawnColoredSmoke(this.world, vec3d1, ModColors.YELLOW, new Vec3d(ModRand.getFloat(1) * 0.1,ModRand.getFloat(1) * 0.1,ModRand.getFloat(1) * 0.1));
+        ParticleManager.spawnColoredSmoke(this.world, vec3d1, ModColors.YELLOW, new Vec3d(ModRand.getFloat(1) * 0.1,ModRand.getFloat(1) * 0.1,ModRand.getFloat(1) * 0.1));
+        ParticleManager.spawnColoredSmoke(this.world, vec3d1, ModColors.YELLOW, new Vec3d(ModRand.getFloat(1) * 0.1,ModRand.getFloat(1) * 0.1,ModRand.getFloat(1) * 0.1));
+        ParticleManager.spawnColoredSmoke(this.world, vec3d1, ModColors.YELLOW, new Vec3d(ModRand.getFloat(1) * 0.1,ModRand.getFloat(1) * 0.1,ModRand.getFloat(1) * 0.1));
+        ParticleManager.spawnColoredSmoke(this.world, vec3d1, ModColors.YELLOW, new Vec3d(ModRand.getFloat(1) * 0.1,ModRand.getFloat(1) * 0.1,ModRand.getFloat(1) * 0.1));
+        ParticleManager.spawnColoredSmoke(this.world, vec3d1, ModColors.YELLOW, new Vec3d(ModRand.getFloat(1) * 0.1,ModRand.getFloat(1) * 0.1,ModRand.getFloat(1) * 0.1));
+    }
+
+    private boolean canBlockDamageSource(DamageSource damageSourceIn) {
+        if (!damageSourceIn.isUnblockable() && !this.shieldLowered && this.isShielded() && !this.isStunned()) {
+            Vec3d vec3d = damageSourceIn.getDamageLocation();
+            //Handler for Parrying specifically
+            if(this.openToParry && vec3d != null) {
+                Vec3d vec3d1 = this.getLook(1.0F);
+                Vec3d vec3d2 = vec3d.subtractReverse(new Vec3d(this.posX, this.posY, this.posZ)).normalize();
+                vec3d2 = new Vec3d(vec3d2.x, 0.0D, vec3d2.z);
+                this.knightIsStunned();
+                this.spawnImpactParticles(vec3d);
+                return vec3d2.dotProduct(vec3d1) < 0.0D;
+            }
+            //Handler for other
+           else if (vec3d != null) {
                 Vec3d vec3d1 = this.getLook(1.0F);
                 Vec3d vec3d2 = vec3d.subtractReverse(new Vec3d(this.posX, this.posY, this.posZ)).normalize();
                 vec3d2 = new Vec3d(vec3d2.x, 0.0D, vec3d2.z);

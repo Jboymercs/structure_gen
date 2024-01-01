@@ -1,13 +1,16 @@
 package com.example.structure.world.Biome;
 
 import com.example.structure.entity.EntityEndBug;
+import com.example.structure.entity.EntitySnatcher;
 import com.example.structure.init.ModBlocks;
 import com.example.structure.util.IBiomeMisty;
 import com.example.structure.util.ModRand;
 import com.example.structure.world.Biome.decorator.EEBiomeDecorator;
 import com.example.structure.world.Biome.generation.WorldGenAshHeights;
+import com.example.structure.world.Biome.generation.WorldGenAshRuins;
 import com.example.structure.world.Biome.generation.WorldGenAshSpikes;
 import com.example.structure.world.Biome.generation.WorldGenRedCrystals;
+import com.example.structure.world.WorldGenStructure;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -35,12 +38,19 @@ public class BiomeAshWasteland extends BiomeFogged implements IBiomeMisty{
     private static final IBlockState AIR = Blocks.AIR.getDefaultState();
 
     public int spikesPerChunk = 3;
+
+    public int ruinsPerChunk = ModRand.range(1, 2);
     public int crystalSelect = ModRand.range(1, 3);
 
+    //Small usage of all the structures seen in the biome
+    public WorldGenStructure[] ruins = {new WorldGenAshRuins("ash_ruins_1", -1), new WorldGenAshRuins("ash_ruins_2", -1),
+    new WorldGenAshRuins("ash_ruins_3", -1), new WorldGenAshRuins("ash_ruins_4", -1), new WorldGenAshRuins("ash_ruins_5", -1),
+    new WorldGenAshRuins("ash_ruins_6", -1), new WorldGenAshRuins("ash_ruins_7", -1), new WorldGenAshRuins("ash_ruins_8", -1)};
     public WorldGenAshSpikes spikes = new WorldGenAshSpikes();
     public WorldGenerator ashHeights = new WorldGenAshHeights();
     public WorldGenerator crystalOre = new WorldGenRedCrystals();
     private static final IBlockState END_FLOOR = ModBlocks.END_ASH.getDefaultState();
+    private static final IBlockState END_WASTES = ModBlocks.BROWN_END_STONE.getDefaultState();
     private Random random;
     public BiomeAshWasteland() {
         super(properties.setBaseHeight(0.9f).setHeightVariation(1.2f).setRainDisabled().setTemperature(0.8F));
@@ -48,9 +58,10 @@ public class BiomeAshWasteland extends BiomeFogged implements IBiomeMisty{
         this.spawnableCreatureList.clear();
         this.spawnableWaterCreatureList.clear();
         this.spawnableCaveCreatureList.clear();
-        this.spawnableCreatureList.add(new SpawnListEntry(EntityEndBug.class, 2, 1, 3));
+        this.spawnableCreatureList.add(new SpawnListEntry(EntityEndBug.class, 10, 1, 3));
+        this.spawnableCreatureList.add(new SpawnListEntry(EntitySnatcher.class, 2, 1, 1));
         this.topBlock = END_FLOOR;
-        this.fillerBlock = END_FLOOR;
+        this.fillerBlock = END_WASTES;
         random = new Random();
         this.setFogColor(10, 30, 22);
 
@@ -107,6 +118,18 @@ public class BiomeAshWasteland extends BiomeFogged implements IBiomeMisty{
                 int yHieght = getEndSurfaceHeight(world, pos.add(16, 0, 16), 50, 70);
                 if (yHieght > 0) {
                 this.crystalOre.generate(world, random, pos.add(l6, yHieght, k10));
+                }
+            }
+        }
+        //Ash Ruins
+        if(rand.nextInt(2) == 0) {
+            for (int k2 = 0; k2 < this.ruinsPerChunk; ++k2) {
+                int l6 = random.nextInt(16) + 8;
+                int k10 = random.nextInt(16) + 8;
+                int yHieght2 = getEndSurfaceHeight(world, pos.add(16, 0, 16), 50, 80);
+                if (yHieght2 > 0) {
+                    WorldGenStructure ruin = ModRand.choice(ruins);
+                    ruin.generate(world, rand, pos.add(l6, yHieght2, k10));
                 }
             }
         }

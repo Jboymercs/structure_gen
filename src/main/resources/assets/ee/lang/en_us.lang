@@ -12,6 +12,7 @@ entity.crystal_boss.name=The Lamentor
 entity.end_knight.name=Ender Knight
 entity.end_mage.name=Ender Mage
 entity.end_shield.name=Ender Shield
+entity.snatcher.name=End Stalker
 entity.end_lord.name=Unholy Ender Knight
 entity.heal_aura.name=Heal Aura
 entity.buffker.name=Constructor
