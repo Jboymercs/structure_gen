@@ -78,17 +78,18 @@ desc.intro_5=There is many threats to be
 desc.intro_6=additionally found!
 
 # The Lamented islands
+title.lame_0=The Lamented Islands
 desc.lame_0=Found as a sub biome in the end,
 desc.lame_1=the Lamented Islands are a group of
 desc.lame_2=islands with structures atop of them.
 desc.lame_3=These islands hold the cell for which
 desc.lame_4=an ancient creature lies within. Once
 desc.lame_5=the protector of the End. Is now
-desc.lame_6=jailed by higher entities.                      One of the main dungeon inhabitants in
-desc.lame_7=                                                   the Lamented Islands are Constructors.
-desc.lame_8=                                                    These creatures are related to Shulkers
-desc.lame_9=                                                    but are more mobile and golem like in
-desc.lame_10=                                                    behaviour. They as well have a chance
-desc.lame_11=                                                    of dropping the Lamented Key used for
-desc.lame_12=                                                    opening the key block in the center
+desc.lame_6=jailed by higher entities. It                   One of the main dungeon inhabitants in
+desc.lame_7=is recommended to find one of                the Lamented Islands. These
+desc.lame_8=these areas before heading to any          creatures are related to Shulkers
+desc.lame_9=other biomes.                                     but are more mobile and golem like in
+desc.lame_10=                                                     behaviour. They as well have a chance
+desc.lame_11=                                                     of dropping the Lamented Key used for
+desc.lame_12=                                                     opening the key block in the center
 desc.lame_13=                                                      island.

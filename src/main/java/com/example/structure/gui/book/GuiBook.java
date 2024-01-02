@@ -20,10 +20,10 @@ public class GuiBook extends GuiScreen {
     protected static final int Y = 180;
     private int currentPage;
     private int prevPage = -1;
-    private final int totalPages = 7;
+    private final int totalPages = 8;
     private static final ResourceLocation GUI_BASE_BOOK_BACKGROUND = new ResourceLocation(ModReference.MOD_ID + ":textures/gui/book_default.png");
     private static final ResourceLocation GUI_INDEX_BUTTON = new ResourceLocation(ModReference.MOD_ID + ":textures/gui/button.png");
-    private static final ResourceLocation MOB_PICTURES = new ResourceLocation(ModReference.MOD_ID + ":textures/gui/cards.png");
+    private static final ResourceLocation MOB_PICTURES = new ResourceLocation( "ee:textures/gui/cards.png");
 
     ItemStack book;
     GuiButton exitButton;
@@ -151,6 +151,11 @@ public class GuiBook extends GuiScreen {
         }
     }
 
+    @Override
+    public boolean doesGuiPauseGame() {
+        return false;
+    }
+
     private void drawPages(int pages) {
         switch (pages) {
             case 0:
@@ -169,6 +174,10 @@ public class GuiBook extends GuiScreen {
 
             case 1:
                 GlStateManager.pushMatrix();
+                this.mc.renderEngine.bindTexture(MOB_PICTURES);
+                drawModalRectWithCustomSizedTexture((this.width + 17) / 2, 13,0, 0, 115, 58, 115, 464);
+                this.createLeftTitleFromString("title.lame_0");
+                this.createRightPictureTitleFromString("entity.buffker.name");
                 this.createLineFromString(0, "desc.lame_0");
                 this.createLineFromString(1, "desc.lame_1");
                 this.createLineFromString(2, "desc.lame_2");
@@ -183,22 +192,49 @@ public class GuiBook extends GuiScreen {
                 this.createLineFromString(11, "desc.lame_11");
                 this.createLineFromString(12, "desc.lame_12");
                 this.createLineFromString(13, "desc.lame_13");
-                this.mc.renderEngine.bindTexture(MOB_PICTURES);
-                drawModalRectWithCustomSizedTexture((this.width + 17) / 2, 13,0, 58, 115, 58, 115, 464);
           GlStateManager.popMatrix();
                 break;
 
             case 2:
 
                 GlStateManager.pushMatrix();
-                this.drawItemStack(new ItemStack(ModItems.PURPLE_CRYSTAL_ITEM), (this.width + 58 * 2) / 2,54);
+                this.mc.renderEngine.bindTexture(MOB_PICTURES);
+                drawModalRectWithCustomSizedTexture((this.width + 17) / 2, 13,0, 58, 115, 58, 115, 464);
                 GlStateManager.popMatrix();
                 break;
 
             case 3:
 
                 GlStateManager.pushMatrix();
-                this.drawItemStack(new ItemStack(ModItems.END_KEY), (this.width + 58 * 2) / 2,54);
+                this.mc.renderEngine.bindTexture(MOB_PICTURES);
+                drawModalRectWithCustomSizedTexture((this.width + 17) / 2, 13,0, 116, 115, 58, 115, 464);
+                GlStateManager.popMatrix();
+                break;
+            case 4:
+                GlStateManager.pushMatrix();
+                this.mc.renderEngine.bindTexture(MOB_PICTURES);
+                drawModalRectWithCustomSizedTexture((this.width + 17) / 2, 13,0, 174, 115, 58, 115, 464);
+                GlStateManager.popMatrix();
+                break;
+            case 5:
+
+                GlStateManager.pushMatrix();
+                this.mc.renderEngine.bindTexture(MOB_PICTURES);
+                drawModalRectWithCustomSizedTexture((this.width + 17) / 2, 13,0, 232, 115, 58, 115, 464);
+                GlStateManager.popMatrix();
+                break;
+            case 6:
+
+                GlStateManager.pushMatrix();
+                this.mc.renderEngine.bindTexture(MOB_PICTURES);
+                drawModalRectWithCustomSizedTexture((this.width + 17) / 2, 13,0, 290, 115, 58, 115, 464);
+                GlStateManager.popMatrix();
+                break;
+            case 7:
+
+                GlStateManager.pushMatrix();
+                this.mc.renderEngine.bindTexture(MOB_PICTURES);
+                drawModalRectWithCustomSizedTexture((this.width + 17) / 2, 13,0, 348, 115, 58, 115, 464);
                 GlStateManager.popMatrix();
                 break;
         }
@@ -212,6 +248,30 @@ public class GuiBook extends GuiScreen {
         GlStateManager.scale(0.6F, 0.6F, 0.0F);
         GlStateManager.translate(0.8F, 0.8F, 0F);
         this.fontRenderer.drawString(TextFormatting.BLACK + s, Math.round(i + 90 / 0.6F),  Math.round(70 + (line * 8) / 0.6F), 0);
+        GlStateManager.popMatrix();
+        GlStateManager.pushMatrix();
+    }
+
+
+    private void createLeftTitleFromString(String text) {
+        String s = I18n.format(text);
+        int k = this.fontRenderer.getStringWidth(s) / 2;
+        int i = (this.width - X) / 2;
+        GlStateManager.scale(0.8F, 0.8F, 0.0F);
+        GlStateManager.translate(0.0F, 0.4F, 0F);
+        this.fontRenderer.drawString(TextFormatting.GRAY + s, Math.round((i + 70 - (k * 0.75F))/ 0.8F),  Math.round(22  / 0.8F), 0);
+        GlStateManager.popMatrix();
+        GlStateManager.pushMatrix();
+    }
+
+
+    private void createRightPictureTitleFromString(String text) {
+        String s = I18n.format(text);
+        int k = this.fontRenderer.getStringWidth(s) / 2;
+        int i = (this.width - X) / 2;
+        GlStateManager.scale(0.8F, 0.8F, 0.0F);
+        GlStateManager.translate(0.0F, 0.4F, 0F);
+        this.fontRenderer.drawString(TextFormatting.GRAY + s, Math.round((i + 200 - (k * 0.75F))/ 0.8F),  Math.round(77  / 0.8F), 0);
         GlStateManager.popMatrix();
         GlStateManager.pushMatrix();
     }
