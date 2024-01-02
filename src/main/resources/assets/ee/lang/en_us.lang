@@ -3,6 +3,7 @@ item.crystalball.name=Crystal Ball
 item.spinsword.name=Thousand Swords
 item.lamented.name= Lamented Eye
 item.sword.name= Lamented Sword
+item.info_book.name=Guide to the End
 entity.end_king.name=The Unholy Ender Lord
 entity.red_crystal.name=Ender Lord's spikes
 entity.red_sword.name=Unholy Sword
@@ -66,3 +67,28 @@ death.attack.ee:thrownMaelstrom=%1$s was pummeled to death by a %2$s
 death.attack.ee:explosionMaelstrom=%1$s was blown up
 death.attack.ee:explosionMaelstrom.player=%1$s was blown up while fighting a %2$s
 death.attack.ee:magicMaelstrom=%1$s was magicked by a %2$s
+
+#Book Info - Intro
+desc.intro_0=The end is known to hold many
+desc.intro_1=mysteries. This book will act
+desc.intro_2=as a guide of your travels and
+desc.intro_3=unlock new notes as you explore
+desc.intro_4=the end. But be wary traveller.
+desc.intro_5=There is many threats to be
+desc.intro_6=additionally found!
+
+# The Lamented islands
+desc.lame_0=Found as a sub biome in the end,
+desc.lame_1=the Lamented Islands are a group of
+desc.lame_2=islands with structures atop of them.
+desc.lame_3=These islands hold the cell for which
+desc.lame_4=an ancient creature lies within. Once
+desc.lame_5=the protector of the End. Is now
+desc.lame_6=jailed by higher entities.                      One of the main dungeon inhabitants in
+desc.lame_7=                                                   the Lamented Islands are Constructors.
+desc.lame_8=                                                    These creatures are related to Shulkers
+desc.lame_9=                                                    but are more mobile and golem like in
+desc.lame_10=                                                    behaviour. They as well have a chance
+desc.lame_11=                                                    of dropping the Lamented Key used for
+desc.lame_12=                                                    opening the key block in the center
+desc.lame_13=                                                      island.

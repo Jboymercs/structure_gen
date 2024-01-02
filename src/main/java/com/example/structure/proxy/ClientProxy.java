@@ -4,6 +4,7 @@ import com.example.structure.entity.animation.IAnimatedEntity;
 import com.example.structure.entity.tileentity.TileEntityAltar;
 import com.example.structure.event_handler.ClientRender;
 import com.example.structure.gui.GuiAltar;
+import com.example.structure.gui.book.GuiBook;
 import com.example.structure.server.container.ContainterAltar;
 import com.example.structure.util.handlers.RenderHandler;
 import ibxm.Player;
@@ -12,6 +13,7 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -54,6 +56,13 @@ public class ClientProxy extends CommonProxy {
             case 1: return ClientRender.SCREEN_SHAKE;
             default: return defaultVal;
         }
+    }
+
+    //Will come back to this and clean it up and put it in with the other GUI's
+    @SideOnly(Side.CLIENT)
+    @Override
+    public void openGuiBook(ItemStack stack) {
+        Minecraft.getMinecraft().displayGuiScreen(new GuiBook(stack));
     }
 
     @Override

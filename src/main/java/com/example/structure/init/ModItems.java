@@ -43,6 +43,8 @@ public class ModItems {
 
     public static final Item SPIN_SWORD_ITEM = new SpinSwordItem("spinsword", null);
 
+    public static final Item EE_BOOK = new ItemModBook("info_book", CreativeTabs.MISC);
+
    //public static final Item SKATE_BOOTS = new ItemSlideBoots("skate_boots", ARMOR, 1, EntityEquipmentSlot.FEET,  "skate");
     public ModItems() {
 
