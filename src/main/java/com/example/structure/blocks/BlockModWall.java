@@ -2,6 +2,7 @@ package com.example.structure.blocks;
 
 import com.example.structure.Main;
 import com.example.structure.init.ModBlocks;
+import com.example.structure.init.ModCreativeTabs;
 import com.example.structure.init.ModItems;
 import com.example.structure.util.IHasModel;
 import net.minecraft.block.Block;
@@ -62,7 +63,7 @@ public class BlockModWall extends Block implements IHasModel {
         this.setHardness(hardness);
         this.setResistance(resistanc / 3.0F);
         this.setSoundType(soundType);
-        this.setCreativeTab(CreativeTabs.DECORATIONS);
+        this.setCreativeTab(ModCreativeTabs.ITEMS);
     }
 
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)

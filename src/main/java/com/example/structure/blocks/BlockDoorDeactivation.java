@@ -36,7 +36,6 @@ public class BlockDoorDeactivation extends BlockBase implements IBlockUpdater, I
         this.setBlockUnbreakable();
         this.hasTileEntity = true;
         this.activationItem = item;
-        this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
         this.setSoundType(SoundType.STONE);
     }
 

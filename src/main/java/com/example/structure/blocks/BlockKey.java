@@ -4,6 +4,7 @@ import com.example.structure.entity.EntityCrystalKnight;
 import com.example.structure.entity.EntityGroundCrystal;
 import com.example.structure.entity.EntityModBase;
 import com.example.structure.entity.tileentity.TileEntityUpdater;
+import com.example.structure.init.ModCreativeTabs;
 import com.example.structure.util.ModUtils;
 import com.google.common.base.Predicate;
 import net.minecraft.block.ITileEntityProvider;
@@ -50,7 +51,7 @@ public class BlockKey extends BlockBase implements IBlockUpdater, ITileEntityPro
         this.activationItem = item;
         this.hasTileEntity = true;
         this.spawnPortal = spawnPortal;
-        this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
+        this.setCreativeTab(ModCreativeTabs.ITEMS);
     }
 
     @Override

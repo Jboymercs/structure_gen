@@ -1,5 +1,6 @@
 package com.example.structure.blocks;
 
+import com.example.structure.init.ModCreativeTabs;
 import net.minecraft.block.BlockLeaves;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockFaceShape;
@@ -18,7 +19,7 @@ public class BlockBarrier extends BlockBase{
         this.setBlockUnbreakable();
         this.setLightLevel(0.8f);
         this.setResistance(6000000.0F);
-        this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
+        this.setCreativeTab(ModCreativeTabs.ITEMS);
 
     }
 

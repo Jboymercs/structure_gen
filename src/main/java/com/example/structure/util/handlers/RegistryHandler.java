@@ -43,7 +43,7 @@ public class RegistryHandler {
     public static void onItemRegister(RegistryEvent.Register<Item> event) {
         itemRegistry = event.getRegistry();
         event.getRegistry().registerAll(ModItems.ITEMS.toArray(new Item[0]));
-        ModItems.ALTAR = registerItem(new ItemBlock(ModBlocks.ALTAR), "altar");
+       // ModItems.ALTAR = registerItem(new ItemBlock(ModBlocks.ALTAR), "altar");
     }
 
 
@@ -72,7 +72,7 @@ public class RegistryHandler {
         ModelLoader.setCustomModelResourceLocation(ModItems.CRYSTAL_BALL, 0, new ModelResourceLocation(ModReference.MOD_ID + ":crystalball","inventory"));
         ModelLoader.setCustomModelResourceLocation(ModItems.BOSS_SWORD, 0, new ModelResourceLocation(ModReference.MOD_ID + ":sword", "inventory"));
         ModelLoader.setCustomModelResourceLocation(ModItems.SPIN_SWORD_ITEM, 0, new ModelResourceLocation(ModReference.MOD_ID + ":spinsword", "inventory"));
-        ModelLoader.setCustomModelResourceLocation(ModItems.ALTAR, 0, new ModelResourceLocation(ModReference.MOD_ID + ":altar", "inventory"));
+      //  ModelLoader.setCustomModelResourceLocation(ModItems.ALTAR, 0, new ModelResourceLocation(ModReference.MOD_ID + ":altar", "inventory"));
 
         ModItems.CRYSTAL_BALL.setTileEntityItemStackRenderer(new RenderCrystalBall());
         ModItems.BOSS_SWORD.setTileEntityItemStackRenderer(new RenderBossSword());

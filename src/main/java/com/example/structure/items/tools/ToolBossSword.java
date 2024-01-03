@@ -1,6 +1,7 @@
 package com.example.structure.items.tools;
 
 import com.example.structure.config.ModConfig;
+import com.example.structure.init.ModCreativeTabs;
 import com.example.structure.util.ModDamageSource;
 import com.example.structure.util.ModUtils;
 import com.example.structure.util.handlers.ModSoundHandler;
@@ -38,7 +39,7 @@ public class ToolBossSword extends ToolSword implements ISweepAttackOverride, IA
 
     public ToolBossSword(String name, String info_loc, ToolMaterial material) {
         super(name, material);
-        super.setCreativeTab(CreativeTabs.COMBAT);
+        super.setCreativeTab(ModCreativeTabs.ITEMS);
         this.setMaxDamage(250);
         this.info_loc = info_loc;
     }

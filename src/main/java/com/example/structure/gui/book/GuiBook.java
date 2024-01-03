@@ -20,10 +20,11 @@ public class GuiBook extends GuiScreen {
     protected static final int Y = 180;
     private int currentPage;
     private int prevPage = -1;
-    private final int totalPages = 8;
+    private final int totalPages = 10;
     private static final ResourceLocation GUI_BASE_BOOK_BACKGROUND = new ResourceLocation(ModReference.MOD_ID + ":textures/gui/book_default.png");
     private static final ResourceLocation GUI_INDEX_BUTTON = new ResourceLocation(ModReference.MOD_ID + ":textures/gui/button.png");
     private static final ResourceLocation MOB_PICTURES = new ResourceLocation( "ee:textures/gui/cards.png");
+    private static final ResourceLocation BLOCK_PICTURES = new ResourceLocation("ee:textures/gui/block_cards.png");
 
     ItemStack book;
     GuiButton exitButton;
@@ -160,94 +161,151 @@ public class GuiBook extends GuiScreen {
         switch (pages) {
             case 0:
             default:
+                //IntroDuction + Index
                 GlStateManager.pushMatrix();
-                this.createLineFromString(0, "desc.intro_0");
-                this.createLineFromString(1, "desc.intro_1");
-                this.createLineFromString(2, "desc.intro_2");
-                this.createLineFromString(3, "desc.intro_3");
-                this.createLineFromString(4, "desc.intro_4");
-                this.createLineFromString(5, "desc.intro_5");
-                this.createLineFromString(6, "desc.intro_6");
+                this.writeLeftFromString(0, 6, "desc.intro_");
                 this.drawItemStack(new ItemStack(ModItems.LAMENTED_EYE), (this.width - 75 * 2) / 2, 14);
                 GlStateManager.popMatrix();
                 break;
 
             case 1:
+                //Lamented Islands + Constructor
                 GlStateManager.pushMatrix();
                 this.mc.renderEngine.bindTexture(MOB_PICTURES);
                 drawModalRectWithCustomSizedTexture((this.width + 17) / 2, 13,0, 0, 115, 58, 115, 464);
                 this.createLeftTitleFromString("title.lame_0");
                 this.createRightPictureTitleFromString("entity.buffker.name");
-                this.createLineFromString(0, "desc.lame_0");
-                this.createLineFromString(1, "desc.lame_1");
-                this.createLineFromString(2, "desc.lame_2");
-                this.createLineFromString(3, "desc.lame_3");
-                this.createLineFromString(4, "desc.lame_4");
-                this.createLineFromString(5, "desc.lame_5");
-                this.createLineFromString(6, "desc.lame_6");
-                this.createLineFromString(7, "desc.lame_7");
-                this.createLineFromString(8, "desc.lame_8");
-                this.createLineFromString(9, "desc.lame_9");
-                this.createLineFromString(10, "desc.lame_10");
-                this.createLineFromString(11, "desc.lame_11");
-                this.createLineFromString(12, "desc.lame_12");
-                this.createLineFromString(13, "desc.lame_13");
+                this.writeLeftFromString(0, 9, "desc.lame_");
+                this.writeRightFromString(6, 13, "desc.cons_");
           GlStateManager.popMatrix();
                 break;
 
             case 2:
-
+                //The Lamentor
                 GlStateManager.pushMatrix();
                 this.mc.renderEngine.bindTexture(MOB_PICTURES);
-                drawModalRectWithCustomSizedTexture((this.width + 17) / 2, 13,0, 58, 115, 58, 115, 464);
+                drawModalRectWithCustomSizedTexture((this.width - 245) / 2, 13,0, 58, 115, 58, 115, 464);
+                this.createLeftPictureTitleFromString("entity.crystal_boss.name");
+                this.writeLeftFromString(6, 13, "desc.cboss_");
+                this.createRightTitleFromString("title.cboss_0");
+                this.writeRightFromString(0, 13, "skill.cboss_");
                 GlStateManager.popMatrix();
                 break;
 
             case 3:
-
+                //Ash Wastelands Biome + End Ash + Ash Brick
                 GlStateManager.pushMatrix();
-                this.mc.renderEngine.bindTexture(MOB_PICTURES);
-                drawModalRectWithCustomSizedTexture((this.width + 17) / 2, 13,0, 116, 115, 58, 115, 464);
+                this.mc.renderEngine.bindTexture(BLOCK_PICTURES);
+                drawModalRectWithCustomSizedTexture((this.width + 17) / 2, 13,0, 0, 115, 58, 115, 464);
+                this.createLeftTitleFromString("title.biome_0");
+                this.writeLeftFromString(0, 13, "desc.ash_");
+                this.createRightPictureTitleFromString("tile.ash_brick.name");
+                this.writeRightFromString(6, 12, "desc.ash_block_");
                 GlStateManager.popMatrix();
                 break;
             case 4:
+                //Unholy Crystals + Red Lamp
                 GlStateManager.pushMatrix();
-                this.mc.renderEngine.bindTexture(MOB_PICTURES);
-                drawModalRectWithCustomSizedTexture((this.width + 17) / 2, 13,0, 174, 115, 58, 115, 464);
+                this.mc.renderEngine.bindTexture(BLOCK_PICTURES);
+                drawModalRectWithCustomSizedTexture((this.width - 245) / 2, 13,0, 348, 115, 58, 115, 464);
+                drawModalRectWithCustomSizedTexture((this.width + 17) / 2, 13,0, 116, 115, 58, 115, 464);
+                this.createLeftPictureTitleFromString("item.red_crystal_item.name");
+                this.writeLeftFromString(6, 12, "desc.red_");
+                this.createRightPictureTitleFromString("tile.red_lamp.name");
+                this.writeRightFromString(6, 7, "desc.lamp_");
                 GlStateManager.popMatrix();
                 break;
             case 5:
-
+                //Door KeyHole + Door Creator
                 GlStateManager.pushMatrix();
-                this.mc.renderEngine.bindTexture(MOB_PICTURES);
-                drawModalRectWithCustomSizedTexture((this.width + 17) / 2, 13,0, 232, 115, 58, 115, 464);
+                this.mc.renderEngine.bindTexture(BLOCK_PICTURES);
+                drawModalRectWithCustomSizedTexture((this.width -245) / 2, 13,0, 174, 115, 58, 115, 464);
+                drawModalRectWithCustomSizedTexture((this.width + 17) / 2, 13,0, 290, 115, 58, 115, 464);
+                this.createLeftPictureTitleFromString("tile.ash_door.name");
+                this.writeLeftFromString(6, 13, "desc.hole_");
+                this.createRightPictureTitleFromString("tile.end_door.name");
+                this.writeRightFromString(6, 10, "desc.crea_");
                 GlStateManager.popMatrix();
                 break;
             case 6:
-
+                //Ash Trap + Start of Ash Items
                 GlStateManager.pushMatrix();
-                this.mc.renderEngine.bindTexture(MOB_PICTURES);
-                drawModalRectWithCustomSizedTexture((this.width + 17) / 2, 13,0, 290, 115, 58, 115, 464);
+                this.mc.renderEngine.bindTexture(BLOCK_PICTURES);
+                drawModalRectWithCustomSizedTexture((this.width - 245) / 2, 13,0, 232, 115, 58, 115, 464);
+                this.createLeftPictureTitleFromString("tile.ash_trap_floor.name");
+                this.writeLeftFromString(6, 12, "desc.trap_");
                 GlStateManager.popMatrix();
                 break;
             case 7:
-
+                //Ashed Parasite + End Stalker
                 GlStateManager.pushMatrix();
                 this.mc.renderEngine.bindTexture(MOB_PICTURES);
-                drawModalRectWithCustomSizedTexture((this.width + 17) / 2, 13,0, 348, 115, 58, 115, 464);
+                drawModalRectWithCustomSizedTexture((this.width - 245) / 2, 13,0, 290, 115, 58, 115, 464);
+                drawModalRectWithCustomSizedTexture((this.width + 17) / 2, 13,0, 116, 115, 58, 115, 464);
+                this.createLeftPictureTitleFromString("entity.end_bug.name");
+                this.writeLeftFromString(6, 13, "desc.bug_");
+                this.createRightPictureTitleFromString("entity.snatcher.name");
+                this.writeRightFromString(6, 13, "desc.stal_");
+
+                GlStateManager.popMatrix();
+                break;
+            case 8:
+                //Ender Knights
+                GlStateManager.pushMatrix();
+                this.mc.renderEngine.bindTexture(MOB_PICTURES);
+                drawModalRectWithCustomSizedTexture((this.width - 245) / 2, 13,0, 174, 115, 58, 115, 464);
+                this.createLeftPictureTitleFromString("title.knights_0");
+                this.writeLeftFromString(6, 13, "desc.knig_");
+                this.createRightTitleFromString("title.knights_1");
+                this.writeRightFromString(0, 12, "desc.mage_");
+                GlStateManager.popMatrix();
+                break;
+            case 9:
+                //Ender Knights materials + End Chad
+                GlStateManager.pushMatrix();
+                this.mc.renderEngine.bindTexture(MOB_PICTURES);
+                drawModalRectWithCustomSizedTexture((this.width + 17) / 2, 13,0, 232, 115, 58, 115, 464);
+                this.createRightPictureTitleFromString("entity.end_lord.name");
+                this.writeRightFromString(6, 13, "desc.chad_");
+
                 GlStateManager.popMatrix();
                 break;
         }
     }
 
+    private void writeLeftFromString(int lineStart, int lineEnd, String text) {
+        for(int x = lineStart; x <= lineEnd; x++) {
+            String s = I18n.format(text + x);
+            int k = this.fontRenderer.getStringWidth(s) / 2;
+            int i = (this.width - X) / 2;
+            GlStateManager.scale(0.6F, 0.6F, 0.0F);
+            GlStateManager.translate(0.8F, 0.8F, 0F);
+            this.fontRenderer.drawString(TextFormatting.BLACK + s, Math.round(i + 90 / 0.6F),  Math.round(70 + (x * 8) / 0.6F), 0);
+            GlStateManager.popMatrix();
+            GlStateManager.pushMatrix();
+        }
+    }
 
-    private void createLineFromString(int line, String text) {
-            String s = I18n.format(text);
+    private void writeRightFromString(int lineStart, int lineEnd, String text) {
+        for(int x = lineStart; x <= lineEnd; x++) {
+            String s = I18n.format(text + x);
+            int k = this.fontRenderer.getStringWidth(s) / 2;
+            int i = (this.width - X) / 2;
+            GlStateManager.scale(0.6F, 0.6F, 0.0F);
+            GlStateManager.translate(0.8F, 0.8F, 0F);
+            this.fontRenderer.drawString(TextFormatting.BLACK + s, Math.round(i + 220 / 0.6F),  Math.round(70 + (x * 8) / 0.6F), 0);
+            GlStateManager.popMatrix();
+            GlStateManager.pushMatrix();
+        }
+    }
+
+    private void createRightTitleFromString(String text) {
+        String s = I18n.format(text);
         int k = this.fontRenderer.getStringWidth(s) / 2;
         int i = (this.width - X) / 2;
-        GlStateManager.scale(0.6F, 0.6F, 0.0F);
-        GlStateManager.translate(0.8F, 0.8F, 0F);
-        this.fontRenderer.drawString(TextFormatting.BLACK + s, Math.round(i + 90 / 0.6F),  Math.round(70 + (line * 8) / 0.6F), 0);
+        GlStateManager.scale(0.8F, 0.8F, 0.0F);
+        GlStateManager.translate(0.0F, 0.4F, 0F);
+        this.fontRenderer.drawString(TextFormatting.GRAY + s, Math.round((i + 200 - (k * 0.75F))/ 0.8F),  Math.round(22  / 0.8F), 0);
         GlStateManager.popMatrix();
         GlStateManager.pushMatrix();
     }
@@ -264,6 +322,16 @@ public class GuiBook extends GuiScreen {
         GlStateManager.pushMatrix();
     }
 
+    private void createLeftPictureTitleFromString(String text) {
+        String s = I18n.format(text);
+        int k = this.fontRenderer.getStringWidth(s) / 2;
+        int i = (this.width - X) / 2;
+        GlStateManager.scale(0.8F, 0.8F, 0.0F);
+        GlStateManager.translate(0.0F, 0.4F, 0F);
+        this.fontRenderer.drawString(TextFormatting.GRAY + s, Math.round((i + 70 - (k * 0.75F))/ 0.8F),  Math.round(77  / 0.8F), 0);
+        GlStateManager.popMatrix();
+        GlStateManager.pushMatrix();
+    }
 
     private void createRightPictureTitleFromString(String text) {
         String s = I18n.format(text);

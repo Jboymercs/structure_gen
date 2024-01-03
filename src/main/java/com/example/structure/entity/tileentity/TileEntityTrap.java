@@ -1,6 +1,9 @@
 package com.example.structure.entity.tileentity;
 
+import com.example.structure.entity.endking.EntityEndKing;
 import com.example.structure.entity.endking.EntityRedCrystal;
+import com.example.structure.entity.knighthouse.EntityKnightBase;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.tileentity.TileEntity;
@@ -19,7 +22,7 @@ public class TileEntityTrap extends TileEntity implements ITickable {
     public void update() {
 
         AxisAlignedBB box = new AxisAlignedBB(pos, pos.add(1,2,1));
-        List<EntityPlayer> players = this.world.getEntitiesWithinAABB(EntityPlayer.class, box);
+        List<EntityLivingBase> players = this.world.getEntitiesWithinAABB(EntityLivingBase.class, box, e -> !e.getIsInvulnerable() && (!(e instanceof EntityEndKing || e instanceof EntityRedCrystal || e instanceof EntityKnightBase)));
         if(!players.isEmpty() && cooldown >= 60) {
             if(!world.isRemote) {
                 EntityRedCrystal spike = new EntityRedCrystal(this.world);

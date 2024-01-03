@@ -1,6 +1,7 @@
 package com.example.structure.items.armor;
 
 import com.example.structure.Main;
+import com.example.structure.init.ModCreativeTabs;
 import com.example.structure.init.ModItems;
 import com.example.structure.util.IHasModel;
 import com.example.structure.util.ModReference;
@@ -35,7 +36,7 @@ private String texture;
     private String armorBonusDesc = "";
     public ModArmorBase(String name, ArmorMaterial materialIn, int renderIdx, EntityEquipmentSlot slotIn, String textureName) {
         super(materialIn, renderIdx, slotIn);
-        setCreativeTab(CreativeTabs.COMBAT);
+        setCreativeTab(ModCreativeTabs.ITEMS);
         setUnlocalizedName(name);
         setRegistryName(name);
         this.texture = textureName;

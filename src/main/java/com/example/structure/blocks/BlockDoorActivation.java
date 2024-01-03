@@ -4,6 +4,7 @@ import com.example.structure.entity.EntityGroundCrystal;
 import com.example.structure.entity.tileentity.TileEntityActivate;
 import com.example.structure.entity.tileentity.TileEntityUpdater;
 import com.example.structure.init.ModBlocks;
+import com.example.structure.init.ModCreativeTabs;
 import com.example.structure.init.ModItems;
 import com.google.common.base.Predicate;
 import jdk.nashorn.internal.ir.Block;
@@ -61,7 +62,7 @@ public class BlockDoorActivation extends BlockBase implements IBlockUpdater, ITi
         this.activationItem = item;
         this.hasTileEntity = true;
 
-        this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
+        this.setCreativeTab(ModCreativeTabs.ITEMS);
     }
 
     @Override
